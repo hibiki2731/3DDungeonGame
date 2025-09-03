@@ -1,4 +1,12 @@
-float4 main( float4 pos : POSITION ) : SV_POSITION
+#include<Header.hlsli>
+
+void main(
+    in float4 i_pos : POSITION,
+    in float2 i_uv : TEXCOORD0,
+    out float4 o_pos : SV_POSITION,
+    out float2 o_uv : TEXCOORD) 
 {
-	return pos;
+    o_pos = mul(Mat, i_pos);
+    o_uv = i_uv;
+    
 }

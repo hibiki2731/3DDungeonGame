@@ -152,8 +152,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scripts\BIN_FILE12.h" />
+    <ClInclude Include="scripts\stb_image.h" />
     <ClInclude Include="scripts\stdafx.h" />
     <ClInclude Include="scripts\WinMain.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="scripts\Header.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

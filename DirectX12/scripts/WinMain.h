@@ -10,6 +10,12 @@
 #include <fstream>
 #include "BIN_FILE12.h"
 #include "stdafx.h"
+#include <DirectXMath.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+
+using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
 void WaitDrawDone();
@@ -22,6 +28,7 @@ const int ClientWidth = 1280;
 const int ClientHeight = 720;
 const int ClientPosX = (GetSystemMetrics(SM_CXSCREEN) - ClientWidth) / 2;
 const int ClientPosY = (GetSystemMetrics(SM_CYSCREEN) - ClientHeight) / 2;
+const float Aspect = static_cast<float>(ClientWidth) / ClientHeight;
 #if 1
 DWORD WindowStyle = WS_OVERLAPPEDWINDOW;
 #else
@@ -50,12 +57,38 @@ ComPtr<ID3D12Resource> BackBuffers[2];
 UINT BackBufIdx;
 ComPtr<ID3D12DescriptorHeap> BbvHeap; //BackBufferViewHeap
 UINT BbvHeapSize;
-//頂点バッファ
+//頂点位置バッファ
 ComPtr<ID3D12Resource> PositionBuf;
 D3D12_VERTEX_BUFFER_VIEW PositionBufView;
+//テクスチャ座標バッファ
+ComPtr<ID3D12Resource> TexcoordBuf;
+D3D12_VERTEX_BUFFER_VIEW TexcoordBufView;
+
+//頂点インデックスバッファ
+ComPtr<ID3D12Resource> IndexBuf;
+D3D12_INDEX_BUFFER_VIEW IndexBufView;
+
+//コンストバッファ0
+struct CONST_BUF0 {
+	XMMATRIX mat;
+};
+CONST_BUF0* MappedConstBuf0;
+ComPtr<ID3D12Resource> ConstBuf0;
+//コンスタバッファ1
+struct CONST_BUF1 {
+	XMFLOAT4 diffuse;
+};
+CONST_BUF1* MappedConstBuf1;
+ComPtr<ID3D12Resource> ConstBuf1;
+//テクスチャバッファ
+ComPtr<ID3D12Resource> TextureBuf;
+//ディスクリプタヒープ
+ComPtr<ID3D12DescriptorHeap> CbvTbvHeap; //ConstBufferViewHeap
+
 //パイプライン
 ComPtr<ID3D12RootSignature> RootSignature;
 ComPtr<ID3D12PipelineState> PipelineState;
 D3D12_VIEWPORT Viewport;
 D3D12_RECT ScissorRect;
+
 

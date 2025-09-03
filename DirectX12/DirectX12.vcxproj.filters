@@ -38,6 +38,9 @@
     <ClInclude Include="scripts\WinMain.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="scripts\stb_image.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="scripts\PixelShader.hlsl">
@@ -46,5 +49,10 @@
     <FxCompile Include="scripts\VertexShader.hlsl">
       <Filter>hlsl</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="scripts\Header.hlsli">
+      <Filter>hlsl</Filter>
+    </None>
   </ItemGroup>
 </Project>
