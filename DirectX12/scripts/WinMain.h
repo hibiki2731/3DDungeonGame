@@ -72,18 +72,25 @@ D3D12_INDEX_BUFFER_VIEW IndexBufView;
 struct CONST_BUF0 {
 	XMMATRIX mat;
 };
-CONST_BUF0* MappedConstBuf0;
-ComPtr<ID3D12Resource> ConstBuf0;
 //コンスタバッファ1
 struct CONST_BUF1 {
 	XMFLOAT4 diffuse;
 };
-CONST_BUF1* MappedConstBuf1;
-ComPtr<ID3D12Resource> ConstBuf1;
-//テクスチャバッファ
-ComPtr<ID3D12Resource> TextureBuf;
-//ディスクリプタヒープ
-ComPtr<ID3D12DescriptorHeap> CbvTbvHeap; //ConstBufferViewHeap
+CONST_BUF0* MappedConstBuf0_a;
+ComPtr<ID3D12Resource> ConstBuf0_a;
+CONST_BUF1* MappedConstBuf1_a;
+ComPtr<ID3D12Resource> ConstBuf1_a;
+ComPtr<ID3D12Resource> TextureBuf_a;
+//ComPtr<ID3D12DescriptorHeap> CbvTbvHeap_a; 
+
+CONST_BUF0* MappedConstBuf0_b;
+ComPtr<ID3D12Resource> ConstBuf0_b;
+CONST_BUF1* MappedConstBuf1_b;
+ComPtr<ID3D12Resource> ConstBuf1_b;
+ComPtr<ID3D12Resource> TextureBuf_b;
+//ComPtr<ID3D12DescriptorHeap> CbvTbvHeap_b;
+
+ComPtr<ID3D12DescriptorHeap> CbvTbvHeap;
 
 //パイプライン
 ComPtr<ID3D12RootSignature> RootSignature;

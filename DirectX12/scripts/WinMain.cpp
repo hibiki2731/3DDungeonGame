@@ -288,24 +288,26 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 			IndexBufView.Format = DXGI_FORMAT_R16_UINT; //unsigned short
 		} 
 		//コンスタントバッファとディスクリプタヒープ
+
+		//コンスタントバッファ_aとテクスチャバッファ_a ⇒ ディスクリプタヒープ_a
 		{
-			//コンスタントバッファ0を作成
+			//コンスタントバッファ０_aをつくる
 			{
 				D3D12_HEAP_PROPERTIES prop = {};
-				prop.Type = D3D12_HEAP_TYPE_UPLOAD; //CPUからGPUへ書き込み
+				prop.Type = D3D12_HEAP_TYPE_UPLOAD;
 				prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
 				prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
 				prop.CreationNodeMask = 1;
 				prop.VisibleNodeMask = 1;
 				D3D12_RESOURCE_DESC desc = {};
-				desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER; //一次元配列
+				desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
 				desc.Alignment = 0;
-				desc.Width = 256; //コンスタントバッファは256の倍数バイトにする（必須）
+				desc.Width = 256;
 				desc.Height = 1;
 				desc.DepthOrArraySize = 1;
 				desc.MipLevels = 1;
 				desc.Format = DXGI_FORMAT_UNKNOWN;
-				desc.SampleDesc = { 1,0 };
+				desc.SampleDesc.Count = 1;
 				desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 				desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 				hr = Device->CreateCommittedResource(
@@ -314,30 +316,31 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 					&desc,
 					D3D12_RESOURCE_STATE_GENERIC_READ,
 					nullptr,
-					IID_PPV_ARGS(ConstBuf0.GetAddressOf())
+					IID_PPV_ARGS(ConstBuf0_a.GetAddressOf())
 				);
 				assert(SUCCEEDED(hr));
 
-				hr = ConstBuf0->Map(0, nullptr, (void**)&MappedConstBuf0); //マップしっぱなしにする
+				//マップしておいて、メインループ中で更新する。
+				hr = ConstBuf0_a->Map(0, nullptr, (void**)&MappedConstBuf0_a);
 				assert(SUCCEEDED(hr));
 			}
-			//コンスタントバッファ1を作成
+			//コンスタントバッファ１_aをつくる
 			{
 				D3D12_HEAP_PROPERTIES prop = {};
-				prop.Type = D3D12_HEAP_TYPE_UPLOAD; //CPUからGPUへ書き込み
+				prop.Type = D3D12_HEAP_TYPE_UPLOAD;
 				prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
 				prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
 				prop.CreationNodeMask = 1;
 				prop.VisibleNodeMask = 1;
 				D3D12_RESOURCE_DESC desc = {};
-				desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER; //一次元配列
+				desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
 				desc.Alignment = 0;
-				desc.Width = 256; //コンスタントバッファは256の倍数バイトにする（必須）
+				desc.Width = 256;
 				desc.Height = 1;
 				desc.DepthOrArraySize = 1;
 				desc.MipLevels = 1;
 				desc.Format = DXGI_FORMAT_UNKNOWN;
-				desc.SampleDesc = { 1,0 };
+				desc.SampleDesc.Count = 1;
 				desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 				desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 				hr = Device->CreateCommittedResource(
@@ -346,108 +349,343 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 					&desc,
 					D3D12_RESOURCE_STATE_GENERIC_READ,
 					nullptr,
-					IID_PPV_ARGS(ConstBuf1.GetAddressOf())
+					IID_PPV_ARGS(ConstBuf1_a.GetAddressOf())
 				);
 				assert(SUCCEEDED(hr));
 
-				//マップしておいて、メインループ中に更新
-				hr = ConstBuf1->Map(0, nullptr, (void**)&MappedConstBuf1);
+				//マップしておいて、メインループ中で更新する。
+				hr = ConstBuf1_a->Map(0, nullptr, (void**)&MappedConstBuf1_a);
 				assert(SUCCEEDED(hr));
 			}
-			//テクスチャバッファを作る(Unified Memory Accessバージョン)
+			//テクスチャバッファ_aをつくる(Unified Memory Accessバージョン)
 			{
-				//ファイル読み込み、画像データを取り出す
+				//ファイルを読み込み、画像データを取り出す
 				unsigned char* pixels = nullptr;
 				int width = 0, height = 0, bytePerPixel = 4;
 				pixels = stbi_load("assets\\penguin1.png", &width, &height, nullptr, bytePerPixel);
 				assert(pixels != nullptr);
 
-				//テクスチャバッファの作成
+				//テクスチャバッファ
 				D3D12_HEAP_PROPERTIES prop = {};
-				prop.Type = D3D12_HEAP_TYPE_CUSTOM;
-				prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_COMBINE; //ライトバックで
-				prop.MemoryPoolPreference = D3D12_MEMORY_POOL_L0; //転送がL0から
-				prop.CreationNodeMask = 0; //単一アダプタのため0
-				prop.VisibleNodeMask = 0; //単一アダプタのため0
+				prop.Type = D3D12_HEAP_TYPE_CUSTOM;//特殊な設定。defaultでもuploadでもなく
+				prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_WRITE_BACK;//ライトバックで
+				prop.MemoryPoolPreference = D3D12_MEMORY_POOL_L0;//転送がL0つまりCPU側から直で
+				prop.CreationNodeMask = 1;
+				prop.VisibleNodeMask = 1;
 				D3D12_RESOURCE_DESC desc = {};
-				desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D; //2Dテクスチャ
+				desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;//2Dテクスチャ用
 				desc.Alignment = 0;
 				desc.Width = width;
 				desc.Height = height;
 				desc.DepthOrArraySize = 1;
 				desc.MipLevels = 1;
-				desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; //RGBA8
-				desc.SampleDesc.Count = 1;
+				desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;//RGBAフォーマット
+				desc.SampleDesc.Count = 1;//通常テクスチャなのでアンチェリしない
 				desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+				desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+				hr = Device->CreateCommittedResource(
+					&prop,
+					D3D12_HEAP_FLAG_NONE,//特に指定なし
+					&desc,
+					D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,//テクスチャ用(ピクセルシェーダから見る用)
+					nullptr,
+					IID_PPV_ARGS(TextureBuf_a.GetAddressOf())
+				);
+				assert(SUCCEEDED(hr));
+
+				//テクスチャバッファに生データをコピー
+				hr = TextureBuf_a->WriteToSubresource(0,
+					nullptr, // 全領域へコピー 
+					pixels, // 元データアドレス 
+					width * bytePerPixel, // 1ラインサイズ 
+					width * height * bytePerPixel // 全サイズ
+				);
+
+				//生データ開放
+				stbi_image_free(pixels);
+			}
+		}{}
+		//コンスタントバッファ_bとテクスチャバッファ_b ⇒ ディスクリプタヒープ_b
+		{
+			//コンスタントバッファ０_bをつくる
+			{
+				D3D12_HEAP_PROPERTIES prop = {};
+				prop.Type = D3D12_HEAP_TYPE_UPLOAD;
+				prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+				prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+				prop.CreationNodeMask = 1;
+				prop.VisibleNodeMask = 1;
+				D3D12_RESOURCE_DESC desc = {};
+				desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+				desc.Alignment = 0;
+				desc.Width = 256;
+				desc.Height = 1;
+				desc.DepthOrArraySize = 1;
+				desc.MipLevels = 1;
+				desc.Format = DXGI_FORMAT_UNKNOWN;
+				desc.SampleDesc.Count = 1;
+				desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 				desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 				hr = Device->CreateCommittedResource(
 					&prop,
 					D3D12_HEAP_FLAG_NONE,
 					&desc,
-					D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, //テクスチャ用
+					D3D12_RESOURCE_STATE_GENERIC_READ,
 					nullptr,
-					IID_PPV_ARGS(TextureBuf.GetAddressOf())
-				);
+					IID_PPV_ARGS(ConstBuf0_b.GetAddressOf()));
 				assert(SUCCEEDED(hr));
 
-				//テクスチャバッファに画像データをコピー
-				hr = TextureBuf->WriteToSubresource(
-					0,
-					nullptr, //全領域にコピー
-					pixels,
-					width * bytePerPixel, //1ラインのバイト数
-					width * height * bytePerPixel //全データのバイト数
-				);
-
-				//生データを解法
-				stbi_image_free(pixels);
+				//マップしておいて、メインループ中で更新する。
+				hr = ConstBuf0_b->Map(0, nullptr, (void**)&MappedConstBuf0_b);
+				assert(SUCCEEDED(hr));
 			}
-			//ディスクリプタヒープ
+			//コンスタントバッファ１_bをつくる
 			{
-				//ディスクリプタヒープを作成
+				D3D12_HEAP_PROPERTIES prop = {};
+				prop.Type = D3D12_HEAP_TYPE_UPLOAD;
+				prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+				prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+				prop.CreationNodeMask = 1;
+				prop.VisibleNodeMask = 1;
+				D3D12_RESOURCE_DESC desc = {};
+				desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+				desc.Alignment = 0;
+				desc.Width = 256;
+				desc.Height = 1;
+				desc.DepthOrArraySize = 1;
+				desc.MipLevels = 1;
+				desc.Format = DXGI_FORMAT_UNKNOWN;
+				desc.SampleDesc.Count = 1;
+				desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+				desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+				hr = Device->CreateCommittedResource(
+					&prop,
+					D3D12_HEAP_FLAG_NONE,
+					&desc,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					nullptr,
+					IID_PPV_ARGS(ConstBuf1_b.GetAddressOf()));
+				assert(SUCCEEDED(hr));
+
+				//マップしておいて、メインループ中で更新する。
+				hr = ConstBuf1_b->Map(0, nullptr, (void**)&MappedConstBuf1_b);
+				assert(SUCCEEDED(hr));
+			}
+			//テクスチャバッファ_bをつくる(Microsoft推奨 Direct Memory Accessバージョン)
+			{
+				//ファイルを読み込み、生データを取り出す
+				unsigned char* pixels = nullptr;
+				int width = 0, height = 0, bytePerPixel = 4;
+				pixels = stbi_load("assets\\penguin2.png", &width, &height, nullptr, bytePerPixel);
+				assert(pixels != nullptr);
+
+				//１行のピッチを256の倍数にしておく(バッファサイズは256の倍数でなければいけない)
+				const UINT64 alignedRowPitch = (width * bytePerPixel + 0xff) & ~0xff;
+
+				//アップロード用中間バッファをつくり、生データをコピーしておく
+				ID3D12Resource* uploadBuf;
 				{
-					D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-					desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV; //定数バッファビュー、シェーダリソースビュー、アンオーダードアクセスビュー
-					desc.NumDescriptors = 3; //コンスタントバッファ2つとテクスチャ1つ
-					desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE; //シェーダから見えるように
-					hr = Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(CbvTbvHeap.GetAddressOf()));
+					//テクスチャではなくフツーのバッファとしてつくる
+					D3D12_HEAP_PROPERTIES prop = {};
+					prop.Type = D3D12_HEAP_TYPE_UPLOAD;
+					prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+					prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+					prop.CreationNodeMask = 1;
+					prop.VisibleNodeMask = 1;
+					D3D12_RESOURCE_DESC desc = {};
+					desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+					desc.Alignment = 0;
+					desc.Width = alignedRowPitch * height;
+					desc.Height = 1;
+					desc.DepthOrArraySize = 1;
+					desc.MipLevels = 1;
+					desc.Format = DXGI_FORMAT_UNKNOWN;
+					desc.SampleDesc.Count = 1;//通常テクスチャなのでアンチェリしない
+					desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+					desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+					hr = Device->CreateCommittedResource(
+						&prop,
+						D3D12_HEAP_FLAG_NONE,
+						&desc,
+						D3D12_RESOURCE_STATE_GENERIC_READ,
+						nullptr,
+						IID_PPV_ARGS(&uploadBuf));
+					assert(SUCCEEDED(hr));
+
+					//生データをuploadbuffに一旦コピーします
+					uint8_t* mapBuf = nullptr;
+					hr = uploadBuf->Map(0, nullptr, (void**)&mapBuf);//マップ
+					auto srcAddress = pixels;
+					auto originalRowPitch = width * bytePerPixel;
+					for (int y = 0; y < height; ++y) {
+						memcpy(mapBuf, srcAddress, originalRowPitch);
+						//1行ごとの辻褄を合わせてやる
+						srcAddress += originalRowPitch;
+						mapBuf += alignedRowPitch;
+					}
+					uploadBuf->Unmap(0, nullptr);//アンマップ
+				}
+
+				//そして、最終コピー先であるテクスチャバッファ_bを作る
+				{
+					D3D12_HEAP_PROPERTIES prop = {};
+					prop.Type = D3D12_HEAP_TYPE_DEFAULT;
+					prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+					prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+					prop.CreationNodeMask = 1;
+					prop.VisibleNodeMask = 1;
+					D3D12_RESOURCE_DESC desc = {};
+					desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+					desc.Alignment = 0;
+					desc.Width = width;
+					desc.Height = height;
+					desc.DepthOrArraySize = 1;
+					desc.MipLevels = 1;
+					desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+					desc.SampleDesc.Count = 1;
+					desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+					desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+					hr = Device->CreateCommittedResource(
+						&prop,
+						D3D12_HEAP_FLAG_NONE,
+						&desc,
+						D3D12_RESOURCE_STATE_COPY_DEST,
+						nullptr,
+						IID_PPV_ARGS(TextureBuf_b.GetAddressOf()));
 					assert(SUCCEEDED(hr));
 				}
+				//uploadBufからtextureBufへコピーする長い道のりが始まります
 
-				auto hCbvHeap = CbvTbvHeap->GetCPUDescriptorHandleForHeapStart(); //ヒープの先頭アドレス
+				//まずコピー元ロケーションの準備・フットプリント指定
+				D3D12_TEXTURE_COPY_LOCATION src = {};
+				src.pResource = uploadBuf;
+				src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+				src.PlacedFootprint.Footprint.Width = static_cast<UINT>(width);
+				src.PlacedFootprint.Footprint.Height = static_cast<UINT>(height);
+				src.PlacedFootprint.Footprint.Depth = static_cast<UINT>(1);
+				src.PlacedFootprint.Footprint.RowPitch = static_cast<UINT>(alignedRowPitch);
+				src.PlacedFootprint.Footprint.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+				//コピー先ロケーションの準備・サブリソースインデックス指定
+				D3D12_TEXTURE_COPY_LOCATION dst = {};
+				dst.pResource = TextureBuf_b.Get();
+				dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+				dst.SubresourceIndex = 0;
 
-				//コンスタントバッファ0のビューをディスクリプタヒープに作成
-				{
-					D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
-					desc.BufferLocation = ConstBuf0->GetGPUVirtualAddress();
-					desc.SizeInBytes = static_cast<UINT>(ConstBuf0->GetDesc().Width); //256バイトアラインメント
-					Device->CreateConstantBufferView(&desc, hCbvHeap);
-				}
+				//コマンドリストでコピーを予約しますよ！！！
+				CommandList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
+				//コピー先からテクスチャリソースに切り替える
+				D3D12_RESOURCE_BARRIER barrier = {};
+				barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+				barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+				barrier.Transition.pResource = TextureBuf_b.Get();
+				barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+				barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+				barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+				CommandList->ResourceBarrier(1, &barrier);
+				//uploadBufの内容を破棄する
+				CommandList->DiscardResource(uploadBuf, nullptr);
+				//コマンドリストを閉じて
+				CommandList->Close();
+				//実行
+				ID3D12CommandList* commandLists[] = { CommandList.Get()};
+				CommandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+				//リソースがGPUに転送されるまで待機する
+				WaitDrawDone();
 
-				auto heapSize = Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-				hCbvHeap.ptr += heapSize; //次のディスクリプタのアドレス
+				//コマンドアロケータをリセット
+				HRESULT Hr = CommandAllocator->Reset();
+				assert(SUCCEEDED(Hr));
+				//コマンドリストをリセット
+				Hr = CommandList->Reset(CommandAllocator.Get(), nullptr);
+				assert(SUCCEEDED(Hr));
 
-				//コンスタントバッファ1のビューをディスクリプタヒープに作成
-				{
-					D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
-					desc.BufferLocation = ConstBuf1->GetGPUVirtualAddress();
-					desc.SizeInBytes = static_cast<UINT>(ConstBuf1->GetDesc().Width); //256バイトアラインメント
-					Device->CreateConstantBufferView(&desc, hCbvHeap);
-				}
-
-				hCbvHeap.ptr += heapSize; //次のディスクリプタのアドレス
-				//テクスチャバッファビューをディスクリプタヒープに作成
-				{
-					D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
-					desc.Format = TextureBuf->GetDesc().Format;
-					desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-					desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-					desc.Texture2D.MipLevels = 1;
-					Device->CreateShaderResourceView(TextureBuf.Get(), &desc, hCbvHeap);
-				}
-
+				//開放
+				uploadBuf->Release();
+				stbi_image_free(pixels);
 			}
 		}
+		//ディスクリプタヒープを用意し、そこに6つのビューをつくる
+		{
+			//「ビュー」の入れ物である「ディスクリプタヒープ」をつくる
+			{
+				D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+				desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+				desc.NumDescriptors = 6;//コンスタントバッファビュー２つとテクスチャバッファビュー１つ
+				desc.NodeMask = 0;
+				desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+				hr = Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(CbvTbvHeap.GetAddressOf()));
+				assert(SUCCEEDED(hr));
+			}
+
+			auto hCbvTbvHeap = CbvTbvHeap->GetCPUDescriptorHandleForHeapStart();
+			auto heapSize = Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+			//コンスタントバッファ０_aの「ビュー」を「ディスクリプタヒープ」につくる
+			{
+				D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
+				desc.BufferLocation = ConstBuf0_a->GetGPUVirtualAddress();
+				desc.SizeInBytes = static_cast<UINT>(ConstBuf0_a->GetDesc().Width);
+				Device->CreateConstantBufferView(&desc, hCbvTbvHeap);
+			}
+
+			hCbvTbvHeap.ptr += heapSize;
+
+			//コンスタントバッファ１_aの「ビュー」を「ディスクリプタヒープ」につくる
+			{
+				D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
+				desc.BufferLocation = ConstBuf1_a->GetGPUVirtualAddress();
+				desc.SizeInBytes = static_cast<UINT>(ConstBuf1_a->GetDesc().Width);
+				Device->CreateConstantBufferView(&desc, hCbvTbvHeap);
+			}
+
+			hCbvTbvHeap.ptr += heapSize;
+
+			//テクスチャバッファ_aの「ビュー」を「ディスクリプタヒープ」につくる
+			{
+				D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
+				desc.Format = TextureBuf_a->GetDesc().Format;
+				desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
+				desc.Texture2D.MipLevels = 1;//ミップマップは使用しないので1
+				Device->CreateShaderResourceView(TextureBuf_a.Get(), &desc, hCbvTbvHeap);
+			}
+
+			hCbvTbvHeap.ptr += heapSize;
+
+			//コンスタントバッファ０_bの「ビュー」を「ディスクリプタヒープ」につくる
+			{
+				D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
+				desc.BufferLocation = ConstBuf0_b->GetGPUVirtualAddress();
+				desc.SizeInBytes = static_cast<UINT>(ConstBuf0_b->GetDesc().Width);
+				Device->CreateConstantBufferView(&desc, hCbvTbvHeap);
+			}
+
+			hCbvTbvHeap.ptr += heapSize;
+
+			//コンスタントバッファ１_bの「ビュー」を「ディスクリプタヒープ」につくる
+			{
+				D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
+				desc.BufferLocation = ConstBuf1_b->GetGPUVirtualAddress();
+				desc.SizeInBytes = static_cast<UINT>(ConstBuf1_b->GetDesc().Width);
+				Device->CreateConstantBufferView(&desc, hCbvTbvHeap);
+			}
+
+			hCbvTbvHeap.ptr += heapSize;
+
+			//テクスチャバッファ_bの「ビュー」を「ディスクリプタヒープ」につくる
+			{
+				D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
+				desc.Format = TextureBuf_b->GetDesc().Format;
+				desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
+				desc.Texture2D.MipLevels = 1;//ミップマップは使用しないので1
+				Device->CreateShaderResourceView(TextureBuf_b.Get(), &desc, hCbvTbvHeap);
+			}
+		}
+
+
+
+			
 		//パイプライン
 		{
 			//ルートシグネチャ
@@ -612,22 +850,34 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 			}
 		}
 
+		//共有データ
 		//回転用ラジアン
 		static float radian = 0;
+		float radius = 0.4f;
 		radian += 0.01f;
-		//ワールドマトリックス
-		XMMATRIX world = XMMatrixRotationY(radian);
 		//ビューマトリックス
 		XMVECTOR eye = { 0.0f, 0.0f, -2.0f }, focus = { 0.0f, 0.0f, 0.0f }, up = { 0.0f , 1.0f, 0.0f };
 		XMMATRIX view = XMMatrixLookAtLH(eye, focus, up);
 		//プロジェクションマトリックス
 		XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, Aspect, 1.0f, 10.0f);
-		//コンスタントバッファの更新
-		MappedConstBuf0->mat = world * view * proj;
 
-		//コンストバッファ1の更新
-		float col = cos(radian) * 0.5f + 0.5f;
-		MappedConstBuf1->diffuse = { col, 1.0f, 0.0f, 1.0f };
+		//メッシュ_aの更新
+		{
+			//コンスタントバッファの更新
+			XMMATRIX world = XMMatrixTranslation(-sin(radian) * radius, 0.0f, -cos(radian) * radius);;
+			MappedConstBuf0_a->mat = world * view * proj;
+			//コンストバッファ1の更新
+			MappedConstBuf1_a->diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
+		}
+		//メッシュbの更新
+		{
+			//コンスタントバッファ0_b更新
+			XMMATRIX world = XMMatrixTranslation(sin(radian) * radius, 0.0f, cos(radian) * radius);
+			MappedConstBuf0_b->mat = world * view * proj;
+			//コンスタントバッファ1_b更新
+			MappedConstBuf1_b->diffuse = { 1.0f,1.0f,1.0f,1.0f };
+		}
+
 
 		//バッファのクリア
 		{
@@ -676,14 +926,26 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 			CommandList->IASetVertexBuffers(0, _countof(vertexBufViews), vertexBufViews);
 			CommandList->IASetIndexBuffer(&IndexBufView);
 
-			//ディスクリプタヒープをGPUにセット。
+			//ディスクリプタヒープをGPUにセット。まだ、シェーダと紐づいていない。
 			CommandList->SetDescriptorHeaps(1, CbvTbvHeap.GetAddressOf());
-			//ディスクリプタヒープをディスクリプタテーブルにセット、シェーダと紐づけ
-			auto hCbvHeap = CbvTbvHeap->GetGPUDescriptorHandleForHeapStart();
-			CommandList->SetGraphicsRootDescriptorTable(0, hCbvHeap);
 
-			//描画
-			CommandList->DrawIndexedInstanced(6, 1, 0, 0, 0); //(インデックスの数、オブジェクトの数)
+			//メッシュ_aの描画
+			auto hCbvTbvHeap = CbvTbvHeap->GetGPUDescriptorHandleForHeapStart();
+			{
+			//ディスクリプタヒープをディスクリプタテーブルにセット。シェーダと紐づく。
+				CommandList->SetGraphicsRootDescriptorTable(0, hCbvTbvHeap);
+				//描画
+				CommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+			}
+			auto heapSize = Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+			hCbvTbvHeap.ptr += heapSize * 3;
+			//メッシュ_bの描画
+			{
+				//ディスクリプタヒープをディスクリプタテーブルにセット。シェーダと紐づく。
+				CommandList->SetGraphicsRootDescriptorTable(0, hCbvTbvHeap);
+				//描画
+				CommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+			}
 		}
 
 		//バックバッファを表示
@@ -724,8 +986,10 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 	//終了処理
 	{
 		WaitDrawDone();
-		ConstBuf0->Unmap(0, nullptr);
-		ConstBuf1->Unmap(0, nullptr);
+		ConstBuf0_a->Unmap(0, nullptr);
+		ConstBuf0_b->Unmap(0, nullptr);
+		ConstBuf1_a->Unmap(0, nullptr);
+		ConstBuf1_b->Unmap(0, nullptr);
 		CloseHandle(FenceEvent);
 	}
 	return 0;	
