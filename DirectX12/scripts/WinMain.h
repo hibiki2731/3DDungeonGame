@@ -57,6 +57,9 @@ ComPtr<ID3D12Resource> BackBuffers[2];
 UINT BackBufIdx;
 ComPtr<ID3D12DescriptorHeap> BbvHeap; //BackBufferViewHeap
 UINT BbvHeapSize;
+//デプスステンシルバッファ
+ComPtr<ID3D12Resource> DepthStencilBuf;
+ComPtr<ID3D12DescriptorHeap> DsvHeap; //DepthStencilBufView
 //頂点位置バッファ
 ComPtr<ID3D12Resource> PositionBuf;
 D3D12_VERTEX_BUFFER_VIEW PositionBufView;
@@ -91,6 +94,7 @@ ComPtr<ID3D12Resource> TextureBuf_b;
 //ComPtr<ID3D12DescriptorHeap> CbvTbvHeap_b;
 
 ComPtr<ID3D12DescriptorHeap> CbvTbvHeap;
+
 
 //パイプライン
 ComPtr<ID3D12RootSignature> RootSignature;

@@ -89,30 +89,32 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 
 	//リソース
 	{
-		//DXGIファクトリーの生成
-		ComPtr<IDXGIFactory4> dxgiFactory;
-		hr = CreateDXGIFactory2(0, IID_PPV_ARGS(dxgiFactory.GetAddressOf()));
-		assert(SUCCEEDED(hr));
-
+		//DXGIファクトリーの生成、スワップチェイン作成(バックバッファもここで作成)
+		{
+			ComPtr<IDXGIFactory4> dxgiFactory;
+			hr = CreateDXGIFactory2(0, IID_PPV_ARGS(dxgiFactory.GetAddressOf()));
+			assert(SUCCEEDED(hr));
+		
 		//スワップチェインの作成
-		DXGI_SWAP_CHAIN_DESC1 desc = {};
-		desc.BufferCount = 2; //ダブルバッファ
-		desc.Width = ClientWidth;
-		desc.Height = ClientHeight;
-		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; //色の書式
-		desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; //フリップ後は保証しない（その代わり早い）
-		desc.SampleDesc.Count = 1;
-		ComPtr<IDXGISwapChain1> swapChain1;
-		hr = dxgiFactory->CreateSwapChainForHwnd(
-			CommandQueue.Get(), hWnd, &desc, nullptr, nullptr, swapChain1.GetAddressOf()
-		);
-		assert(SUCCEEDED(hr));
+		
+			DXGI_SWAP_CHAIN_DESC1 desc = {};
+			desc.BufferCount = 2; //ダブルバッファ
+			desc.Width = ClientWidth;
+			desc.Height = ClientHeight;
+			desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; //色の書式
+			desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+			desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; //フリップ後は保証しない（その代わり早い）
+			desc.SampleDesc.Count = 1;
+			ComPtr<IDXGISwapChain1> swapChain1;
+			hr = dxgiFactory->CreateSwapChainForHwnd(
+				CommandQueue.Get(), hWnd, &desc, nullptr, nullptr, swapChain1.GetAddressOf()
+			);
+			assert(SUCCEEDED(hr));
 
-		//IDGISwapChain4のインターフェイスがサポートしているか確認、取得
-		hr = swapChain1->QueryInterface(IID_PPV_ARGS(SwapChain.GetAddressOf()));
-		assert(SUCCEEDED(hr));
-
+			//IDGISwapChain4のインターフェイスがサポートしているか確認、取得
+			hr = swapChain1->QueryInterface(IID_PPV_ARGS(SwapChain.GetAddressOf()));
+			assert(SUCCEEDED(hr));
+		}
 		//デスクリプターヒープ（ビューを記憶する場所）の作成
 		{
 			D3D12_DESCRIPTOR_HEAP_DESC desc = {};
@@ -137,6 +139,55 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 				hBbvHeap.ptr += idx * BbvHeapSize;
 				Device->CreateRenderTargetView(BackBuffers[idx].Get(), nullptr, hBbvHeap);
 			}
+		}
+		//デプスステンシルバッファを作る
+		{
+			D3D12_HEAP_PROPERTIES prop = {};
+			prop.Type = D3D12_HEAP_TYPE_DEFAULT; //DEFAULTだからあとはUNKNOWN
+			prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+			prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+			D3D12_RESOURCE_DESC desc = {};
+			desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+			desc.Width = ClientWidth; //レンダーターゲットと同じ
+			desc.Height = ClientHeight;
+			desc.DepthOrArraySize = 1; //二次元のテクスチャデータとして　
+			desc.Format = DXGI_FORMAT_D32_FLOAT; //深度書き込み用フォーマット
+			desc.SampleDesc.Count = 1; //サンプルは1ピクセルあたり1つ
+			desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL; //深度ステンシルとして使用
+			desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+			desc.MipLevels = 1;
+			//デプスステンシルバッファをクリアする値
+			D3D12_CLEAR_VALUE depthClearValue = {};
+			depthClearValue.DepthStencil.Depth = 1.0f; //深さ1(最大値)でクリア
+			depthClearValue.Format = DXGI_FORMAT_D32_FLOAT; //32bit深度値としてクリア
+			//デプスステンシルバッファを作る
+			hr = Device->CreateCommittedResource(
+				&prop,
+				D3D12_HEAP_FLAG_NONE,
+				&desc,
+				D3D12_RESOURCE_STATE_DEPTH_WRITE, //デプス書き込みに使用
+				&depthClearValue,
+				IID_PPV_ARGS(DepthStencilBuf.GetAddressOf())
+			);
+			assert(SUCCEEDED(hr));
+		}
+		//デプスステンシルバッファビューの入れ物であるディスクリプタヒープを作る
+		{
+			D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+			desc.NumDescriptors = 1; //深度ビュー1るのみ
+			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV; //デプスステンシルビューのディスクリプタヒープ
+			desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+			hr = Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(DsvHeap.GetAddressOf()));
+			assert(SUCCEEDED(hr));
+		}
+		//デプスステンシルバッファビューをディスクリプタヒープに作る
+		{
+			D3D12_DEPTH_STENCIL_VIEW_DESC desc = {};
+			desc.Format = DXGI_FORMAT_D32_FLOAT; //デプス値に32bit
+			desc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D; //2Dテクスチャ
+			desc.Flags = D3D12_DSV_FLAG_NONE; //フラグなし
+			D3D12_CPU_DESCRIPTOR_HANDLE hDsvHeap = DsvHeap->GetCPUDescriptorHandleForHeapStart();
+			Device->CreateDepthStencilView(DepthStencilBuf.Get(), &desc, hDsvHeap);
 		}
 		//頂点バッファ　位置
 		{
@@ -603,7 +654,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 				uploadBuf->Release();
 				stbi_image_free(pixels);
 			}
-		}
+		} {}
 		//ディスクリプタヒープを用意し、そこに6つのビューをつくる
 		{
 			//「ビュー」の入れ物である「ディスクリプタヒープ」をつくる
@@ -779,7 +830,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 			rasterDesc.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
 
 			D3D12_BLEND_DESC blendDesc = {};
-			blendDesc.AlphaToCoverageEnable = FALSE;
+			blendDesc.AlphaToCoverageEnable = true;
 			blendDesc.IndependentBlendEnable = FALSE;
 			blendDesc.RenderTarget[0].BlendEnable = TRUE;
 			blendDesc.RenderTarget[0].LogicOpEnable = FALSE;
@@ -793,7 +844,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 			blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 
 			D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
-			depthStencilDesc.DepthEnable = FALSE;
+			depthStencilDesc.DepthEnable = true;
 			depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL; //書き込み許可
 			depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS; //小さいほうが手前
 			depthStencilDesc.StencilEnable = FALSE; //ステンシルしない
@@ -897,8 +948,10 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 			//バックバッファの場所を示すディスクリプタヒープハンドルを用意
 			auto hBbvHeap = BbvHeap->GetCPUDescriptorHandleForHeapStart();
 			hBbvHeap.ptr += BackBufIdx * BbvHeapSize;
+			//デプスステンシルバッファのディスクリプタハンドルを用意
+			auto hDsvHeap = DsvHeap->GetCPUDescriptorHandleForHeapStart();
 			//バックバッファを描画ターゲットとして設定
-			CommandList->OMSetRenderTargets(1, &hBbvHeap, FALSE, nullptr);
+			CommandList->OMSetRenderTargets(1, &hBbvHeap, FALSE, &hDsvHeap);
 			//描画ターゲットをクリア
 			static float radian = 0;
 			float r = cos(radian) * 0.5f + 0.5f;
@@ -907,6 +960,8 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 			const float clearColor[] = { r, g, b, 1.0f }; //青っぽい色
 			radian += 0.01f;
 			CommandList->ClearRenderTargetView(hBbvHeap, clearColor, 0, nullptr);
+			//デプスステンシルバッファをクリア
+			CommandList->ClearDepthStencilView(hDsvHeap, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 		}
 
