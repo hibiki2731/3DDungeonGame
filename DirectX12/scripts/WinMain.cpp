@@ -812,8 +812,8 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 			//各種記述
 			UINT slot0 = 0, slot1 = 1;
 			D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = {
-				{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, slot0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
-				{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, slot1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+				{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, slot0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+				{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, slot1, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
 			};
 
 			D3D12_RASTERIZER_DESC rasterDesc = {};
@@ -885,6 +885,12 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 		}
 	}
 	
+	//const char* txtFilename = "assets\\Alicia\\FBX\\Alicia.txt";
+	//const char* fbxFilename = "assets\\Alicia\\FBX\\Alicia_solid_Unity.FBX";
+	const char* txtFilename = "assets\\desk_refined.txt";
+	const char* fbxFilename = "assets\\desk_refined.fbx";
+	FBXConverter fbxConverter;
+	fbxConverter.fbxToTxt(fbxFilename, txtFilename, 1.0f, 1.0f, 1.0f, 0, 1, 2  );
 
 	//メインループ
 	while (true) {
