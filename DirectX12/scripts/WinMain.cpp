@@ -1070,14 +1070,14 @@ void WaitDrawDone() {
 		WaitForSingleObject(FenceEvent, INFINITE);
 	}
 }
-
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-		
-	switch (message) {
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
-	}
-}
+//
+//LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+//		
+//	switch (message) {
+//	case WM_DESTROY:
+//		PostQuitMessage(0);
+//		return 0;
+//	default:
+//		return DefWindowProc(hWnd, message, wParam, lParam);
+//	}
+//}

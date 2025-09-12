@@ -10,6 +10,7 @@
 #include <fstream>
 #include "BIN_FILE12.h"
 #include "stdafx.h"
+#include "Graphic.h"
 #include <DirectXMath.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -21,7 +22,7 @@ using Microsoft::WRL::ComPtr;
 
 void WaitDrawDone();
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+//LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 //ウィンドウ
 LPCWSTR WindowTitle = L"DirectX12 Sample";
