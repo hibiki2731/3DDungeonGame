@@ -160,9 +160,10 @@
     <ClCompile Include="scripts\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Graphic.h" />
+    <ClInclude Include="scripts\Buffer.h" />
     <ClInclude Include="scripts\FBXConverter.h" />
     <ClInclude Include="scripts\BIN_FILE12.h" />
+    <ClInclude Include="scripts\Graphic.h" />
     <ClInclude Include="scripts\stb_image.h" />
     <ClInclude Include="scripts\stdafx.h" />
     <ClInclude Include="scripts\WinMain.h" />

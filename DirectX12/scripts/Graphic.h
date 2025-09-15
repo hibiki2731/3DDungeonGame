@@ -4,17 +4,50 @@
 #include <cmath>
 #include <cassert>
 #include <fstream>
+#include "Buffer.h"
 #include "BIN_FILE12.h"
-#include <DirectXMath.h>/*
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"*/
+#include <DirectXMath.h>
+
 #include <wrl/client.h>
+using namespace DirectX;
 using Microsoft::WRL::ComPtr;
+
+struct Vertex {
+	XMFLOAT3 pos; //xyz座標
+	XMFLOAT2 uv;  //uv座標
+};
 
 class Graphic
 {
 public:
-	void init();
+	Graphic();
+
+	void init();	
+	HRESULT createBuf(UINT sizeInBytes, ComPtr<ID3D12Resource>& buffer);
+	HRESULT updateBuf(void* data, UINT sizeInBytes, ComPtr<ID3D12Resource>& buffer);
+	HRESULT mapBuf(void** mappedBuffer, ComPtr<ID3D12Resource>& buffer);
+	void unmapBuf(ComPtr<ID3D12Resource>& buffer);
+	UINT alignedSize(size_t size);
+	HRESULT createShaderResource(const char* filename, ComPtr<ID3D12Resource> shaderResource);
+	HRESULT createDescriptorHeap(UINT numDescriptors);
+	void createVertexBufferView(ComPtr<ID3D12Resource>& vertexBuf, UINT sizeInBytes, UINT strideInBytes, D3D12_VERTEX_BUFFER_VIEW& vertexBufferView);
+	void createIndexBufferView(ComPtr<ID3D12Resource>& indexBuf, UINT sizeInBytes, D3D12_INDEX_BUFFER_VIEW indexBufferView);
+	UINT createConstantBufferView(ComPtr<ID3D12Resource>& constantBuf);
+	UINT createShaderResourceView(ComPtr<ID3D12Resource>& shaderResource);
+	
+	void clearColor(float r, float g, float b);
+	void beginRender();
+	void drawMesh(D3D12_VERTEX_BUFFER_VIEW& vertexBufferView, D3D12_INDEX_BUFFER_VIEW& indexBufferView, UINT cbvTbvIdx);
+	void endRender();
+
+	bool quit();
+	int msg_wparam();
+	void closeEventHandle();
+	void waitGPU();
+
+	//Getter
+	float getAspect();
+
 private:
 	HRESULT createDevice();
 	HRESULT createCommand();
@@ -24,8 +57,10 @@ private:
 	HRESULT createBbv();
 	HRESULT createDSbuf();
 	HRESULT createDSbv();
-	HRESULT createVertexBuf();
+	HRESULT createPipeline();
 
+
+	
 
 	//ウィンドウ
 	LPCWSTR WindowTitle = L"DirectX12 Sample";
@@ -41,6 +76,7 @@ private:
 #endif
 
 	HWND hWnd = nullptr;
+	MSG Msg;
 	
 	//デバイス
 	ComPtr<ID3D12Device> Device;
@@ -62,12 +98,21 @@ private:
 	UINT BackBufIdx;
 	ComPtr<ID3D12DescriptorHeap> BbvHeap; //BackBufferViewHeap
 	UINT BbvHeapSize;
+	float ClearColor[4];
+
 	//デプスステンシルバッファ
 	ComPtr<ID3D12Resource> DepthStencilBuf;
 	ComPtr<ID3D12DescriptorHeap> DsvHeap; //DepthStencilBufView
-	//頂点位置バッファ
-	ComPtr<ID3D12Resource> PositionBuf;
-	D3D12_VERTEX_BUFFER_VIEW PositionBufView;
+	//パイプライン
+	ComPtr<ID3D12RootSignature> RootSignature;
+	ComPtr<ID3D12PipelineState> PipelineState;
+	D3D12_VIEWPORT Viewport;
+	D3D12_RECT ScissorRect;
+
+	//ディスクリプタヒープ
+	ComPtr<ID3D12DescriptorHeap> CbvTbvHeap; //ConstBufferView, TextureBufferViewHeap
+	UINT CurrentCbvTbvIndex;
+	UINT CbvTbvIncSize;
 };
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
