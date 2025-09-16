@@ -5,20 +5,21 @@
 ComPtr<ID3D12Resource> VertexBuf;
 D3D12_VERTEX_BUFFER_VIEW VertexBufView;
 
-ComPtr<ID3D12Resource> PositionBuf;
-D3D12_VERTEX_BUFFER_VIEW PositionBufView;
-//テクスチャ座標バッファ
-ComPtr<ID3D12Resource> TexcoordBuf;
-D3D12_VERTEX_BUFFER_VIEW TexcoordBufView;
-
 //頂点インデックスバッファ
 ComPtr<ID3D12Resource> IndexBuf;
 D3D12_INDEX_BUFFER_VIEW IndexBufView;
-CONST_BUF0* MappedConstBuf0;
-ComPtr<ID3D12Resource> ConstBuf0;
-CONST_BUF1* MappedConstBuf1;
-ComPtr<ID3D12Resource> ConstBuf1;
-ComPtr<ID3D12Resource> TextureBuf;
+
+//コンスタントバッファ
+CONST_BUF0* MappedConstBuf0_a;
+ComPtr<ID3D12Resource> ConstBuf0_a;
+CONST_BUF1* MappedConstBuf1_a;
+ComPtr<ID3D12Resource> ConstBuf1_a;
+ComPtr<ID3D12Resource> TextureBuf_a;
+CONST_BUF0* MappedConstBuf0_b;
+ComPtr<ID3D12Resource> ConstBuf0_b;
+CONST_BUF1* MappedConstBuf1_b;
+ComPtr<ID3D12Resource> ConstBuf1_b;
+ComPtr<ID3D12Resource> TextureBuf_b;
 
 
 Vertex vertices[] = {
@@ -94,34 +95,34 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 		//コンスタントバッファ0
 		{
 			//バッファを作る
-			hr = graphic.createBuf(graphic.alignedSize(sizeof(CONST_BUF0)), ConstBuf0);
+			hr = graphic.createBuf(graphic.alignedSize(sizeof(CONST_BUF0)), ConstBuf0_a);
 			assert(SUCCEEDED(hr));
 			//マップする
-			hr = graphic.mapBuf((void**)&MappedConstBuf0, ConstBuf0);
+			hr = graphic.mapBuf((void**)&MappedConstBuf0_a, ConstBuf0_a);
 			assert(SUCCEEDED(hr));
 			//ビューを作り、インデックスを取得
-			CbvTbvIdx = graphic.createConstantBufferView(ConstBuf0);
+			CbvTbvIdx = graphic.createConstantBufferView(ConstBuf0_a);
 		}
 		//コンスタントバッファ1
 		{
 			//バッファを作る
-			hr = graphic.createBuf(graphic.alignedSize(sizeof(CONST_BUF1)), ConstBuf1);
+			hr = graphic.createBuf(graphic.alignedSize(sizeof(CONST_BUF1)), ConstBuf1_a);
 			assert(SUCCEEDED(hr));
 			//マップする
-			hr = graphic.mapBuf((void**)&MappedConstBuf1, ConstBuf1);
+			hr = graphic.mapBuf((void**)&MappedConstBuf1_a, ConstBuf1_a);
 			assert(SUCCEEDED(hr));
 			//データを入れる
-			MappedConstBuf1->diffuse = { Diffuse[0], Diffuse[1], Diffuse[2], Diffuse[3] };
+			MappedConstBuf1_a->diffuse = { Diffuse[0], Diffuse[1], Diffuse[2], Diffuse[3] };
 			//ビューを作る
-			graphic.createConstantBufferView(ConstBuf1);
+			graphic.createConstantBufferView(ConstBuf1_a);
 		}
 		//テクスチャバッファ
 		{
 			//バッファを作る
-			hr = graphic.createShaderResource(TextureFilename, TextureBuf);
+			hr = graphic.createShaderResource(TextureFilename, TextureBuf_a);
 			assert(SUCCEEDED(hr));
 			//ビューを作る
-			graphic.createShaderResourceView(TextureBuf);
+			graphic.createShaderResourceView(TextureBuf_a);
 		}
 	}
 
@@ -139,7 +140,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 		XMMATRIX view = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&focus), XMLoadFloat3(&up));
 		//プロジェクションマトリックス
 		XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, graphic.getAspect(), 1.0f, 10.0f);
-		MappedConstBuf0->mat = world * view * proj;
+		MappedConstBuf0_a->mat = world * view * proj;
 
 		//描画
 		graphic.beginRender();
@@ -151,8 +152,8 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 	{
 		graphic.waitGPU();
 		graphic.closeEventHandle();
-		graphic.unmapBuf(ConstBuf0);
-		graphic.unmapBuf(ConstBuf1);
+		graphic.unmapBuf(ConstBuf0_a);
+		graphic.unmapBuf(ConstBuf1_a);
 	}
 	return graphic.msg_wparam();	
 }
