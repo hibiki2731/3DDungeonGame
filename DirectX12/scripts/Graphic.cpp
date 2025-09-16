@@ -767,6 +767,11 @@ float Graphic::getAspect()
 	return Aspect;
 }
 
+UINT Graphic::getCbvTbvIncSize()
+{
+	return CbvTbvIncSize;
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
 
 	switch (message) {

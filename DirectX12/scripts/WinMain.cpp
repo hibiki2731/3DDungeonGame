@@ -44,7 +44,8 @@ unsigned short indices[] = {
 
 float Diffuse[] = { 1.0f, 0.5f, 1.0f, 1.0f };
 
-const char* TextureFilename = "assets\\penguin1.png";
+const char* TextureFilename_a = "assets\\penguin1.png";
+const char* TextureFilename_b = "assets\\penguin2.png";
 
 UINT CbvTbvIdx;
 
@@ -59,7 +60,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 
 	//必要な数のCbv、Tbv用のディスクリプタヒープを作成
 	{
-		hr = graphic.createDescriptorHeap(3);
+		hr = graphic.createDescriptorHeap(6);
 		assert(SUCCEEDED(hr));
 	}
 
@@ -119,12 +120,12 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 		//テクスチャバッファ_a
 		{
 			//バッファを作る
-			hr = graphic.createShaderResource(TextureFilename, TextureBuf_a);
+			hr = graphic.createShaderResource(TextureFilename_a, TextureBuf_a);
 			assert(SUCCEEDED(hr));
 			//ビューを作る
 			graphic.createShaderResourceView(TextureBuf_a);
 		}
-		//コンスタントバッファ0_a
+		//コンスタントバッファ0_b
 		{
 			//バッファを作る
 			hr = graphic.createBuf(graphic.alignedSize(sizeof(CONST_BUF0)), ConstBuf0_b);
@@ -151,7 +152,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 		//テクスチャバッファ_b
 		{
 			//バッファを作る
-			hr = graphic.createShaderResource(TextureFilename, TextureBuf_b);
+			hr = graphic.createShaderResource(TextureFilename_b, TextureBuf_b);
 			assert(SUCCEEDED(hr));
 			//ビューを作る
 			graphic.createShaderResourceView(TextureBuf_b);
@@ -165,20 +166,42 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 		//更新
 		static float r = 0;
 		r += 0.01f;
-		//ワールドマトリックス
-		XMMATRIX world = XMMatrixRotationY(r);
-		//ビューマトリックス
-		XMFLOAT3 eye = { 0, 0, -2 }, focus = {0, 0, 0}, up{0, 1, 0};
-		XMMATRIX view = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&focus), XMLoadFloat3(&up));
-		//プロジェクションマトリックス
-		XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, graphic.getAspect(), 1.0f, 10.0f);
-		MappedConstBuf0_a->mat = world * view * proj;
-		MappedConstBuf0_b->mat = world * view * proj;
+		//メッシュa
+		{
+			//ワールドマトリックス
+			XMMATRIX world = XMMatrixTranslation(-1.0f, 0.0f, 0.0f);
+			world = XMMatrixRotationY(r) * world;
+			//ビューマトリックス
+			XMFLOAT3 eye = { 0, 0, -2 }, focus = { 0, 0, 0 }, up{ 0, 1, 0 };
+			XMMATRIX view = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&focus), XMLoadFloat3(&up));
+			//プロジェクションマトリックス
+			XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, graphic.getAspect(), 1.0f, 10.0f);
+			MappedConstBuf0_a->mat = world * view * proj;
+		}
+
+		//メッシュb
+		{
+			//ワールドマトリックス
+			XMMATRIX world = XMMatrixTranslation(1.0f, 0.0f, 0.0f);
+			world = XMMatrixRotationY(r) * world;
+			//ビューマトリックス
+			XMFLOAT3 eye = { 0, 0, -2 }, focus = { 0, 0, 0 }, up{ 0, 1, 0 };
+			XMMATRIX view = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&focus), XMLoadFloat3(&up));
+			//プロジェクションマトリックス
+			XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, graphic.getAspect(), 1.0f, 10.0f);
+			MappedConstBuf0_b->mat = world * view * proj;
+		}
+
+		
+	
 		//描画
 		graphic.beginRender();
 		graphic.drawMesh(VertexBufView, IndexBufView, CbvTbvIdx);
-
+		CbvTbvIdx += 3;
+		graphic.drawMesh(VertexBufView, IndexBufView, CbvTbvIdx);
 		graphic.endRender();
+
+		CbvTbvIdx = 0;
 	}
 
 	//終了処理

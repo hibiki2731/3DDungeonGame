@@ -38,6 +38,7 @@ public:
 
 	//Getter
 	float getAspect();
+	UINT getCbvTbvIncSize();
 
 private:
 	HRESULT createDevice();
