@@ -31,6 +31,8 @@ void Graphic::init() {
 
 	//パイプラインステートの作成
 	assert(SUCCEEDED(createPipeline()));
+
+	ShowWindow(hWnd, SW_SHOW);
 }
 
 HRESULT Graphic::createDevice() {
@@ -118,7 +120,7 @@ HRESULT Graphic::createWindow() {
 		windowClass.hInstance,
 		nullptr
 	);
-	ShowWindow(hWnd, SW_SHOW);
+	//ShowWindow(hWnd, SW_SHOW);
 
 	return S_OK;
 }
@@ -308,14 +310,14 @@ HRESULT Graphic::createPipeline()
 	assert(ps.succeeded());
 
 	//各種記述
-	UINT slot0 = 0, slot1 = 1;
+	UINT slot0 = 0;
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = {
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, slot0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, slot0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
 	};
 
 	D3D12_RASTERIZER_DESC rasterDesc = {};
-	rasterDesc.FrontCounterClockwise = FALSE; //時計回り
+	rasterDesc.FrontCounterClockwise = true; //時計回り
 	rasterDesc.CullMode = D3D12_CULL_MODE_NONE; //裏面描画するか？
 	rasterDesc.FillMode = D3D12_FILL_MODE_SOLID;
 	rasterDesc.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
@@ -368,8 +370,8 @@ HRESULT Graphic::createPipeline()
 	//出力領域を設定
 	Viewport.TopLeftX = 0.0f;
 	Viewport.TopLeftY = 0.0f;
-	Viewport.Width = ClientWidth;
-	Viewport.Height = ClientHeight;
+	Viewport.Width = (float)ClientWidth;
+	Viewport.Height = (float)ClientHeight;
 	Viewport.MinDepth = 0.0f;
 	Viewport.MaxDepth = 1.0f;
 
@@ -398,7 +400,7 @@ HRESULT Graphic::createBuf(UINT sizeInBytes, ComPtr<ID3D12Resource>& buffer)
 	desc.DepthOrArraySize = 1;
 	desc.MipLevels = 1;
 	desc.Format = DXGI_FORMAT_UNKNOWN;
-	desc.SampleDesc.Count = 1;
+	desc.SampleDesc = { 1, 0 };
 	desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 	HRESULT hr = Device->CreateCommittedResource(
@@ -407,7 +409,7 @@ HRESULT Graphic::createBuf(UINT sizeInBytes, ComPtr<ID3D12Resource>& buffer)
 		&desc,
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
-		IID_PPV_ARGS(buffer.GetAddressOf())
+		IID_PPV_ARGS(buffer.ReleaseAndGetAddressOf())
 	);
 
 	return hr;
@@ -439,10 +441,10 @@ void Graphic::unmapBuf(ComPtr<ID3D12Resource>& buffer)
 
 UINT Graphic::alignedSize(size_t size)
 {
-	return (size + 0xff) & ~0xff;;
+	return (size + 0xff) & ~0xff;
 }
 
-HRESULT Graphic::createShaderResource(const char* filename, ComPtr<ID3D12Resource> shaderResource)
+HRESULT Graphic::createShaderResource(const char* filename, ComPtr<ID3D12Resource>& shaderResource)
 {
 
 	//ファイルを読み込み、生データを取り出す
@@ -455,7 +457,7 @@ HRESULT Graphic::createShaderResource(const char* filename, ComPtr<ID3D12Resourc
 	const UINT64 alignedRowPitch = (width * bytePerPixel + 0xff) & ~0xff;
 
 	//アップロード用中間バッファをつくり、生データをコピーしておく
-	ID3D12Resource* uploadBuf;
+	ComPtr<ID3D12Resource> uploadBuf;
 	{
 		//テクスチャではなくフツーのバッファとしてつくる
 		D3D12_HEAP_PROPERTIES prop = {};
@@ -472,7 +474,7 @@ HRESULT Graphic::createShaderResource(const char* filename, ComPtr<ID3D12Resourc
 		desc.DepthOrArraySize = 1;
 		desc.MipLevels = 1;
 		desc.Format = DXGI_FORMAT_UNKNOWN;
-		desc.SampleDesc.Count = 1;//通常テクスチャなのでアンチェリしない
+		desc.SampleDesc = {1,0};//通常テクスチャなのでアンチェリしない
 		desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 		desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 		HRESULT hr = Device->CreateCommittedResource(
@@ -523,14 +525,14 @@ HRESULT Graphic::createShaderResource(const char* filename, ComPtr<ID3D12Resourc
 			&desc,
 			D3D12_RESOURCE_STATE_COPY_DEST,
 			nullptr,
-			IID_PPV_ARGS(shaderResource.GetAddressOf()));
+			IID_PPV_ARGS(shaderResource.ReleaseAndGetAddressOf()));
 		assert(SUCCEEDED(hr));
 	}
 	//uploadBufからtextureBufへコピーする長い道のりが始まります
 
 	//まずコピー元ロケーションの準備・フットプリント指定
 	D3D12_TEXTURE_COPY_LOCATION src = {};
-	src.pResource = uploadBuf;
+	src.pResource = uploadBuf.Get();
 	src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
 	src.PlacedFootprint.Footprint.Width = static_cast<UINT>(width);
 	src.PlacedFootprint.Footprint.Height = static_cast<UINT>(height);
@@ -555,7 +557,7 @@ HRESULT Graphic::createShaderResource(const char* filename, ComPtr<ID3D12Resourc
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
 	CommandList->ResourceBarrier(1, &barrier);
 	//uploadBufの内容を破棄する
-	CommandList->DiscardResource(uploadBuf, nullptr);
+	CommandList->DiscardResource(uploadBuf.Get(), nullptr);
 	//コマンドリストを閉じて
 	CommandList->Close();
 	//実行
@@ -572,7 +574,6 @@ HRESULT Graphic::createShaderResource(const char* filename, ComPtr<ID3D12Resourc
 	assert(SUCCEEDED(Hr));
 
 	//開放
-	uploadBuf->Release();
 	stbi_image_free(pixels);
 
 	return hr;
@@ -588,7 +589,7 @@ HRESULT Graphic::createDescriptorHeap(UINT numDescriptors)
 	desc.NumDescriptors = numDescriptors;//コンスタントバッファビュー２つとテクスチャバッファビュー１つ
 	desc.NodeMask = 0;
 	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	return Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(CbvTbvHeap.GetAddressOf()));
+	return Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(CbvTbvHeap.ReleaseAndGetAddressOf()));
 	
 }
 
@@ -630,6 +631,7 @@ UINT Graphic::createShaderResourceView(ComPtr<ID3D12Resource>& shaderResource)
 	auto hCbvTbvHeap = CbvTbvHeap->GetCPUDescriptorHandleForHeapStart();
 	hCbvTbvHeap.ptr += CbvTbvIncSize * CurrentCbvTbvIndex;
 	Device->CreateShaderResourceView(shaderResource.Get(), &desc, hCbvTbvHeap);
+
 	return CurrentCbvTbvIndex++;
 }
 

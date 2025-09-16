@@ -28,7 +28,7 @@ public:
 	HRESULT mapBuf(void** mappedBuffer, ComPtr<ID3D12Resource>& buffer);
 	void unmapBuf(ComPtr<ID3D12Resource>& buffer);
 	UINT alignedSize(size_t size);
-	HRESULT createShaderResource(const char* filename, ComPtr<ID3D12Resource> shaderResource);
+	HRESULT createShaderResource(const char* filename, ComPtr<ID3D12Resource>& shaderResource);
 	HRESULT createDescriptorHeap(UINT numDescriptors);
 	void createVertexBufferView(ComPtr<ID3D12Resource>& vertexBuf, UINT sizeInBytes, UINT strideInBytes, D3D12_VERTEX_BUFFER_VIEW& vertexBufferView);
 	void createIndexBufferView(ComPtr<ID3D12Resource>& indexBuf, UINT sizeInBytes, D3D12_INDEX_BUFFER_VIEW indexBufferView);

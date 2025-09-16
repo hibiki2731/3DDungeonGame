@@ -6,6 +6,14 @@ Vertex vertices[] = {
 	{XMFLOAT3(0.5,  0.5,  0.0), XMFLOAT2(1.0f, 0.0f)},
 	{XMFLOAT3(0.5,  -0.5,  0.0), XMFLOAT2(1.0f, 1.0f)},
 };
+//
+//float Vertices[] = {
+//	//position            texcoord
+//	-0.5f,  0.5f,  0.0f,  0.0f,  0.0f, //左上
+//	-0.5f, -0.5f,  0.0f,  0.0f,  1.0f, //左下
+//	 0.5f,  0.5f,  0.0f,  1.0f,  0.0f, //右上
+//	 0.5f, -0.5f,  0.0f,  1.0f,  1.0f, //右下
+//};
 
 unsigned short indices[] = {
 	0,1,2,
@@ -39,7 +47,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 		{
 			//データサイズをもとめる
 			UINT sizeInBytes = sizeof(vertices);
-			UINT strideInBytes = sizeof(vertices[0]);
+			UINT strideInBytes = sizeof(Vertex);
 			//バッファを作る
 			hr = graphic.createBuf(sizeInBytes, VertexBuf);
 			assert(SUCCEEDED(hr));
@@ -68,7 +76,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 			hr = graphic.createBuf(graphic.alignedSize(sizeof(CONST_BUF0)), ConstBuf0);
 			assert(SUCCEEDED(hr));
 			//マップする
-			hr = graphic.mapBuf((void**)MappedConstBuf0, ConstBuf0);
+			hr = graphic.mapBuf((void**)&MappedConstBuf0, ConstBuf0);
 			assert(SUCCEEDED(hr));
 			//ビューを作り、インデックスを取得
 			CbvTbvIdx = graphic.createConstantBufferView(ConstBuf0);
@@ -92,7 +100,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 			hr = graphic.createShaderResource(TextureFilename, TextureBuf);
 			assert(SUCCEEDED(hr));
 			//ビューを作る
-			graphic.createShaderResourceView(TexcoordBuf);
+			graphic.createShaderResourceView(TextureBuf);
 		}
 	}
 
