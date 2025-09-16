@@ -7,9 +7,10 @@
 class FBXConverter
 {
 public:
+	FBXConverter();
 	void fbxToTxt(
 		const char* fbxFilename, const char* txtFilename,
-		float x = 1, float fy = 1, float fz = 1,
+		float fx = 1, float fy = 1, float fz = 1,
 		int idx0 = 0, int idx1 = 1, int idx2 = 2);
 
 private:

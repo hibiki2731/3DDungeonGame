@@ -3,6 +3,16 @@
 #include <algorithm>
 #include <fstream>
 
+FBXConverter::FBXConverter() {
+	//‰Šú‰»
+	Idx0 = 0;
+	Idx1 = 1;
+	Idx2 = 2;
+
+	NumParts = 0;
+	Parts = nullptr;
+}
+
 void FBXConverter::fbxToTxt(const char* fbxFilename, const char* txtFilename, float fx, float fy, float fz, int idx0, int idx1, int idx2)
 {
 	//FbxManagerì¬
