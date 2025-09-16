@@ -92,7 +92,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 			//ビューを作成
 			graphic.createIndexBufferView(IndexBuf, sizeInBytes, IndexBufView);
 		}
-		//コンスタントバッファ0
+		//コンスタントバッファ0_a
 		{
 			//バッファを作る
 			hr = graphic.createBuf(graphic.alignedSize(sizeof(CONST_BUF0)), ConstBuf0_a);
@@ -103,7 +103,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 			//ビューを作り、インデックスを取得
 			CbvTbvIdx = graphic.createConstantBufferView(ConstBuf0_a);
 		}
-		//コンスタントバッファ1
+		//コンスタントバッファ1_a
 		{
 			//バッファを作る
 			hr = graphic.createBuf(graphic.alignedSize(sizeof(CONST_BUF1)), ConstBuf1_a);
@@ -116,13 +116,45 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 			//ビューを作る
 			graphic.createConstantBufferView(ConstBuf1_a);
 		}
-		//テクスチャバッファ
+		//テクスチャバッファ_a
 		{
 			//バッファを作る
 			hr = graphic.createShaderResource(TextureFilename, TextureBuf_a);
 			assert(SUCCEEDED(hr));
 			//ビューを作る
 			graphic.createShaderResourceView(TextureBuf_a);
+		}
+		//コンスタントバッファ0_a
+		{
+			//バッファを作る
+			hr = graphic.createBuf(graphic.alignedSize(sizeof(CONST_BUF0)), ConstBuf0_b);
+			assert(SUCCEEDED(hr));
+			//マップする
+			hr = graphic.mapBuf((void**)&MappedConstBuf0_b, ConstBuf0_b);
+			assert(SUCCEEDED(hr));
+			//ビューを作り、インデックスを取得
+			graphic.createConstantBufferView(ConstBuf0_b);
+		}
+		//コンスタントバッファ1_b
+		{
+			//バッファを作る
+			hr = graphic.createBuf(graphic.alignedSize(sizeof(CONST_BUF1)), ConstBuf1_b);
+			assert(SUCCEEDED(hr));
+			//マップする
+			hr = graphic.mapBuf((void**)&MappedConstBuf1_b, ConstBuf1_b);
+			assert(SUCCEEDED(hr));
+			//データを入れる
+			MappedConstBuf1_b->diffuse = { Diffuse[0], Diffuse[1], Diffuse[2], Diffuse[3] };
+			//ビューを作る
+			graphic.createConstantBufferView(ConstBuf1_b);
+		}
+		//テクスチャバッファ_b
+		{
+			//バッファを作る
+			hr = graphic.createShaderResource(TextureFilename, TextureBuf_b);
+			assert(SUCCEEDED(hr));
+			//ビューを作る
+			graphic.createShaderResourceView(TextureBuf_b);
 		}
 	}
 
@@ -141,10 +173,11 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 		//プロジェクションマトリックス
 		XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, graphic.getAspect(), 1.0f, 10.0f);
 		MappedConstBuf0_a->mat = world * view * proj;
-
+		MappedConstBuf0_b->mat = world * view * proj;
 		//描画
 		graphic.beginRender();
 		graphic.drawMesh(VertexBufView, IndexBufView, CbvTbvIdx);
+
 		graphic.endRender();
 	}
 
