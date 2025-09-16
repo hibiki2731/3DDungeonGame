@@ -1,5 +1,26 @@
 #include "WinMain.h"
 
+
+//頂点位置バッファ
+ComPtr<ID3D12Resource> VertexBuf;
+D3D12_VERTEX_BUFFER_VIEW VertexBufView;
+
+ComPtr<ID3D12Resource> PositionBuf;
+D3D12_VERTEX_BUFFER_VIEW PositionBufView;
+//テクスチャ座標バッファ
+ComPtr<ID3D12Resource> TexcoordBuf;
+D3D12_VERTEX_BUFFER_VIEW TexcoordBufView;
+
+//頂点インデックスバッファ
+ComPtr<ID3D12Resource> IndexBuf;
+D3D12_INDEX_BUFFER_VIEW IndexBufView;
+CONST_BUF0* MappedConstBuf0;
+ComPtr<ID3D12Resource> ConstBuf0;
+CONST_BUF1* MappedConstBuf1;
+ComPtr<ID3D12Resource> ConstBuf1;
+ComPtr<ID3D12Resource> TextureBuf;
+
+
 Vertex vertices[] = {
 	{XMFLOAT3(-0.5,  0.5,  0.0), XMFLOAT2(0.0f, 0.0f)},
 	{XMFLOAT3(-0.5,  -0.5,  0.0), XMFLOAT2(0.0f, 1.0f)},

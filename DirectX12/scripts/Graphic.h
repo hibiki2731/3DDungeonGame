@@ -1,16 +1,7 @@
 #pragma once
-#include <d3d12.h>
-#include <dxgi1_6.h>
-#include <cmath>
-#include <cassert>
-#include <fstream>
+#include "stdafx.h"
 #include "Buffer.h"
 #include "BIN_FILE12.h"
-#include <DirectXMath.h>
-
-#include <wrl/client.h>
-using namespace DirectX;
-using Microsoft::WRL::ComPtr;
 
 struct Vertex {
 	XMFLOAT3 pos; //xyzç¿ïW
