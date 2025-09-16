@@ -47,7 +47,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 		{
 			//データサイズをもとめる
 			UINT sizeInBytes = sizeof(vertices);
-			UINT strideInBytes = sizeof(Vertex);
+			UINT strideInBytes = sizeof(vertices[0]);
 			//バッファを作る
 			hr = graphic.createBuf(sizeInBytes, VertexBuf);
 			assert(SUCCEEDED(hr));
@@ -114,7 +114,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 		//ワールドマトリックス
 		XMMATRIX world = XMMatrixRotationY(r);
 		//ビューマトリックス
-		XMFLOAT3 eye = { 0, 0, -2 }, focus = { 0, 0, 0 }, up{ 0, 1, 0 };
+		XMFLOAT3 eye = { 0, 0, -2 }, focus = {0, 0, 0}, up{0, 1, 0};
 		XMMATRIX view = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&focus), XMLoadFloat3(&up));
 		//プロジェクションマトリックス
 		XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, graphic.getAspect(), 1.0f, 10.0f);

@@ -31,7 +31,7 @@ public:
 	HRESULT createShaderResource(const char* filename, ComPtr<ID3D12Resource>& shaderResource);
 	HRESULT createDescriptorHeap(UINT numDescriptors);
 	void createVertexBufferView(ComPtr<ID3D12Resource>& vertexBuf, UINT sizeInBytes, UINT strideInBytes, D3D12_VERTEX_BUFFER_VIEW& vertexBufferView);
-	void createIndexBufferView(ComPtr<ID3D12Resource>& indexBuf, UINT sizeInBytes, D3D12_INDEX_BUFFER_VIEW indexBufferView);
+	void createIndexBufferView(ComPtr<ID3D12Resource>& indexBuf, UINT sizeInBytes, D3D12_INDEX_BUFFER_VIEW& indexBufferView);
 	UINT createConstantBufferView(ComPtr<ID3D12Resource>& constantBuf);
 	UINT createShaderResourceView(ComPtr<ID3D12Resource>& shaderResource);
 	

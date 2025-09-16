@@ -317,7 +317,7 @@ HRESULT Graphic::createPipeline()
 	};
 
 	D3D12_RASTERIZER_DESC rasterDesc = {};
-	rasterDesc.FrontCounterClockwise = true; //時計回り
+	rasterDesc.FrontCounterClockwise = true; //反時計回り
 	rasterDesc.CullMode = D3D12_CULL_MODE_NONE; //裏面描画するか？
 	rasterDesc.FillMode = D3D12_FILL_MODE_SOLID;
 	rasterDesc.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
@@ -601,7 +601,7 @@ void Graphic::createVertexBufferView(ComPtr<ID3D12Resource>& vertexBuf, UINT siz
 
 }
 
-void Graphic::createIndexBufferView(ComPtr<ID3D12Resource>& indexBuf, UINT sizeInBytes, D3D12_INDEX_BUFFER_VIEW indexBufferView)
+void Graphic::createIndexBufferView(ComPtr<ID3D12Resource>& indexBuf, UINT sizeInBytes, D3D12_INDEX_BUFFER_VIEW& indexBufferView)
 {
 	indexBufferView.BufferLocation = indexBuf->GetGPUVirtualAddress();
 	indexBufferView.SizeInBytes = sizeInBytes; //全バイト数
