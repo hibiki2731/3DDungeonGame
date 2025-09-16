@@ -8,3 +8,5 @@
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
+
+UINT NumMeshes = 0;
