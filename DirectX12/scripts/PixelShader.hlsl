@@ -1,9 +1,13 @@
 //出力ファイルをassets/%(Filename).csoに変更
 #include <Header.hlsli>
-void main(
-	in float4 i_pos : SV_POSITION,
+float4 main(
+	in float4 i_svpos : SV_POSITION,
+	in float4 i_diffuse : COLOR,
 	in float2 i_uv : TEXCOORD,
-	out float4 o_col : SV_TARGET)
+	in float4 i_pos : TEXCOORD1
+	) : SV_TARGET
 {
-    o_col = float4(Texture.Sample(Sampler, i_uv)) * Diffuse;
+    return float4(1, 0, 0, 1.0f);
+    //return Texture.Sample(Sampler, i_uv) * i_diffuse;
+
 }

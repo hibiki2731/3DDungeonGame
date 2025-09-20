@@ -18,17 +18,21 @@ public:
 	HRESULT updateBuf(void* data, UINT sizeInBytes, ComPtr<ID3D12Resource>& buffer);
 	HRESULT mapBuf(void** mappedBuffer, ComPtr<ID3D12Resource>& buffer);
 	void unmapBuf(ComPtr<ID3D12Resource>& buffer);
-	UINT alignedSize(size_t size);
-	HRESULT createShaderResource(const char* filename, ComPtr<ID3D12Resource>& shaderResource);
-	HRESULT createDescriptorHeap(UINT numDescriptors);
-	void createVertexBufferView(ComPtr<ID3D12Resource>& vertexBuf, UINT sizeInBytes, UINT strideInBytes, D3D12_VERTEX_BUFFER_VIEW& vertexBufferView);
-	void createIndexBufferView(ComPtr<ID3D12Resource>& indexBuf, UINT sizeInBytes, D3D12_INDEX_BUFFER_VIEW& indexBufferView);
-	UINT createConstantBufferView(ComPtr<ID3D12Resource>& constantBuf);
-	UINT createShaderResourceView(ComPtr<ID3D12Resource>& shaderResource);
+	UINT alignedSize(UINT size);
+	HRESULT createShaderResource(const std::string& filename, ComPtr<ID3D12Resource>& shaderResource);
+	HRESULT createCbvTbvHeap(ComPtr<ID3D12DescriptorHeap>& cbvTbvHeap, UINT numDescriptors);
+	HRESULT createSharedCbvTbvHeap(ComPtr<ID3D12DescriptorHeap>& cbvTbvHeap, UINT numDescriptors);
+	void copySharedCbvTbvHeap(ComPtr<ID3D12DescriptorHeap> const& cbvTbvHeap, D3D12_CPU_DESCRIPTOR_HANDLE hDestHeap);
+	void createVertexBufferView(ComPtr<ID3D12Resource> const& vertexBuf, UINT sizeInBytes, UINT strideInBytes, D3D12_VERTEX_BUFFER_VIEW& vertexBufferView);
+	void createIndexBufferView(ComPtr<ID3D12Resource> const& indexBuf, UINT sizeInBytes, D3D12_INDEX_BUFFER_VIEW& indexBufferView);
+	void createConstantBufferView(ComPtr<ID3D12Resource> const& constantBuf, D3D12_CPU_DESCRIPTOR_HANDLE handle);
+	void createShaderResourceView(ComPtr<ID3D12Resource> const& shaderResource, D3D12_CPU_DESCRIPTOR_HANDLE handle);
+	void createSharedConstBuf0();
+	void updateViewProj(XMMATRIX& viewProj);
+	void updateLightPos(XMFLOAT4& lightPos);
 	
 	void clearColor(float r, float g, float b);
 	void beginRender();
-	void drawMesh(D3D12_VERTEX_BUFFER_VIEW& vertexBufferView, D3D12_INDEX_BUFFER_VIEW& indexBufferView, UINT cbvTbvIdx);
 	void endRender();
 
 	bool quit();
@@ -39,6 +43,8 @@ public:
 	//Getter
 	float getAspect();
 	UINT getCbvTbvIncSize();
+	ComPtr<ID3D12GraphicsCommandList>& getCommandList();
+	ComPtr<ID3D12DescriptorHeap>& getCb0vHeap();
 
 private:
 	HRESULT createDevice();
@@ -101,10 +107,11 @@ private:
 	D3D12_VIEWPORT Viewport;
 	D3D12_RECT ScissorRect;
 
-	//ディスクリプタヒープ
-	ComPtr<ID3D12DescriptorHeap> CbvTbvHeap; //ConstBufferView, TextureBufferViewHeap
-	UINT CurrentCbvTbvIndex;
-	UINT CbvTbvIncSize;
+	//コンスタントバッファ0
+	CB0* CB0Data;
+	ComPtr<ID3D12Resource> ConstBuf0;
+	ComPtr<ID3D12DescriptorHeap> SharedCb0vHeap;
+
 };
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
