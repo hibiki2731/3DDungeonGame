@@ -314,7 +314,7 @@ HRESULT Graphic::createPipeline()
 	};
 
 	D3D12_RASTERIZER_DESC rasterDesc = {};
-	rasterDesc.FrontCounterClockwise = true; //îΩéûåvâÒÇË
+	rasterDesc.FrontCounterClockwise = false; //îΩéûåvâÒÇË
 	rasterDesc.CullMode = D3D12_CULL_MODE_BACK; //ó†ñ ï`âÊÇ∑ÇÈÇ©ÅH
 	rasterDesc.FillMode = D3D12_FILL_MODE_SOLID;
 	rasterDesc.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;

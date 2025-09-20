@@ -7,7 +7,7 @@ float4 main(
 	in float4 i_pos : TEXCOORD1
 	) : SV_TARGET
 {
-    return float4(1, 0, 0, 1.0f);
-    //return Texture.Sample(Sampler, i_uv) * i_diffuse;
+    //return float4(1, 0, 0, 1.0f);
+    return Texture.Sample(Sampler, i_uv) * i_diffuse;
 
 }

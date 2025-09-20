@@ -6,7 +6,7 @@ cbuffer b0 : register(b0)
 
 cbuffer b1 : register(b1)
 {
-    float4 World;
+    matrix World;
 }
 cbuffer b2 : register(b2)
 {

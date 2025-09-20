@@ -28,7 +28,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 		graphic->updateLightPos(lightPos);
 
 		const char* text[] = {
-			"assets\\desk_refined.txt",
+			"assets\\box.txt",
 		};
 
 		//メッシュの生成
@@ -48,7 +48,6 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 
 	//メインループ
 	while (!graphic->quit()) {
-		
 		meshes[idx]->ry(sinf(radian));
 		meshes[idx]->update();
 		//描画
