@@ -241,7 +241,7 @@ void FBXConverter::LoadMaterialName(FbxMesh* mesh, int k) {
 	//Mesh側のマテリアル情報を取得
 	FbxLayerElementMaterial* material = mesh->GetElementMaterial(0);
 	int index = material->GetIndexArray().GetAt(0);
-	FbxSurfaceMaterial* surface_material = mesh->GetSrcObject<FbxSurfaceMaterial>(index);
+	FbxSurfaceMaterial* surface_material = mesh->GetNode()->GetSrcObject<FbxSurfaceMaterial>(index);
 	if (surface_material != nullptr) {
 		Parts[k].MaterialName = surface_material->GetName();
 	}
@@ -326,7 +326,7 @@ void FBXConverter::CreateTextConbineVertex(const char* txtFilename, float fx, fl
 			std::string pathName = txtFilename;
 			//'/'を'\\'に置き換え
 			std::replace(pathName.begin(), pathName.end(), '/', '\\');
-			//最後の'\\'の位置をを検索
+			//最後の'\\'の位置を検索
 			size_t lastSlashPos = pathName.rfind('\\');
 			if (lastSlashPos != std::string::npos) {
 				//パス名のみにします。

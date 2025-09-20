@@ -120,16 +120,11 @@ void Mesh::create(const char* filename)
 			std::string dataType;
 			file >> dataType;
 			assert(dataType == "material");
-			file >> dataType;
 			XMFLOAT4 ambient, diffuse, specular;
-			ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
-			diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-			specular = XMFLOAT4(1.0f, 1.0f, 1.0f, 16.0f);
-			if (dataType != "texture") {
-				file >> ambient.x >> ambient.y >> ambient.z >> ambient.w;
-				file >> diffuse.x >> diffuse.y >> diffuse.z >> diffuse.w;
-				file >> specular.x >> specular.y >> specular.z >> specular.w;
-			}
+			file >> ambient.x >> ambient.y >> ambient.z >> ambient.w;
+			file >> diffuse.x >> diffuse.y >> diffuse.z >> diffuse.w;
+			file >> specular.x >> specular.y >> specular.z >> specular.w;
+			
 
 			//コンスタントバッファ２をつくる
 			Hr = mGraphic->createBuf(mGraphic->alignedSize(sizeof(CB2)), Parts[k].ConstBuf2);
@@ -145,6 +140,9 @@ void Mesh::create(const char* filename)
 		//テクスチャバッファ
 		{
 			//ファイル名を読み込む
+			std::string dataType;
+			file >> dataType;
+			assert(dataType == "texture");
 			std::string filename;
 			file >> filename;
 			//ファイルを読み込み、テクスチャバッファをつくる

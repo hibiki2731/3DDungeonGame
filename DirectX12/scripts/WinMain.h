@@ -6,6 +6,7 @@
 #include "FBXConverter.h"
 #include "Graphic.h"
 #include "Mesh.h"
+#include "timer.h"
 #include <vector>
 
 using namespace DirectX;
