@@ -20,9 +20,6 @@ Mesh::~Mesh()
 {
 	for (int k = 0; k < NumParts; k++) {
 		Parts[k].ConstBuf2->Unmap(0, nullptr);
-#ifdef USE_INDEX
-		Parts[k].IndexBuf->Release();
-#endif
 	}
 	delete[] Parts;
 	ConstBuf1->Unmap(0, nullptr);
@@ -82,38 +79,6 @@ void Mesh::create(const char* filename)
 			Parts[k].VertexBufView.SizeInBytes = sizeInByte;//全バイト数
 			Parts[k].VertexBufView.StrideInBytes = sizeof(float) * numElementsPerVertex;//１頂点のバイト数
 		}
-#ifdef USE_INDEX
-		//頂点インデックスバッファ
-		{
-			//生データをファイルからvector配列に読み込む
-			std::string dataType;
-			file >> dataType;
-			assert(dataType == "indices");
-			int numElements = 0;
-			file >> numElements;//インデックスはこれが要素数；
-			std::vector<UINT16> indices(numElements);
-			for (int i = 0; i < numElements; i++) {
-				file >> indices[i];
-			}
-
-			//インデックスで描画する時に使用するので取っておく
-			Parts[k].NumIndices = numElements;
-
-			//インデックスバッファをつくる
-			UINT sizeInByte = sizeof(UINT16) * numElements;//全バイト数
-			Hr = createBuffer(sizeInByte, &Parts[k].IndexBuf);
-			assert(SUCCEEDED(Hr));
-
-			//作ったバッファにデータをコピー
-			Hr = updateBuffer(Parts[k].IndexBuf, indices.data(), sizeInByte);
-			assert(SUCCEEDED(Hr));
-
-			//インデックスバッファビューをつくる
-			Parts[k].IndexBufView.BufferLocation = Parts[k].IndexBuf->GetGPUVirtualAddress();
-			Parts[k].IndexBufView.SizeInBytes = sizeInByte;
-			Parts[k].IndexBufView.Format = DXGI_FORMAT_R16_UINT;
-		}
-#endif
 		//コンスタントバッファ２
 		{
 			//生データをファイルからvector配列に読み込む
@@ -195,13 +160,7 @@ void Mesh::draw()
 		auto hCbvTbvHeap = CbvTbvHeap->GetGPUDescriptorHandleForHeapStart();
 		hCbvTbvHeap.ptr += CbvTbvSize * NumDescriptors * k;
 		CommandList->SetGraphicsRootDescriptorTable(0, hCbvTbvHeap);
-#ifdef USE_INDEX
-		//描画。インデックスを使用する
-		CommandList->IASetIndexBuffer(&Parts[k].IndexBufView);
-		CommandList->DrawIndexedInstanced(Parts[k].NumIndices, 1, 0, 0, 0);
-#else
 		//描画。インデックスを使用しない
 		CommandList->DrawInstanced(Parts[k].NumVertices, 1, 0, 0);
-#endif
 	}
 }

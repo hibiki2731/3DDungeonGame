@@ -124,6 +124,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.7\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -157,6 +158,7 @@
     <ClCompile Include="scripts\BIN_FILE12.cpp" />
     <ClCompile Include="scripts\Game.cpp" />
     <ClCompile Include="scripts\Graphic.cpp" />
+    <ClCompile Include="scripts\input.cpp" />
     <ClCompile Include="scripts\Mesh.cpp" />
     <ClCompile Include="scripts\stdafx.cpp" />
     <ClCompile Include="scripts\timer.cpp" />
@@ -168,6 +170,7 @@
     <ClInclude Include="scripts\BIN_FILE12.h" />
     <ClInclude Include="scripts\Game.h" />
     <ClInclude Include="scripts\Graphic.h" />
+    <ClInclude Include="scripts\input.h" />
     <ClInclude Include="scripts\Mesh.h" />
     <ClInclude Include="scripts\stb_image.h" />
     <ClInclude Include="scripts\stdafx.h" />

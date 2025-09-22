@@ -11,26 +11,36 @@ Graphic::Graphic()
 }
 
 void Graphic::init() {
+	HRESULT hr;
 	//ウィンドウの作成
-	assert(SUCCEEDED(createWindow()));
+	hr = createWindow();
+	assert(SUCCEEDED(hr));
 	//デバイスの作成
-	assert(SUCCEEDED(createDevice()));
+	hr = createDevice();
+	assert(SUCCEEDED(hr));
 	//コマンド作成
-	assert(SUCCEEDED(createCommand()));
+	hr = createCommand();
+	assert(SUCCEEDED(hr));
 	//フェンス 処理完了のチェック
-	assert(SUCCEEDED(createFence()));
+	hr = createFence();
+	assert(SUCCEEDED(hr));
 
 	//スワップチェイン、バックバッファの作成
-	assert(SUCCEEDED(createSwapChain()));
+	hr = createSwapChain();
+	assert(SUCCEEDED(hr));
 	//バックバッファビューの作成
-	assert(SUCCEEDED(createBbv()));
+	hr = createBbv();
+	assert(SUCCEEDED(hr));
 	//デプスステンシルバッファの作成
-	assert(SUCCEEDED(createDSbuf()));
+	hr = createDSbuf();
+	assert(SUCCEEDED(hr));
 	//デプスステンシルビューの作成
-	assert(SUCCEEDED(createDSbv()));
+	hr = createDSbv();
+	assert(SUCCEEDED(hr));
 
 	//パイプラインステートの作成
-	assert(SUCCEEDED(createPipeline()));
+	hr = createPipeline();
+	assert(SUCCEEDED(hr));
 
 	//コンスタントバッファ0の作成
 	createSharedConstBuf0();
@@ -39,14 +49,17 @@ void Graphic::init() {
 }
 
 HRESULT Graphic::createDevice() {
+	{
 #ifdef _DEBUG
-	//デバッグレイヤーをオンに
-	ComPtr<ID3D12Debug> debug;
-	HRESULT hr = D3D12GetDebugInterface(IID_PPV_ARGS(&debug));
-	assert(SUCCEEDED(hr));
-	debug->EnableDebugLayer();
+		//デバッグレイヤーをオンに
+		ComPtr<ID3D12Debug> debug;
+		HRESULT hr = D3D12GetDebugInterface(IID_PPV_ARGS(&debug));
+		assert(SUCCEEDED(hr));
+		debug->EnableDebugLayer();
 #endif
-	hr = D3D12CreateDevice(
+	}
+
+	HRESULT hr = D3D12CreateDevice(
 		nullptr,
 		D3D_FEATURE_LEVEL_12_0,
 		IID_PPV_ARGS(Device.GetAddressOf())
@@ -314,7 +327,7 @@ HRESULT Graphic::createPipeline()
 	};
 
 	D3D12_RASTERIZER_DESC rasterDesc = {};
-	rasterDesc.FrontCounterClockwise = false; //反時計回り
+	rasterDesc.FrontCounterClockwise = true; //反時計回り
 	rasterDesc.CullMode = D3D12_CULL_MODE_BACK; //裏面描画するか？
 	rasterDesc.FillMode = D3D12_FILL_MODE_SOLID;
 	rasterDesc.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
