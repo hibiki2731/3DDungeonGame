@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-#include "Buffer.h";
+#include "Buffer.h"
 #include "BIN_FILE12.h"
 #include "FBXConverter.h"
 #include "Graphic.h"
@@ -22,6 +22,7 @@ public:
 	int endProcess();
 
 private:
+	//‰Šú‰»
 	void init();
 	//ƒ‹[ƒv“àˆ—
 	void input();
@@ -34,5 +35,6 @@ private:
 	std::vector<std::shared_ptr<Mesh>> mMeshes;
 
 	UINT NumMeshes = 0;
-	float time = 0;
+	float yRot = 0;
+	float xRot = 0;
 };

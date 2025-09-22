@@ -55,12 +55,6 @@ private:
         UINT NumVertices;
         ComPtr<ID3D12Resource> VertexBuf;
         D3D12_VERTEX_BUFFER_VIEW VertexBufView;
-#ifdef USE_INDEX
-        //頂点インデックスバッファ
-        UINT NumIndices;
-        ComPtr<ID3D12Resource> IndexBuf;
-        D3D12_INDEX_BUFFER_VIEW	IndexBufView;
-#endif
         //コンスタントバッファ2(マテリアル)
         CB2* Cb2;//マップしたアドレスを入れる
         ComPtr<ID3D12Resource> ConstBuf2;
