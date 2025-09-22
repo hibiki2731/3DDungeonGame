@@ -6,10 +6,10 @@ using namespace DirectX;
 struct Buffer {
 
 };
-
-//コンストバッファ0
-struct CONST_BUF0 {
-	XMMATRIX mat;
+//コンスタントバッファ０-----------------------------------------------------------------
+struct CB0 {
+    XMMATRIX viewProj;
+    XMFLOAT4 lightPos;
 };
 //コンスタバッファ1
 struct CONST_BUF1 {

@@ -156,7 +156,9 @@
     <ClCompile Include="scripts\FBXConverter.cpp" />
     <ClCompile Include="scripts\BIN_FILE12.cpp" />
     <ClCompile Include="scripts\Graphic.cpp" />
+    <ClCompile Include="scripts\Mesh.cpp" />
     <ClCompile Include="scripts\stdafx.cpp" />
+    <ClCompile Include="scripts\timer.cpp" />
     <ClCompile Include="scripts\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -164,8 +166,10 @@
     <ClInclude Include="scripts\FBXConverter.h" />
     <ClInclude Include="scripts\BIN_FILE12.h" />
     <ClInclude Include="scripts\Graphic.h" />
+    <ClInclude Include="scripts\Mesh.h" />
     <ClInclude Include="scripts\stb_image.h" />
     <ClInclude Include="scripts\stdafx.h" />
+    <ClInclude Include="scripts\timer.h" />
     <ClInclude Include="scripts\WinMain.h" />
   </ItemGroup>
   <ItemGroup>

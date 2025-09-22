@@ -32,6 +32,9 @@ void Graphic::init() {
 	//パイプラインステートの作成
 	assert(SUCCEEDED(createPipeline()));
 
+	//コンスタントバッファ0の作成
+	createSharedConstBuf0();
+
 	ShowWindow(hWnd, SW_SHOW);
 }
 
@@ -242,27 +245,20 @@ HRESULT Graphic::createPipeline()
 	//ルートシグネチャ
 	{
 		//ディスクリプタレンジ、ディスクリプタヒープとシェーダを紐づける役割を持つ
-		D3D12_DESCRIPTOR_RANGE range[3] = {};
+		D3D12_DESCRIPTOR_RANGE range[2] = {};
 		UINT b0 = 0;
 		range[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV; //定数バッファビュー
 		range[0].BaseShaderRegister = b0;
-		range[0].NumDescriptors = 1; //b0だけ
+		range[0].NumDescriptors = 3; //b0,b1,b2
 		range[0].RegisterSpace = 0;
 		range[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; //自動計算
 
-		UINT b1 = 1;
-		range[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV; //定数バッファビュー
-		range[1].BaseShaderRegister = b1;
-		range[1].NumDescriptors = 1; //b1だけ
+		UINT t0 = 0;
+		range[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; //シェーダリソースビュー
+		range[1].BaseShaderRegister = t0;
+		range[1].NumDescriptors = 1; //t0だけ
 		range[1].RegisterSpace = 0;
 		range[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; //自動計算
-
-		UINT t0 = 0;
-		range[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; //シェーダリソースビュー
-		range[2].BaseShaderRegister = t0;
-		range[2].NumDescriptors = 1; //t0だけ
-		range[2].RegisterSpace = 0;
-		range[2].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; //自動計算
 
 		//ルートパラメタをディスクリプタテーブルとして使用
 		//rangeの入れ物
@@ -312,13 +308,14 @@ HRESULT Graphic::createPipeline()
 	//各種記述
 	UINT slot0 = 0;
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = {
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, slot0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
-		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, slot0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, slot0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+		{"NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, slot0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,    slot0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
 	};
 
 	D3D12_RASTERIZER_DESC rasterDesc = {};
-	rasterDesc.FrontCounterClockwise = true; //反時計回り
-	rasterDesc.CullMode = D3D12_CULL_MODE_NONE; //裏面描画するか？
+	rasterDesc.FrontCounterClockwise = false; //反時計回り
+	rasterDesc.CullMode = D3D12_CULL_MODE_BACK; //裏面描画するか？
 	rasterDesc.FillMode = D3D12_FILL_MODE_SOLID;
 	rasterDesc.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
 	rasterDesc.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
@@ -332,7 +329,7 @@ HRESULT Graphic::createPipeline()
 	D3D12_BLEND_DESC blendDesc = {};
 	blendDesc.AlphaToCoverageEnable = true;
 	blendDesc.IndependentBlendEnable = FALSE;
-	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].BlendEnable = false;
 	blendDesc.RenderTarget[0].LogicOpEnable = FALSE;
 	blendDesc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
 	blendDesc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
@@ -400,7 +397,7 @@ HRESULT Graphic::createBuf(UINT sizeInBytes, ComPtr<ID3D12Resource>& buffer)
 	desc.DepthOrArraySize = 1;
 	desc.MipLevels = 1;
 	desc.Format = DXGI_FORMAT_UNKNOWN;
-	desc.SampleDesc = { 1, 0 };
+	desc.SampleDesc.Count = 1;
 	desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 	HRESULT hr = Device->CreateCommittedResource(
@@ -439,18 +436,18 @@ void Graphic::unmapBuf(ComPtr<ID3D12Resource>& buffer)
 	buffer->Unmap(0, nullptr);
 }
 
-UINT Graphic::alignedSize(size_t size)
+UINT Graphic::alignedSize(UINT size)
 {
 	return (size + 0xff) & ~0xff;
 }
 
-HRESULT Graphic::createShaderResource(const char* filename, ComPtr<ID3D12Resource>& shaderResource)
+HRESULT Graphic::createShaderResource(const std::string& filename, ComPtr<ID3D12Resource>& shaderResource)
 {
 
 	//ファイルを読み込み、生データを取り出す
 	unsigned char* pixels = nullptr;
 	int width = 0, height = 0, bytePerPixel = 4;
-	pixels = stbi_load(filename, &width, &height, nullptr, bytePerPixel);
+	pixels = stbi_load(filename.c_str(), &width, &height, nullptr, bytePerPixel);
 	assert(pixels != nullptr);
 
 	//１行のピッチを256の倍数にしておく(バッファサイズは256の倍数でなければいけない)
@@ -568,10 +565,10 @@ HRESULT Graphic::createShaderResource(const char* filename, ComPtr<ID3D12Resourc
 
 	//コマンドアロケータをリセット
 	HRESULT hr = CommandAllocator->Reset();
-	assert(SUCCEEDED(Hr));
+	assert(SUCCEEDED(hr));
 	//コマンドリストをリセット
 	hr = CommandList->Reset(CommandAllocator.Get(), nullptr);
-	assert(SUCCEEDED(Hr));
+	assert(SUCCEEDED(hr));
 
 	//開放
 	stbi_image_free(pixels);
@@ -579,21 +576,39 @@ HRESULT Graphic::createShaderResource(const char* filename, ComPtr<ID3D12Resourc
 	return hr;
 }
 
-HRESULT Graphic::createDescriptorHeap(UINT numDescriptors)
+HRESULT Graphic::createCbvTbvHeap(ComPtr<ID3D12DescriptorHeap>& cbvTbvHeap, UINT numDescriptors)
 {
-	CurrentCbvTbvIndex = 0;
-	CbvTbvIncSize = Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
 	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
 	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	desc.NumDescriptors = numDescriptors;//コンスタントバッファビュー２つとテクスチャバッファビュー１つ
 	desc.NodeMask = 0;
 	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	return Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(CbvTbvHeap.ReleaseAndGetAddressOf()));
+	return Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(cbvTbvHeap.ReleaseAndGetAddressOf()));
 	
 }
 
-void Graphic::createVertexBufferView(ComPtr<ID3D12Resource>& vertexBuf, UINT sizeInBytes, UINT strideInBytes, D3D12_VERTEX_BUFFER_VIEW& vertexBufferView)
+HRESULT Graphic::createSharedCbvTbvHeap(ComPtr<ID3D12DescriptorHeap>& cbvTbvHeap, UINT numDescriptors)
+{
+	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	desc.NumDescriptors = numDescriptors;
+	desc.NodeMask = 0;
+	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	return Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(cbvTbvHeap.ReleaseAndGetAddressOf()));
+
+}
+
+void Graphic::copySharedCbvTbvHeap(ComPtr<ID3D12DescriptorHeap> const& cbvTbvHeap, D3D12_CPU_DESCRIPTOR_HANDLE hDestHeap)
+{
+	Device->CopyDescriptorsSimple(
+		1,
+		hDestHeap,
+		cbvTbvHeap->GetCPUDescriptorHandleForHeapStart(),
+		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
+	);
+}
+
+void Graphic::createVertexBufferView(ComPtr<ID3D12Resource> const& vertexBuf, UINT sizeInBytes, UINT strideInBytes, D3D12_VERTEX_BUFFER_VIEW& vertexBufferView)
 {
 	vertexBufferView.BufferLocation = vertexBuf->GetGPUVirtualAddress();
 	vertexBufferView.SizeInBytes = sizeInBytes; //全バイト数
@@ -601,38 +616,49 @@ void Graphic::createVertexBufferView(ComPtr<ID3D12Resource>& vertexBuf, UINT siz
 
 }
 
-void Graphic::createIndexBufferView(ComPtr<ID3D12Resource>& indexBuf, UINT sizeInBytes, D3D12_INDEX_BUFFER_VIEW& indexBufferView)
+void Graphic::createIndexBufferView(ComPtr<ID3D12Resource> const& indexBuf, UINT sizeInBytes, D3D12_INDEX_BUFFER_VIEW& indexBufferView)
 {
 	indexBufferView.BufferLocation = indexBuf->GetGPUVirtualAddress();
 	indexBufferView.SizeInBytes = sizeInBytes; //全バイト数
 	indexBufferView.Format = DXGI_FORMAT_R16_UINT; //1頂点のバイト数
 }
 
-UINT Graphic::createConstantBufferView(ComPtr<ID3D12Resource>& constantBuf)
+void Graphic::createConstantBufferView(ComPtr<ID3D12Resource> const& constantBuf, D3D12_CPU_DESCRIPTOR_HANDLE handle)
 {
 	D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
 	desc.BufferLocation = constantBuf->GetGPUVirtualAddress();
 	desc.SizeInBytes = static_cast<UINT>(constantBuf->GetDesc().Width); //256バイトアライメント
-	//ディスクリプタヒープにコンスタントバッファビューを作成
-	auto hCbvTbvHeap = CbvTbvHeap->GetCPUDescriptorHandleForHeapStart();
-	hCbvTbvHeap.ptr += CbvTbvIncSize * CurrentCbvTbvIndex;
-	Device->CreateConstantBufferView(&desc, hCbvTbvHeap);
-	return CurrentCbvTbvIndex++;
+	Device->CreateConstantBufferView(&desc, handle);
 }
 
-UINT Graphic::createShaderResourceView(ComPtr<ID3D12Resource>& shaderResource)
+void Graphic::createShaderResourceView(ComPtr<ID3D12Resource> const& shaderResource, D3D12_CPU_DESCRIPTOR_HANDLE handle)
 {
 	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
 	desc.Format = shaderResource->GetDesc().Format;
 	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	desc.Texture2D.MipLevels = 1;//ミップマップは使用しないので1
-	//ディスクリプタヒープにテクスチャバッファビューを作成
-	auto hCbvTbvHeap = CbvTbvHeap->GetCPUDescriptorHandleForHeapStart();
-	hCbvTbvHeap.ptr += CbvTbvIncSize * CurrentCbvTbvIndex;
-	Device->CreateShaderResourceView(shaderResource.Get(), &desc, hCbvTbvHeap);
+	Device->CreateShaderResourceView(shaderResource.Get(), &desc, handle);
+}
 
-	return CurrentCbvTbvIndex++;
+void Graphic::createSharedConstBuf0()
+{
+	//コンスタントバッファ0を作る
+	createBuf(alignedSize(sizeof(CB0)), ConstBuf0);
+	mapBuf((void**)&CB0Data, ConstBuf0);
+	//全メッシュで共有するコピー元でスクリプタヒープを作る
+	createSharedCbvTbvHeap(SharedCb0vHeap, 1);
+	createConstantBufferView(ConstBuf0, SharedCb0vHeap->GetCPUDescriptorHandleForHeapStart());
+}
+
+void Graphic::updateViewProj(XMMATRIX& viewProj)
+{
+	CB0Data->viewProj = viewProj;
+}
+
+void Graphic::updateLightPos(XMFLOAT4& lightPos)
+{
+	CB0Data->lightPos = lightPos;
 }
 
 void Graphic::clearColor(float r, float g, float b)
@@ -674,27 +700,13 @@ void Graphic::beginRender()
 	CommandList->RSSetViewports(1, &Viewport);
 	CommandList->RSSetScissorRects(1, &ScissorRect);
 
+	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);//三角形リスト
 	//パイプラインステートをセット
 	CommandList->SetPipelineState(PipelineState.Get());
 	//ルートシグニチャをセット
 	CommandList->SetGraphicsRootSignature(RootSignature.Get());
-	//ディスクリプタヒープをＧＰＵにセット
-	CommandList->SetDescriptorHeaps(1, CbvTbvHeap.GetAddressOf());
 }
-void Graphic::drawMesh(D3D12_VERTEX_BUFFER_VIEW& vertexBufferView, D3D12_INDEX_BUFFER_VIEW& indexBufferView, UINT cbvTbvIdx)
-{
-	//頂点をセット
-	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	CommandList->IASetVertexBuffers(0, 1, &vertexBufferView);
-	CommandList->IASetIndexBuffer(&indexBufferView);
-	//ディスクリプタヒープをディスクリプタテーブルにセット
-	auto hCbvTbvHeap = CbvTbvHeap->GetGPUDescriptorHandleForHeapStart();
-	hCbvTbvHeap.ptr += CbvTbvIncSize * cbvTbvIdx;
-	CommandList->SetGraphicsRootDescriptorTable(0, hCbvTbvHeap);
-	//描画
-	UINT numIndices = indexBufferView.SizeInBytes / sizeof(UINT16);
-	CommandList->DrawIndexedInstanced(numIndices, 1, 0, 0, 0);
-}
+
 void Graphic::endRender()
 {
 	//バリアでバックバッファを表示用に切り替える
@@ -716,7 +728,7 @@ void Graphic::endRender()
 	waitGPU();
 
 	//バックバッファを表示
-	SwapChain->Present(1, 0);
+	SwapChain->Present(0, 0);
 
 	//コマンドアロケータをリセット
 	Hr = CommandAllocator->Reset();
@@ -769,7 +781,17 @@ float Graphic::getAspect()
 
 UINT Graphic::getCbvTbvIncSize()
 {
-	return CbvTbvIncSize;
+	return Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+}
+
+ComPtr<ID3D12GraphicsCommandList>& Graphic::getCommandList()
+{
+	return CommandList;
+}
+
+ComPtr<ID3D12DescriptorHeap>& Graphic::getCb0vHeap()
+{
+	return SharedCb0vHeap;
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
