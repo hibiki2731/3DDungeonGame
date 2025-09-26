@@ -1,7 +1,15 @@
 #pragma once
-#include "stdafx.h"
+#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "dxgi.lib")
+#include <DirectXMath.h>
+#include <d3d12.h>
+#include <dxgi1_6.h>
+#include <wrl/client.h>
 #include "Buffer.h"
 #include "BIN_FILE12.h"
+
+using namespace DirectX;
+using Microsoft::WRL::ComPtr;
 
 struct Vertex {
 	XMFLOAT3 pos; //xyz座標
@@ -11,6 +19,11 @@ struct Vertex {
 class Graphic
 {
 public:
+	enum STATE {
+		RENDER3D,
+		RENDER2D
+	};
+
 	Graphic();
 
 	void init();	
@@ -45,6 +58,9 @@ public:
 	UINT getCbvTbvIncSize();
 	ComPtr<ID3D12GraphicsCommandList>& getCommandList();
 	ComPtr<ID3D12DescriptorHeap>& getCb0vHeap();
+
+	//Setter
+	void setRenderType(STATE state);
 
 private:
 	HRESULT createDevice();
@@ -103,7 +119,9 @@ private:
 	ComPtr<ID3D12DescriptorHeap> DsvHeap; //DepthStencilBufView
 	//パイプライン
 	ComPtr<ID3D12RootSignature> RootSignature;
+	ComPtr<ID3D12RootSignature> RootSignature2D;
 	ComPtr<ID3D12PipelineState> PipelineState;
+	ComPtr<ID3D12PipelineState> PipelineState2D;
 	D3D12_VIEWPORT Viewport;
 	D3D12_RECT ScissorRect;
 

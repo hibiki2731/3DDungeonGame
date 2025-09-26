@@ -1,7 +1,10 @@
 #include "Game.h"
 #include "Actor.h"
 #include "Player.h"
+#include "UI.h"
 #include "MeshComponent.h"
+#include "SpriteComponent.h"
+#include "RenderComponent.h"
 
 
 Game::Game(){
@@ -74,6 +77,8 @@ void Game::init() {
 	std::shared_ptr<Player> player = createActor<Player>(shared_from_this());
 	player->setPosition({ -4.0f, 0.0f, 0.0f });
 
+	std::shared_ptr<UI> ui = createActor<UI>(shared_from_this());
+
 }
 
 void Game::addActor(const std::shared_ptr<Actor>& actor)
@@ -112,6 +117,19 @@ void Game::removeMesh(const std::shared_ptr<MeshComponent>& mesh)
 	if (iter != mMeshes.end()) {
 		std::iter_swap(iter, mMeshes.end() - 1);
 		mMeshes.pop_back();
+	}
+}
+void Game::addSprite(const std::shared_ptr<SpriteComponent>& sprite)
+{
+	mSprites.emplace_back(sprite);
+}
+
+void Game::removeSprite(const std::shared_ptr<SpriteComponent>& sprite)
+{
+	auto iter = std::find(mSprites.begin(), mSprites.end(), sprite);
+	if (iter != mSprites.end()) {
+		std::iter_swap(iter, mSprites.end() - 1);
+		mSprites.pop_back();
 	}
 }
 
@@ -164,9 +182,18 @@ void Game::update()
 void Game::draw()
 {
 	//•`‰æ
+	//3D•`‰æ
 	mGraphic->beginRender();
+	mGraphic->setRenderType(Graphic::RENDER3D);
 	for (auto& mesh : mMeshes) {
 		mesh->draw();
 	}
+
+	//2D•`
+	mGraphic->setRenderType(Graphic::RENDER2D);
+	for (auto& sprite : mSprites) {
+		sprite->draw();
+	}
 	mGraphic->endRender();
+
 }

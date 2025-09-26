@@ -1,12 +1,16 @@
 #pragma once
-#include "stdafx.h"
+#include <vector>
+#include <memory>
+#include <algorithm>
+#include <DirectXMath.h>
+#include <cassert>
+
 #include "input.h"
 #include "BIN_FILE12.h"
 #include "Buffer.h"
 #include "FBXConverter.h"
 #include "timer.h"
 #include "Graphic.h"
-#include <vector>
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
@@ -14,7 +18,9 @@ using Microsoft::WRL::ComPtr;
 //前方宣言
 class Actor;
 class Component;
+class RenderComponent;
 class MeshComponent;
+class SpriteComponent;
 class Player;
 
 class Game : public std::enable_shared_from_this<Game>{
@@ -34,6 +40,8 @@ public:
 	//メッシュの追加
 	void addMesh(const std::shared_ptr<MeshComponent>& mesh);
 	void removeMesh(const std::shared_ptr<MeshComponent>& mesh);
+	void addSprite(const std::shared_ptr<SpriteComponent>& mesh);
+	void removeSprite(const std::shared_ptr<SpriteComponent>& mesh);
 
 	//ゲッター
 	std::shared_ptr<Graphic> getGraphic();
@@ -49,6 +57,7 @@ private:
 	//メッシュ配列
 	//std::vector<std::shared_ptr<Mesh>> mMeshes;
 	std::vector<std::shared_ptr<MeshComponent>> mMeshes;
+	std::vector<std::shared_ptr<SpriteComponent>> mSprites;
 	//アクター配列
 	std::vector<std::shared_ptr<Actor>> mActors;
 	std::vector<std::shared_ptr<Actor>> mPendingActors;

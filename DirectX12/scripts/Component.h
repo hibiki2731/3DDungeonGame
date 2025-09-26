@@ -1,5 +1,8 @@
 #pragma once
-#include "stdafx.h"
+#include <memory>
+#include <vector>
+#include <concepts>
+#include <algorithm>
 
 //‘O•ûéŒ¾
 class Actor;
@@ -31,13 +34,6 @@ protected:
 	//XV‡˜
 	int mUpdateOrder;
 
-};
-
-class SpriteComponent : public Component {
-public:
-	SpriteComponent();
-	~SpriteComponent();
-	void update() override;
 };
 
 //Component‚Ìì¬

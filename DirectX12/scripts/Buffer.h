@@ -1,6 +1,5 @@
 #pragma once
-#include "stdafx.h"
-
+#include <DirectXMath.h>
 using namespace DirectX;
 
 struct Buffer {
@@ -21,4 +20,10 @@ struct CB2 {
     XMFLOAT4 ambient;
     XMFLOAT4 diffuse;
     XMFLOAT4 specular;
+};
+
+//2D用バッファ
+struct CB3 {
+	XMMATRIX world;
+	XMFLOAT4 rect; //xy:位置、zw:幅高さ
 };

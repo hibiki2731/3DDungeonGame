@@ -1,5 +1,8 @@
 #pragma once
+#include "Math.h"
+#include "timer.h"
 #include "Actor.h"
+
 
 class Player : public Actor {
 public:
