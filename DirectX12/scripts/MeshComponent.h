@@ -1,46 +1,31 @@
 #pragma once
+#pragma once
 
 //#define USE_INDEX
 #include "stdafx.h"
 #include "Graphic.h"
+#include "Component.h"
 #include<map>
 #include<memory>
 
-//１つのメッシュに１つのCB1
-struct CB1 {
-    XMMATRIX world;
-};
-
-//１つのメッシュに複数のCB2
-struct CB2 {
-    XMFLOAT4 ambient;
-    XMFLOAT4 diffuse;
-    XMFLOAT4 specular;
-};
-
-class Mesh
+class MeshComponent : public Component
 {
 public:
-    Mesh(std::shared_ptr<Graphic> graphic);
-    ~Mesh();
+    MeshComponent() {};
+    ~MeshComponent();
+
+    void initComponent() override;
     void create(const char* filename);
-    void update();
     void draw();
-    //Setter
-    void px(float px) { Px = px; }
-    void py(float py) { Py = py; }
-    void pz(float pz) { Pz = pz; }
-    void rx(float rx) { Rx = rx; }
-    void ry(float ry) { Ry = ry; }
-    void rz(float rz) { Rz = rz; }
 private:
-    float Px, Py, Pz;
-    float Rx, Ry, Rz;
 
     HRESULT Hr;
 
+    //読み込みファイルネーム
+	const char* mFilename;
+
     //コマンドリスト graphic.cppから引っ張ってきます
-	std::shared_ptr<Graphic> mGraphic;
+    std::shared_ptr<Graphic> mGraphic;
     ComPtr<ID3D12GraphicsCommandList> CommandList;
 
     //コンスタントバッファ1(World Matrix)

@@ -1,22 +1,14 @@
+#include "MeshComponent.h"
 
 #include<fstream>
 #include<vector>
-#include "Mesh.h"
 #include "Graphic.h"
+#include "Actor.h"
+#include "Game.h"
 
-Mesh::Mesh(std::shared_ptr<Graphic> graphic)
-	:Px(0)
-	, Py(0)
-	, Pz(0)
-	, Rx(0)
-	, Ry(0)
-	, Rz(0)
-{
-	mGraphic = graphic;
-	CommandList = mGraphic->getCommandList();
-}
 
-Mesh::~Mesh()
+
+MeshComponent::~MeshComponent()
 {
 	for (int k = 0; k < NumParts; k++) {
 		Parts[k].ConstBuf2->Unmap(0, nullptr);
@@ -25,8 +17,15 @@ Mesh::~Mesh()
 	ConstBuf1->Unmap(0, nullptr);
 }
 
-void Mesh::create(const char* filename)
-{
+void MeshComponent::initComponent() {
+	mGraphic = mOwner->getGame()->getGraphic();
+	CommandList = mGraphic->getCommandList();
+	mOwner->getGame()->addMesh(dynamic_pointer_cast<MeshComponent>(shared_from_this()));
+}
+
+void MeshComponent::create(const char* filename)
+{	
+
 	//world matrix用コンスタントバッファ1をつくる
 	mGraphic->createBuf(mGraphic->alignedSize(sizeof(Cb1)), ConstBuf1);
 	mGraphic->mapBuf((void**)&Cb1, ConstBuf1);
@@ -89,7 +88,7 @@ void Mesh::create(const char* filename)
 			file >> ambient.x >> ambient.y >> ambient.z >> ambient.w;
 			file >> diffuse.x >> diffuse.y >> diffuse.z >> diffuse.w;
 			file >> specular.x >> specular.y >> specular.z >> specular.w;
-			
+
 
 			//コンスタントバッファ２をつくる
 			Hr = mGraphic->createBuf(mGraphic->alignedSize(sizeof(CB2)), Parts[k].ConstBuf2);
@@ -132,21 +131,18 @@ void Mesh::create(const char* filename)
 
 }
 
-void Mesh::update()
+void MeshComponent::draw()
 {
 	//ワールドマトリックス
 	XMMATRIX world = XMMatrixIdentity()
-		* XMMatrixRotationX(Rx)
-		* XMMatrixRotationY(Ry)
-		* XMMatrixRotationZ(Rz)
-		* XMMatrixTranslation(Px, Py, Pz)
+		* XMMatrixRotationX(mOwner->getRotation().x)
+		* XMMatrixRotationY(mOwner->getRotation().y)
+		* XMMatrixRotationZ(mOwner->getRotation().z)
+		* XMMatrixTranslation(mOwner->getPosition().x, mOwner->getPosition().y, mOwner->getPosition().z)
 		;
-
 	Cb1->world = world;
-}
 
-void Mesh::draw()
-{
+
 	//ディスクリプタヒープをＧＰＵにセット
 	UINT numDescriptorHeaps = 1;
 	CommandList->SetDescriptorHeaps(numDescriptorHeaps, CbvTbvHeap.GetAddressOf());

@@ -3,9 +3,9 @@
 
 INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 
-	Game game;
+	auto game = std::make_shared<Game>();
+	game->init();
+	game->runLoop();
 
-	game.runLoop();
-
-	return game.endProcess();
+	return game->endProcess();
 }

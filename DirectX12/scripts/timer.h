@@ -1,9 +1,9 @@
 #pragma once
 # pragma comment(lib, "winmm.lib")
-#define delta deltaTime()
+#define deltaTime getDeltaTime()
 
 void initDeltaTime();
 void setDeltaTime();
-float deltaTime();
+float getDeltaTime();
 bool timer(int number, float interval);
 void resetTimer(int number);

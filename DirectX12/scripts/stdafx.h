@@ -1,8 +1,5 @@
 #pragma once
 
-#pragma comment(lib, "d3d12.lib")
-#pragma comment(lib, "dxgi.lib")
-
 #include <iostream>
 #include <Windows.h>
 #include <d3d12.h>
@@ -11,7 +8,15 @@
 #include <cassert>
 #include <fstream>
 #include <DirectXMath.h>
+#include <memory>
+#include <vector>
+#include <algorithm>
 
 #include <wrl/client.h>
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
+
+#include "timer.h"
+#include "Buffer.h"
+#include "input.h"
+#include "Math.h"

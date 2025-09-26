@@ -30,6 +30,6 @@ void resetTimer(int number) {
 	ElapsedTime[number] = 0;
 }
 
-float deltaTime() {
+float getDeltaTime() {
 	return DeltaTime;
 }
