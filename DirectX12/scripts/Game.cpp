@@ -1,6 +1,11 @@
 #include "Game.h"
+#include "Actor.h"
+#include "Player.h"
+#include "MeshComponent.h"
+
+
 Game::Game(){
-	init();
+	mUpdatingActors = false;
 }
 
 Game::~Game() {}
@@ -63,58 +68,105 @@ void Game::init() {
 		fbxConverter.fbxToTxt(fbx[i], text[i], 0.01f, 0.01f, 0.01f, 0, 2, 1);
 	}
 #endif
-
-	//メッシュの生成
-	const int num = _countof(text);
-	for (int i = 0; i < num; i++) {
-		std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(mGraphic);
-		mMeshes.push_back(mesh);
-	}
-
-	for (int i = 0; i < num; i++) {
-		mMeshes[i]->create(text[i]);
-	}
 	//タイマー初期化
 	initDeltaTime();
 
+	std::shared_ptr<Player> player = createActor<Player>(shared_from_this());
+	player->setPosition({ -4.0f, 0.0f, 0.0f });
 
 }
 
-void Game::input()
+void Game::addActor(const std::shared_ptr<Actor>& actor)
 {
-	if (GetAsyncKeyState(VK_RIGHT)) {
-		yRot += 0.7f * delta;
+	//アクターの更新中なら待ちに追加
+	if (mUpdatingActors) {
+		mPendingActors.emplace_back(actor);
 	}
-	if (GetAsyncKeyState(VK_LEFT)) {
-		yRot -= 0.7f * delta;
+	else {
+		mActors.emplace_back(actor);
 	}
-	if (GetAsyncKeyState(VK_UP)) {
-		xRot += 0.7f * delta;
+}
+
+void Game::removeActor(const std::shared_ptr<Actor>& actor)
+{
+	auto iter = std::find(mPendingActors.begin(), mPendingActors.end(), actor);
+	if (iter != mPendingActors.end()) {
+		std::iter_swap(iter, mPendingActors.end() - 1);
+		mPendingActors.pop_back();
 	}
-	if (GetAsyncKeyState(VK_DOWN)) {
-		xRot -= 0.7f * delta;
+	iter = std::find(mActors.begin(), mActors.end(), actor);
+	if (iter != mActors.end()) {
+		std::iter_swap(iter, mActors.end() - 1);
+		mActors.pop_back();
+	}
+}
+
+void Game::addMesh(const std::shared_ptr<MeshComponent>& mesh)
+{
+	mMeshes.emplace_back(mesh);
+}
+
+void Game::removeMesh(const std::shared_ptr<MeshComponent>& mesh)
+{
+	auto iter = std::find(mMeshes.begin(), mMeshes.end(), mesh);
+	if (iter != mMeshes.end()) {
+		std::iter_swap(iter, mMeshes.end() - 1);
+		mMeshes.pop_back();
+	}
+}
+
+std::shared_ptr<Graphic> Game::getGraphic()
+{
+	return mGraphic;
+}
+
+void Game::input()
+{	
+	if (GetAsyncKeyState('A')) {
+		std::shared_ptr<Player> actor = createActor<Player>(shared_from_this());
+		actor->setPosition({ -4.0f + 1.0f * mActors.size(), 0.0f, 0.0f});
+	}
+
+	for (auto& actor : mActors) {
+		actor->input();
 	}
 }
 
 void Game::update()
 {
-	mMeshes[0]->px(-1.0f);
-	mMeshes[1]->px(1.0f);
-	mMeshes[0]->ry(yRot);
-	mMeshes[1]->ry(yRot);
-	mMeshes[0]->rx(xRot);
-	mMeshes[1]->rx(xRot);
-	for (UINT i = 0; i < mMeshes.size(); i++) {
-		mMeshes[i]->update();
+	mUpdatingActors = true;
+	//アクターの更新処理
+	for (auto& actor : mActors) {
+		actor->update();
 	}
+	mUpdatingActors = false;
+
+	for (auto pending : mPendingActors) {
+		mActors.emplace_back(pending);
+	}
+	mPendingActors.clear();
+
+	//死んだアクターを一次配列に追加
+	std::vector<std::shared_ptr<Actor>> deadActors;
+	for (auto actor : mActors) {
+		if (actor->getState() == Actor::Dead) {
+			deadActors.emplace_back(actor);
+		}
+	}
+
+	//死んだアクターを削除
+	for (auto actor : deadActors) {
+		removeActor(actor);
+	}
+
 }
 
 void Game::draw()
 {
 	//描画
 	mGraphic->beginRender();
-	for (UINT i = 0; i < mMeshes.size(); i++) {
-		mMeshes[i]->draw();
+	for (auto& mesh : mMeshes) {
+		mesh->draw();
 	}
 	mGraphic->endRender();
 }
