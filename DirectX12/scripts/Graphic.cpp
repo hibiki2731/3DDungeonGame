@@ -385,7 +385,7 @@ HRESULT Graphic::createPipeline()
 		UINT b0 = 0;
 		range[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV; //定数バッファビュー
 		range[0].BaseShaderRegister = b0;
-		range[0].NumDescriptors = 1; 
+		range[0].NumDescriptors = 1;
 		range[0].RegisterSpace = 0;
 		range[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; //自動計算
 
@@ -398,11 +398,15 @@ HRESULT Graphic::createPipeline()
 
 		//ルートパラメタをディスクリプタテーブルとして使用
 		//rangeの入れ物
-		D3D12_ROOT_PARAMETER rootParam[1] = {};
+		D3D12_ROOT_PARAMETER rootParam[2] = {};
 		rootParam[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-		rootParam[0].DescriptorTable.pDescriptorRanges = range;
-		rootParam[0].DescriptorTable.NumDescriptorRanges = _countof(range);
+		rootParam[0].DescriptorTable.pDescriptorRanges = &range[0];
+		rootParam[0].DescriptorTable.NumDescriptorRanges = 1;
 		rootParam[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL; //全てのシェーダから見える
+		rootParam[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		rootParam[1].DescriptorTable.pDescriptorRanges = &range[1];
+		rootParam[1].DescriptorTable.NumDescriptorRanges = 1;
+		rootParam[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL; //全てのシェーダから見える
 
 		//サンプラの記述
 		D3D12_STATIC_SAMPLER_DESC samplerDesc[1] = {};

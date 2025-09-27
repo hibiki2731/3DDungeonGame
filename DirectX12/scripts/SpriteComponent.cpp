@@ -1,7 +1,9 @@
 #include "SpriteComponent.h"
 
-#include<fstream>
-#include<vector>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <vector>
 #include "Graphic.h"
 #include "Actor.h"
 #include "Game.h"
@@ -26,15 +28,16 @@ SpriteComponent::~SpriteComponent()
 void SpriteComponent::initComponent()
 {
 	mRect = { 0.0f, 0.0f, 1.0f, 1.0f };
+	mTextureIndex = 0;
 
 	mGraphic = mOwner->getGame()->getGraphic();
 	mCommandList = mGraphic->getCommandList();
 	mOwner->getGame()->addSprite(std::dynamic_pointer_cast<SpriteComponent>(shared_from_this()));
 }
 
-void SpriteComponent::create(const char* filename)
+void SpriteComponent::create(const std::string filename, int textureNum)
 {
-
+	mTextureNum = textureNum;
 	{
 		//頂点バッファの作成
 		UINT sizeInByte = sizeof(float) * 16;
@@ -73,18 +76,30 @@ void SpriteComponent::create(const char* filename)
 	}
 	//シェーダーリソース
 	{
-		Hr = mGraphic->createShaderResource(filename, TextureBuf);
-		assert(SUCCEEDED(Hr));
+		int dotPos = filename.rfind('.');
+		std::string preName = filename.substr(0, dotPos);
+		std::string postName = filename.substr(dotPos);
+
+		for (int i = 0;i < mTextureNum;i++)
+		{
+			ComPtr<ID3D12Resource> textureBuf;
+			std::string textureName = preName + std::to_string(i) + postName;
+			Hr = mGraphic->createShaderResource(textureName, textureBuf);
+			TextureBufs.emplace_back(textureBuf);
+			assert(SUCCEEDED(Hr));
+		}
 	}
 	//ディスクリプタヒープを作る
 	{
-		Hr = mGraphic->createCbvTbvHeap(CbvTbvHeap, 2);
+		Hr = mGraphic->createCbvTbvHeap(CbvTbvHeap, 1 + mTextureNum);
 		assert(SUCCEEDED(Hr));
 
 		auto hCbvTbvHeap = CbvTbvHeap->GetCPUDescriptorHandleForHeapStart();
 		CbvTbvSize = mGraphic->getCbvTbvIncSize();
 		mGraphic->createConstantBufferView(ConstBuf3, hCbvTbvHeap);			hCbvTbvHeap.ptr += CbvTbvSize;
-		mGraphic->createShaderResourceView(TextureBuf, hCbvTbvHeap);		hCbvTbvHeap.ptr += CbvTbvSize;
+		for (int i = 0; i < mTextureNum; i++) {
+			mGraphic->createShaderResourceView(TextureBufs[i], hCbvTbvHeap);		hCbvTbvHeap.ptr += CbvTbvSize;
+		}
 	}
 
 }
@@ -110,7 +125,10 @@ void SpriteComponent::draw()
 
 	//ディスクリプタヒープをディスクリプタテーブルにセット
 	auto hCbvTbvHeap = CbvTbvHeap->GetGPUDescriptorHandleForHeapStart();
+	UINT CbvTbvSize = mGraphic->getCbvTbvIncSize();
 	mCommandList->SetGraphicsRootDescriptorTable(0, hCbvTbvHeap);
+	hCbvTbvHeap.ptr += CbvTbvSize * (1 + mTextureIndex);
+	mCommandList->SetGraphicsRootDescriptorTable(1, hCbvTbvHeap);
 	//描画。インデックスを使用
 	mCommandList->IASetIndexBuffer(&IndexBufView);
 	mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
@@ -120,4 +138,12 @@ void SpriteComponent::draw()
 void SpriteComponent::setRect(const XMFLOAT4& rect)
 {
 	mRect = rect;
+}
+
+void SpriteComponent::setTextureIndex(int index)
+{
+	if (index < mTextureNum && index >= 0)
+	{
+		mTextureIndex = index;
+	}
 }
