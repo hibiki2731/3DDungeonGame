@@ -13,21 +13,15 @@ public:
     ~SpriteComponent();
 
     void initComponent() override;
-    void create(const std::string filename, int textureNum);
-    void draw();
+    void create(const std::string filename);
+    virtual void draw();
 
 	//描画範囲のセッター
     void setRect(const XMFLOAT4& rect);
-    void setTextureIndex(int index);
 
-    //getter
-	int getTextureNum() { return mTextureNum; };
-
-private:
+protected:
     //描画範囲
 	XMFLOAT4 mRect;//xy:位置、zw:幅高さ
-    int mTextureNum;
-	int mTextureIndex;
 
     //デバック用
     HRESULT Hr;
@@ -48,11 +42,13 @@ private:
     ComPtr<ID3D12Resource> IndexBuf;
     D3D12_INDEX_BUFFER_VIEW IndexBufView;
     //テクスチャバッファ
-    std::vector<ComPtr<ID3D12Resource>> TextureBufs;
+    ComPtr<ID3D12Resource> TextureBuf;
 
     //ディスクリプタヒープ
     ComPtr<ID3D12DescriptorHeap> CbvTbvHeap;
     UINT CbvTbvSize;//ビューのサイズ
     UINT NumDescriptors;//ひとつのパーツで使用するディスクリプタの数
+
+
 };
 

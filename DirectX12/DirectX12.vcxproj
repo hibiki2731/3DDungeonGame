@@ -173,6 +173,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scripts\Actor.cpp" />
+    <ClCompile Include="scripts\Anime2DComponent.cpp" />
     <ClCompile Include="scripts\Component.cpp" />
     <ClCompile Include="scripts\FBXConverter.cpp" />
     <ClCompile Include="scripts\BIN_FILE12.cpp" />
@@ -190,6 +191,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scripts\Actor.h" />
+    <ClInclude Include="scripts\Anime2DComponent.h" />
     <ClInclude Include="scripts\Buffer.h" />
     <ClInclude Include="scripts\Component.h" />
     <ClInclude Include="scripts\FBXConverter.h" />

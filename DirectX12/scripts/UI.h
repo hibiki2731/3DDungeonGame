@@ -1,7 +1,7 @@
 #pragma once
 #include "Actor.h"
 
-class SpriteComponent;
+class Anime2DComponent;
 
 class UI : public Actor
 {
@@ -13,7 +13,7 @@ public:
 	void updateActor() override;
 
 private:
-	std::shared_ptr<SpriteComponent> mSprite;
+	std::shared_ptr<Anime2DComponent> mAnime;
 	int mTextureIndex;
 	int counter;
 };
