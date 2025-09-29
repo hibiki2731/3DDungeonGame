@@ -2,11 +2,12 @@
 #pragma once
 
 //#define USE_INDEX
-#include "stdafx.h"
+#include <map>
+#include <memory>
+#include <d3d12.h>
+#include <DirectXMath.h>
 #include "Graphic.h"
 #include "Component.h"
-#include<map>
-#include<memory>
 
 class MeshComponent : public Component
 {
@@ -16,7 +17,7 @@ public:
 
     void initComponent() override;
     void create(const char* filename);
-    void draw();
+	void draw();
 private:
 
     HRESULT Hr;
@@ -26,7 +27,7 @@ private:
 
     //コマンドリスト graphic.cppから引っ張ってきます
     std::shared_ptr<Graphic> mGraphic;
-    ComPtr<ID3D12GraphicsCommandList> CommandList;
+    ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
     //コンスタントバッファ1(World Matrix)
     CB1* Cb1;

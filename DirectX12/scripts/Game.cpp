@@ -1,7 +1,12 @@
 #include "Game.h"
 #include "Actor.h"
 #include "Player.h"
+#include "UI.h"
+#include "Camera.h"
+#include "Light.h"
 #include "MeshComponent.h"
+#include "SpriteComponent.h"
+#include "RenderComponent.h"
 
 
 Game::Game(){
@@ -33,46 +38,30 @@ void Game::init() {
 	mGraphic->init();
 	mGraphic->clearColor(0.25f, 0.5f, 0.9f);
 
-	//ビューマトリックス		
-	float h = 0.5f;
-	XMFLOAT3 eye = { 0, h, -5 }, focus = { 0, 0, 0 }, up{ 0, 1, 0 };
-	XMMATRIX view = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&focus), XMLoadFloat3(&up));
-	//プロジェクションマトリックス
-	XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, mGraphic->getAspect(), 1.0f, 50.0f);
-	XMMATRIX viewProj = view * proj;
-	mGraphic->updateViewProj(viewProj);
+	std::shared_ptr<Camera> camera = createActor<Camera>(shared_from_this());
 
-	//ライトベクトル
-	XMFLOAT4 lightPos = { 0, 1, -1, 0 };
-	XMVECTOR v = XMLoadFloat4(&lightPos);
-	XMVECTOR n = XMVector3Normalize(v);
-	XMStoreFloat4(&lightPos, n);
-	mGraphic->updateLightPos(lightPos);
 
-	const char* fbx[] = {
-		"assets\\Alicia\\FBX\\Alicia.FBX",
-		"assets\\Alicia\\FBX\\Alicia.FBX",
+	const char* fbx[] = { 
+		"assets\\Models\\FBX format\\room-corner.fbx",
 	};
 
-	const char* text[] = {
-		"assets\\Alicia\\FBX\\Alicia.txt",
-		"assets\\Alicia\\FBX\\Alicia.txt",
+	const char* text[] = { 
+		"assets\\Models\\FBX format\\gate.txt",
 	};
 
-#if 0
+#if 1
 	//FBX→テキスト変換
 	FBXConverter fbxConverter;
 	const int fbxNum = _countof(fbx);
 	int i;
 	for (i = 0; i < fbxNum; i++) {
-		fbxConverter.fbxToTxt(fbx[i], text[i], 0.01f, 0.01f, 0.01f, 0, 2, 1);
+		fbxConverter.fbxToTxt(fbx[i], text[i], 0.005f, 0.005f, 0.005f, 0, 1, 2);
 	}
 #endif
 	//タイマー初期化
 	initDeltaTime();
 
 	std::shared_ptr<Player> player = createActor<Player>(shared_from_this());
-	player->setPosition({ -4.0f, 0.0f, 0.0f });
 
 }
 
@@ -114,6 +103,19 @@ void Game::removeMesh(const std::shared_ptr<MeshComponent>& mesh)
 		mMeshes.pop_back();
 	}
 }
+void Game::addSprite(const std::shared_ptr<SpriteComponent>& sprite)
+{
+	mSprites.emplace_back(sprite);
+}
+
+void Game::removeSprite(const std::shared_ptr<SpriteComponent>& sprite)
+{
+	auto iter = std::find(mSprites.begin(), mSprites.end(), sprite);
+	if (iter != mSprites.end()) {
+		std::iter_swap(iter, mSprites.end() - 1);
+		mSprites.pop_back();
+	}
+}
 
 std::shared_ptr<Graphic> Game::getGraphic()
 {
@@ -122,10 +124,9 @@ std::shared_ptr<Graphic> Game::getGraphic()
 
 void Game::input()
 {	
-	if (GetAsyncKeyState('A')) {
-		std::shared_ptr<Player> actor = createActor<Player>(shared_from_this());
-		actor->setPosition({ -4.0f + 1.0f * mActors.size(), 0.0f, 0.0f});
-	}
+
+
+
 
 	for (auto& actor : mActors) {
 		actor->input();
@@ -164,9 +165,18 @@ void Game::update()
 void Game::draw()
 {
 	//描画
+	//3D描画
 	mGraphic->beginRender();
+	mGraphic->setRenderType(Graphic::RENDER3D);
 	for (auto& mesh : mMeshes) {
 		mesh->draw();
 	}
+
+	//2D描
+	mGraphic->setRenderType(Graphic::RENDER2D);
+	for (auto& sprite : mSprites) {
+		sprite->draw();
+	}
 	mGraphic->endRender();
+
 }

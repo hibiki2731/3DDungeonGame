@@ -1,5 +1,8 @@
 #pragma once
-#include "stdafx.h"
+#include <memory>
+#include <vector>
+#include <concepts>
+#include <algorithm>
 
 //前方宣言
 class Actor;
@@ -15,10 +18,10 @@ public:
 	virtual void initComponent() {};
 
 	//入力
-	virtual void input() {};
+	virtual void inputComponent() {};
 
 	//更新
-	virtual void update();
+	virtual void updateComponent();
 	int getUpdateOrder() const { return mUpdateOrder; }
 
 private:
@@ -31,13 +34,6 @@ protected:
 	//更新順序
 	int mUpdateOrder;
 
-};
-
-class SpriteComponent : public Component {
-public:
-	SpriteComponent();
-	~SpriteComponent();
-	void update() override;
 };
 
 //Componentの作成

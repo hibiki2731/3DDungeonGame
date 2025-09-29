@@ -17,18 +17,6 @@ void Component::init(const std::shared_ptr<Actor>& owner, int updateOrder)
 	mOwner->addComponent(shared_from_this());
 }
 
-void Component::update()
-{
-}
-
-SpriteComponent::SpriteComponent()
-{
-}
-
-SpriteComponent::~SpriteComponent()
-{
-}
-
-void SpriteComponent::update()
+void Component::updateComponent()
 {
 }

@@ -19,7 +19,7 @@ MeshComponent::~MeshComponent()
 
 void MeshComponent::initComponent() {
 	mGraphic = mOwner->getGame()->getGraphic();
-	CommandList = mGraphic->getCommandList();
+	mCommandList = mGraphic->getCommandList();
 	mOwner->getGame()->addMesh(dynamic_pointer_cast<MeshComponent>(shared_from_this()));
 }
 
@@ -108,10 +108,13 @@ void MeshComponent::create(const char* filename)
 			file >> dataType;
 			assert(dataType == "texture");
 			std::string filename;
-			file >> filename;
+			std::getline(file, filename);
+			filename.erase(0, 1); //先頭の" "を削除
+
 			//ファイルを読み込み、テクスチャバッファをつくる
 			Hr = mGraphic->createShaderResource(filename, Parts[k].TextureBuf);
 			assert(SUCCEEDED(Hr));
+			
 		}
 	}
 
@@ -145,18 +148,18 @@ void MeshComponent::draw()
 
 	//ディスクリプタヒープをＧＰＵにセット
 	UINT numDescriptorHeaps = 1;
-	CommandList->SetDescriptorHeaps(numDescriptorHeaps, CbvTbvHeap.GetAddressOf());
+	mCommandList->SetDescriptorHeaps(numDescriptorHeaps, CbvTbvHeap.GetAddressOf());
 	//パーツごとに描画
 	for (int k = 0; k < NumParts; ++k)
 	{
 		//頂点をセット
-		CommandList->IASetVertexBuffers(0, 1, &Parts[k].VertexBufView);
+		mCommandList->IASetVertexBuffers(0, 1, &Parts[k].VertexBufView);
 
 		//ディスクリプタヒープをディスクリプタテーブルにセット
 		auto hCbvTbvHeap = CbvTbvHeap->GetGPUDescriptorHandleForHeapStart();
 		hCbvTbvHeap.ptr += CbvTbvSize * NumDescriptors * k;
-		CommandList->SetGraphicsRootDescriptorTable(0, hCbvTbvHeap);
+		mCommandList->SetGraphicsRootDescriptorTable(0, hCbvTbvHeap);
 		//描画。インデックスを使用しない
-		CommandList->DrawInstanced(Parts[k].NumVertices, 1, 0, 0);
+		mCommandList->DrawInstanced(Parts[k].NumVertices, 1, 0, 0);
 	}
 }

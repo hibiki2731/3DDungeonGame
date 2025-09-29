@@ -6,7 +6,7 @@ void Actor::input()
 {
 	if (mState == Active) {
 		for (auto& component : mComponents) {
-			component->input();
+			component->inputComponent();
 		}
 		inputActor();
 	}
@@ -23,14 +23,14 @@ void Actor::update()
 void Actor::updateComponents()
 {
 	for (auto& component : mComponents) {
-		component->update();
+		component->updateComponent();
 	}
 }
 
 void Actor::init(const std::shared_ptr<Game>& game)
 {
 	mPosition = { 0.0f, 0.0f, 0.0f };
-	mScale = 1.0f;
+	mScale = { 1.0f, 1.0f, 1.0f };
 	mRotation = { 0.0f, 0.0f, 0.0f };
 	mState = Active;
 	mGame = game;
@@ -47,7 +47,7 @@ void Actor::setPosition(const XMFLOAT3& position)
 	mPosition = position;
 }
 
-void Actor::setScale(float scale)
+void Actor::setScale(const XMFLOAT3& scale)
 {
 	mScale = scale;
 }
@@ -97,7 +97,7 @@ XMFLOAT3 Actor::getPosition() const
 	return mPosition;
 }
 
-float Actor::getScale() const
+XMFLOAT3 Actor::getScale() const
 {
 	return mScale;
 }

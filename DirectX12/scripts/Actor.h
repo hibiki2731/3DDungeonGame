@@ -1,6 +1,9 @@
 #pragma once
 #include <concepts>
-#include "stdafx.h"
+#include <memory>
+#include <vector>
+#include <DirectXMath.h>
+using namespace DirectX;
 
 //前方宣言
 class Game;
@@ -41,7 +44,7 @@ public:
 	//セッター
 	void setState(State state);
 	void setPosition(const XMFLOAT3& position);
-	void setScale(float scale);
+	void setScale(const XMFLOAT3& scale);
 	void setRotation(const XMFLOAT3& rotation);
 
 	void setXPos(float x);
@@ -55,14 +58,15 @@ public:
 	//ゲッター
 	State getState();
 	XMFLOAT3 getPosition() const;
-	float    getScale() const;
+	XMFLOAT3 getScale() const;
 	XMFLOAT3 getRotation() const;
 	std::shared_ptr<Game> getGame();
-	
 
 private:
 	//newを禁止にする
 	static void* operator new(size_t size);
+
+protected:
 	//アクターの状態
 	State mState;
 
@@ -72,7 +76,7 @@ private:
 
 	//ベクトル
 	XMFLOAT3 mPosition;
-	float    mScale;
+	XMFLOAT3 mScale;
 	XMFLOAT3 mRotation;
 };
 
