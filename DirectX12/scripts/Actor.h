@@ -65,6 +65,8 @@ public:
 private:
 	//newを禁止にする
 	static void* operator new(size_t size);
+
+protected:
 	//アクターの状態
 	State mState;
 

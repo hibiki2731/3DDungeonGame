@@ -8,5 +8,6 @@ float4 main(
 	) : SV_TARGET
 {
     return Texture.Sample(Sampler, i_uv) * i_diffuse;
+    //return Texture.Sample(Sampler, i_uv);
 
 }

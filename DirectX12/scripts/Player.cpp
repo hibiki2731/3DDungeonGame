@@ -7,7 +7,7 @@ Player::~Player()
 }
 
 void Player::inputActor()
-{
+{/*
 	XMFLOAT3 rot = getRotation();
 	XMFLOAT3 updateRot = { 0, 0, 0 };
 
@@ -24,7 +24,7 @@ void Player::inputActor()
 		updateRot.x -= 0.7f * deltaTime;
 	}
 	rot = rot + updateRot;
-	setRotation(rot);
+	setRotation(rot);*/
 }
 
 void Player::updateActor()
@@ -34,7 +34,7 @@ void Player::updateActor()
 void Player::initActor()
 {
 	 auto mesh = createComponent<MeshComponent>(shared_from_this());
-	 mesh->create("assets\\Alicia\\FBX\\Alicia.txt");
+	 mesh->create("assets\\Models\\FBX format\\gate.txt");
 }
 
 Player::Player()

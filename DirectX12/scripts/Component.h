@@ -18,10 +18,10 @@ public:
 	virtual void initComponent() {};
 
 	//“ü—Í
-	virtual void input() {};
+	virtual void inputComponent() {};
 
 	//XV
-	virtual void update();
+	virtual void updateComponent();
 	int getUpdateOrder() const { return mUpdateOrder; }
 
 private:

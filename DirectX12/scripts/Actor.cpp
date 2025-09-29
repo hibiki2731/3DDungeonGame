@@ -6,7 +6,7 @@ void Actor::input()
 {
 	if (mState == Active) {
 		for (auto& component : mComponents) {
-			component->input();
+			component->inputComponent();
 		}
 		inputActor();
 	}
@@ -23,7 +23,7 @@ void Actor::update()
 void Actor::updateComponents()
 {
 	for (auto& component : mComponents) {
-		component->update();
+		component->updateComponent();
 	}
 }
 

@@ -108,10 +108,13 @@ void MeshComponent::create(const char* filename)
 			file >> dataType;
 			assert(dataType == "texture");
 			std::string filename;
-			file >> filename;
+			std::getline(file, filename);
+			filename.erase(0, 1); //先頭の" "を削除
+
 			//ファイルを読み込み、テクスチャバッファをつくる
 			Hr = mGraphic->createShaderResource(filename, Parts[k].TextureBuf);
 			assert(SUCCEEDED(Hr));
+			
 		}
 	}
 

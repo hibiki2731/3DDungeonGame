@@ -47,6 +47,7 @@ public:
 	std::shared_ptr<Graphic> getGraphic();
 
 private:
+
 	//ループ内処理
 	void input();
 	void update();
@@ -55,7 +56,6 @@ private:
 	//グラフィック
 	std::shared_ptr<Graphic> mGraphic;
 	//メッシュ配列
-	//std::vector<std::shared_ptr<Mesh>> mMeshes;
 	std::vector<std::shared_ptr<MeshComponent>> mMeshes;
 	std::vector<std::shared_ptr<SpriteComponent>> mSprites;
 	//アクター配列
