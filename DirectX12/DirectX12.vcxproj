@@ -188,6 +188,7 @@
     <ClCompile Include="scripts\MeshComponent.cpp" />
     <ClCompile Include="scripts\Player.cpp" />
     <ClCompile Include="scripts\RenderComponent.cpp" />
+    <ClCompile Include="scripts\RockWall.cpp" />
     <ClCompile Include="scripts\SpriteComponent.cpp" />
     <ClCompile Include="scripts\timer.cpp" />
     <ClCompile Include="scripts\UI.cpp" />
@@ -211,6 +212,7 @@
     <ClInclude Include="scripts\MeshComponent.h" />
     <ClInclude Include="scripts\Player.h" />
     <ClInclude Include="scripts\RenderComponent.h" />
+    <ClInclude Include="scripts\RockWall.h" />
     <ClInclude Include="scripts\SpriteComponent.h" />
     <ClInclude Include="scripts\stb_image.h" />
     <ClInclude Include="scripts\timer.h" />

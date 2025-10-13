@@ -34,7 +34,8 @@ void Player::updateActor()
 void Player::initActor()
 {
 	 auto mesh = createComponent<MeshComponent>(shared_from_this());
-	 mesh->create("assets\\Models\\FBX format\\gate.txt");
+	 //mesh->create("assets\\rock_side\\wall_side.txt");
+	 mesh->create("assets\\Models\\FBX format\\room-corner.txt");
 }
 
 Player::Player()

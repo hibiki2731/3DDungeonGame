@@ -9,6 +9,7 @@ struct Buffer {
 struct CB0 {
     XMMATRIX viewProj;
     XMFLOAT4 lightPos;
+    XMFLOAT4 cameraPos;
 };
 //‚P‚Â‚ÌƒƒbƒVƒ…‚É‚P‚Â‚ÌCB1
 struct CB1 {

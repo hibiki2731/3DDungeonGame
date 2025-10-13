@@ -1,5 +1,7 @@
 #include "Math.h"
 
+XMFLOAT3 normalZ = {0 ,0, 1};
+
 XMFLOAT3 operator+(const XMFLOAT3& v1, const XMFLOAT3& v2)
 {
     return XMFLOAT3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);

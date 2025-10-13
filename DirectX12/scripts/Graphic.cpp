@@ -801,6 +801,11 @@ void Graphic::updateLightPos(XMFLOAT4& lightPos)
 	CB0Data->lightPos = lightPos;
 }
 
+void Graphic::updateCameraPos(XMFLOAT4& cameraPos)
+{
+	CB0Data->cameraPos = cameraPos;
+}
+
 void Graphic::clearColor(float r, float g, float b)
 {
 	ClearColor[0] = r, ClearColor[1] = g, ClearColor[2] = b;

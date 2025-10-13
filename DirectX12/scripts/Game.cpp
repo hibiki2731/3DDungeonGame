@@ -7,6 +7,7 @@
 #include "MeshComponent.h"
 #include "SpriteComponent.h"
 #include "RenderComponent.h"
+#include "RockWall.h"
 
 
 Game::Game(){
@@ -43,10 +44,18 @@ void Game::init() {
 
 	const char* fbx[] = { 
 		"assets\\Models\\FBX format\\room-corner.fbx",
+		"assets\\rock_side\\wall_side.fbx",
+		"assets\\desk_refined.fbx",
+		"assets\\rockObj\\rockWall.fbx",
+		"assets\\rockObj\\rockFloor.fbx",
 	};
 
 	const char* text[] = { 
-		"assets\\Models\\FBX format\\gate.txt",
+		"assets\\Models\\FBX format\\room-corner.txt",
+		"assets\\rock_side\\wall_side.txt",
+		"assets\\desk_refined.txt",
+		"assets\\rockObj\\rockWall.txt",
+		"assets\\rockObj\\rockFloor.txt",
 	};
 
 #if 1
@@ -54,14 +63,27 @@ void Game::init() {
 	FBXConverter fbxConverter;
 	const int fbxNum = _countof(fbx);
 	int i;
-	for (i = 0; i < fbxNum; i++) {
-		fbxConverter.fbxToTxt(fbx[i], text[i], 0.005f, 0.005f, 0.005f, 0, 1, 2);
+	//フリー素材
+	fbxConverter.fbxToTxt(fbx[0], text[0], 0.005f, 0.005f, 0.005f, 2, 1, 0); //横、縦、奥行
+	//blender
+	for (i = 1; i < fbxNum; i++) {
+		fbxConverter.fbxToTxt(fbx[i], text[i], 1.0f, 1.0f, 1.0f, 0, 2, 1); //横、縦、奥行
 	}
 #endif
 	//タイマー初期化
 	initDeltaTime();
 
-	std::shared_ptr<Player> player = createActor<Player>(shared_from_this());
+	//std::shared_ptr<Player> player = createActor<Player>(shared_from_this());
+	auto wall = createActor<RockWall>(shared_from_this());
+	auto wall1 = createActor<RockWall>(shared_from_this());
+	auto floor = createActor<RockFloor>(shared_from_this());
+	auto floor1 = createActor<RockFloor>(shared_from_this());
+	floor1->setPosition(XMFLOAT3(0, 0, 2.0f));
+	auto floor2 = createActor<RockFloor>(shared_from_this());
+	floor2->setPosition(XMFLOAT3(0, 0, 4.0f));
+	wall->setYRot(PI / 2.0f);
+	wall1->setPosition(XMFLOAT3(0, 0, 2.0f));
+	wall1->setYRot(PI / 2.0f);
 
 }
 

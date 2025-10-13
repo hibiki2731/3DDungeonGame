@@ -4,6 +4,8 @@
 
 using namespace DirectX;
 
+extern XMFLOAT3 normalZ;
+
 XMFLOAT3 operator+(const XMFLOAT3& v1, const XMFLOAT3& v2);
 
 XMFLOAT3 operator-(const XMFLOAT3& v1, const XMFLOAT3& v2);
