@@ -21,12 +21,9 @@ void LightComponent::updateComponent()
 		lightPos.x = mOwner->getPosition().x;
 		lightPos.y = mOwner->getPosition().y;
 		lightPos.z = mOwner->getPosition().z;
-		lightPos.w = 0;
+		lightPos.w = 1;
 
 		//ライトベクトル
-		XMVECTOR v = XMLoadFloat4(&lightPos);
-		XMVECTOR n = XMVector3Normalize(v);
-		XMStoreFloat4(&lightPos, n);
 		mOwner->getGame()->getGraphic()->updateLightPos(lightPos);
 	}
 }

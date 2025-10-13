@@ -43,6 +43,7 @@ public:
 	void createSharedConstBuf0();
 	void updateViewProj(XMMATRIX& viewProj);
 	void updateLightPos(XMFLOAT4& lightPos);
+	void updateCameraPos(XMFLOAT4& cameraPos);
 	
 	void clearColor(float r, float g, float b);
 	void beginRender();

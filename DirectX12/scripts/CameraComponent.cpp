@@ -19,16 +19,26 @@ void CameraComponent::inputComponent()
 void CameraComponent::updateComponent()
 {
 	if (isActive) {
-		mFront = { sinf(mRot), 0, cosf(mRot) };
+		mFront = { 0.0f, 0.0f, 1.0f };
+		mFront = rotateX(mFront, mOwner->getRotation().x);
+		mFront = rotateY(mFront, mOwner->getRotation().y);
+		mFront = rotateZ(mFront, mOwner->getRotation().z);
 		mFocus = mOwner->getPosition() + mFront;
 		XMFLOAT3 eye = mOwner->getPosition();
 
 
 		XMMATRIX view = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&mFocus), XMLoadFloat3(&mUp));
 		//プロジェクションマトリックス
-		XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, mOwner->getGame()->getGraphic()->getAspect(), 1.0f, 50.0f);
+		XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, mOwner->getGame()->getGraphic()->getAspect(), 0.01f, 50.0f);
 		XMMATRIX viewProj = view * proj;
 		mOwner->getGame()->getGraphic()->updateViewProj(viewProj);
+
+		XMFLOAT4 cameraPos;
+		cameraPos.x = eye.x;
+		cameraPos.y = eye.y;
+		cameraPos.z = eye.z;
+		cameraPos.w = 1;
+		mOwner->getGame()->getGraphic()->updateCameraPos(cameraPos);
 	}
 
 }

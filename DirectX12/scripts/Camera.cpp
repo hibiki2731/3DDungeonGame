@@ -19,23 +19,31 @@ void Camera::initActor()
 
 void Camera::inputActor()
 {
+
+
 	if (GetAsyncKeyState('A')) {
-		mPosition = mPosition + rotateY(mCamera->getFront(), PI / 2.0f) * mMoveSpeed * deltaTime;
+		mPosition = mPosition + rotateY(normalZ, mRotation.y + PI / 2.0f) * mMoveSpeed * deltaTime;
 	}
 	if (GetAsyncKeyState('D')) {
-		mPosition = mPosition + rotateY(mCamera->getFront(),  -PI/2.0f) * mMoveSpeed * deltaTime;
+		mPosition = mPosition + rotateY(normalZ,  mRotation.y - PI/2.0f) * mMoveSpeed * deltaTime;
 	}
 	if (GetAsyncKeyState('W')) {
-		mPosition = mPosition + mCamera->getFront() * mMoveSpeed * deltaTime;
+		mPosition = mPosition + rotateY(normalZ, mRotation.y) * mMoveSpeed * deltaTime;
 	}
 	if (GetAsyncKeyState('S')) {
-		mPosition = mPosition - mCamera->getFront() * mMoveSpeed * deltaTime;
+		mPosition = mPosition - rotateY(normalZ, mRotation.y) * mMoveSpeed * deltaTime;
+	}
+	if (GetAsyncKeyState(VK_UP)) {
+		mRotation = mRotation - XMFLOAT3(mRotSpeed * deltaTime, 0, 0);
+	}
+	if (GetAsyncKeyState(VK_DOWN)) {
+		mRotation = mRotation + XMFLOAT3(mRotSpeed * deltaTime, 0, 0);
 	}
 	if (GetAsyncKeyState(VK_RIGHT)) {
-		mCamera->setRot( mCamera->getRot() + mRotSpeed * deltaTime);
+		mRotation = mRotation - XMFLOAT3(0, mRotSpeed * deltaTime, 0);
 	}
 	if (GetAsyncKeyState(VK_LEFT)) {
-		mCamera->setRot(mCamera->getRot() - mRotSpeed * deltaTime);
+		mRotation = mRotation + XMFLOAT3(0, mRotSpeed * deltaTime, 0);
 	}
 }
 
