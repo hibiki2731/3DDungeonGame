@@ -1,6 +1,7 @@
 #pragma once
 #include <DirectXMath.h>
 #include "Component.h"
+#include "Buffer.h"
 using namespace DirectX;
 
 class LightComponent : public Component
@@ -17,5 +18,6 @@ public:
 
 private:
 	bool isActive;
+	Light mLight;
 };
 

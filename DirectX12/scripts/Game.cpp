@@ -3,7 +3,6 @@
 #include "Player.h"
 #include "UI.h"
 #include "Camera.h"
-#include "Light.h"
 #include "MeshComponent.h"
 #include "SpriteComponent.h"
 #include "RenderComponent.h"
@@ -137,6 +136,12 @@ void Game::removeSprite(const std::shared_ptr<SpriteComponent>& sprite)
 		std::iter_swap(iter, mSprites.end() - 1);
 		mSprites.pop_back();
 	}
+}
+
+void Game::addLight(const Light& light, int index)
+{
+	mLights[index] = light;
+	mGraphic->updateLightPos(mLights);
 }
 
 std::shared_ptr<Graphic> Game::getGraphic()

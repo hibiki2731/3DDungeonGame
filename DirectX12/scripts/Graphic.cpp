@@ -796,9 +796,14 @@ void Graphic::updateViewProj(XMMATRIX& viewProj)
 	CB0Data->viewProj = viewProj;
 }
 
-void Graphic::updateLightPos(XMFLOAT4& lightPos)
+//void Graphic::updateLightPos(std::vector<Light> &lights)
+//{
+//	CB0Data->lights = lights;
+//}
+
+void Graphic::updateLightPos(Light(&lights)[4])
 {
-	CB0Data->lightPos = lightPos;
+	for(int i = 0; i < 4; i ++) CB0Data->lights[i] = lights[i];
 }
 
 void Graphic::updateCameraPos(XMFLOAT4& cameraPos)

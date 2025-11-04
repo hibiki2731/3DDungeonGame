@@ -5,6 +5,7 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl/client.h>
+#include <vector>
 #include "Buffer.h"
 #include "BIN_FILE12.h"
 
@@ -42,7 +43,8 @@ public:
 	void createShaderResourceView(ComPtr<ID3D12Resource> const& shaderResource, D3D12_CPU_DESCRIPTOR_HANDLE handle);
 	void createSharedConstBuf0();
 	void updateViewProj(XMMATRIX& viewProj);
-	void updateLightPos(XMFLOAT4& lightPos);
+	void updateLightPos(Light (&lights)[4]);
+	//void updateLightPos(std::vector<Light> &lights);
 	void updateCameraPos(XMFLOAT4& cameraPos);
 	
 	void clearColor(float r, float g, float b);

@@ -1,19 +1,19 @@
-#include "Light.h"
+#include "PointLight.h"
 #include "LightComponent.h"
 #include "timer.h"
 #include <windows.h>
 
-void Light::initActor()
+void PointLight::initActor()
 {
 	mPosition = {0, 1.0f, -5.0f};
 	auto light = createComponent<LightComponent>(shared_from_this());
 	light->setActive(true);
 }
 
-void Light::updateActor()
+void PointLight::updateActor()
 {
 }
 
-void Light::inputActor()
+void PointLight::inputActor()
 {
 }

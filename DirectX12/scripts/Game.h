@@ -21,6 +21,7 @@ class Component;
 class RenderComponent;
 class MeshComponent;
 class SpriteComponent;
+class LightComponent;
 class Player;
 
 class Game : public std::enable_shared_from_this<Game>{
@@ -42,6 +43,7 @@ public:
 	void removeMesh(const std::shared_ptr<MeshComponent>& mesh);
 	void addSprite(const std::shared_ptr<SpriteComponent>& mesh);
 	void removeSprite(const std::shared_ptr<SpriteComponent>& mesh);
+	void addLight(const Light& light, int index);
 
 	//ゲッター
 	std::shared_ptr<Graphic> getGraphic();
@@ -58,6 +60,9 @@ private:
 	//メッシュ配列
 	std::vector<std::shared_ptr<MeshComponent>> mMeshes;
 	std::vector<std::shared_ptr<SpriteComponent>> mSprites;
+	//ライト配列
+	//std::vector<std::shared_ptr<LightComponent>> mLights;
+	Light mLights[4];
 	//アクター配列
 	std::vector<std::shared_ptr<Actor>> mActors;
 	std::vector<std::shared_ptr<Actor>> mPendingActors;

@@ -8,6 +8,7 @@
 void LightComponent::initComponent()
 {
 	isActive = false;
+	mOwner->getGame()->addLight(mLight, 0);
 }
 
 void LightComponent::inputComponent()
@@ -21,10 +22,19 @@ void LightComponent::updateComponent()
 		lightPos.x = mOwner->getPosition().x;
 		lightPos.y = mOwner->getPosition().y;
 		lightPos.z = mOwner->getPosition().z;
-		lightPos.w = 1;
+		lightPos.w = 1.0f;
 
 		//ライトベクトル
-		mOwner->getGame()->getGraphic()->updateLightPos(lightPos);
+		mLight.position = lightPos;
+		lightPos.x = 0.f;
+		lightPos.y = 1.f;
+		lightPos.z = 2.0f;
+		lightPos.w = 1.0f;
+		Light anotherLight;
+		anotherLight.position = lightPos;
+		mLight.isActive.x = ACTIVE;
+		anotherLight.isActive.x = ACTIVE;
+
 	}
 }
 

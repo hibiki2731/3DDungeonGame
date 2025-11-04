@@ -1,11 +1,11 @@
 #pragma once
 #include "Actor.h"
-class Light :
+class PointLight :
     public Actor
 {
 public:
-    Light() {};
-    ~Light() {};
+    PointLight() {};
+    ~PointLight() {};
 
     void initActor() override;
     void updateActor() override;
