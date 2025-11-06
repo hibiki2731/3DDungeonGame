@@ -37,6 +37,13 @@ void Actor::init(const std::shared_ptr<Game>& game)
 	mGame->addActor(shared_from_this());
 }
 
+void Actor::endProccess()
+{
+	for (auto& component : mComponents) {
+		component->endProccess();
+	}
+}
+
 void Actor::setState(State state)
 {
 	mState = state;

@@ -40,6 +40,9 @@ public:
 	void init(const std::shared_ptr<Game>& game);
 	//アクター独自の初期化
 	virtual void initActor() {};
+	
+	//終了処理
+	void endProccess();
 
 	//セッター
 	void setState(State state);
