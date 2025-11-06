@@ -16,6 +16,8 @@ public:
     ~MeshComponent();
 
     void initComponent() override;
+	void endProccess() override;
+
     void create(const char* filename);
 	void draw();
 private:

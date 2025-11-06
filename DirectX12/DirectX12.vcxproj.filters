@@ -63,7 +63,7 @@
     <ClCompile Include="scripts\CameraComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Light.cpp">
+    <ClCompile Include="scripts\PointLight.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\LightComponent.cpp">
@@ -134,7 +134,7 @@
     <ClInclude Include="scripts\CameraComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Light.h">
+    <ClInclude Include="scripts\PointLight.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\LightComponent.h">

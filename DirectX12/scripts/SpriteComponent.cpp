@@ -34,6 +34,12 @@ void SpriteComponent::initComponent()
 	mOwner->getGame()->addSprite(std::dynamic_pointer_cast<SpriteComponent>(shared_from_this()));
 }
 
+void SpriteComponent::endProccess()
+{
+	//Gameからスプライトを削除
+	mOwner->getGame()->removeSprite(std::dynamic_pointer_cast<SpriteComponent>(shared_from_this()));
+}
+
 void SpriteComponent::create(const std::string filename)
 {
 	{
