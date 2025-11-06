@@ -12,6 +12,8 @@
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
+class LightComponent;
+
 struct Vertex {
 	XMFLOAT3 pos; //xyzç¿ïW
 	XMFLOAT2 uv;  //uvç¿ïW
@@ -43,7 +45,7 @@ public:
 	void createShaderResourceView(ComPtr<ID3D12Resource> const& shaderResource, D3D12_CPU_DESCRIPTOR_HANDLE handle);
 	void createSharedConstBuf0();
 	void updateViewProj(XMMATRIX& viewProj);
-	void updateLightPos(Light (&lights)[4]);
+	void updateLightPos(std::vector<std::shared_ptr<LightComponent>>& lights);
 	//void updateLightPos(std::vector<Light> &lights);
 	void updateCameraPos(XMFLOAT4& cameraPos);
 	

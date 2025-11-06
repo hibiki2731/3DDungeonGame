@@ -2,9 +2,7 @@
 #include <DirectXMath.h>
 using namespace DirectX;
 
-struct Buffer {
-
-};
+const int MAX_LIGHT_NUM = 16;
 
 enum LightStat {
     INACTIVE = 0,
@@ -12,16 +10,14 @@ enum LightStat {
 };
 
 struct Light {
-    XMFLOAT4 position;
-	XMFLOAT4 isActive;
+	XMFLOAT4 position; //xyz:位置、w:有効無効
 };
 
 //コンスタントバッファ０-----------------------------------------------------------------
 struct CB0 {
     XMMATRIX viewProj;
     XMFLOAT4 cameraPos;
-    Light lights[4];
-    //std::vector<Light> lights;
+	XMFLOAT4 pointLightsPos[MAX_LIGHT_NUM]; //xyz:位置、w:有効無効
 };
 
 //１つのメッシュに１つのCB1

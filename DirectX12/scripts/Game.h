@@ -43,7 +43,8 @@ public:
 	void removeMesh(const std::shared_ptr<MeshComponent>& mesh);
 	void addSprite(const std::shared_ptr<SpriteComponent>& mesh);
 	void removeSprite(const std::shared_ptr<SpriteComponent>& mesh);
-	void addLight(const Light& light, int index);
+	void addLight(const std::shared_ptr<LightComponent>& light);
+	void removeLight(const std::shared_ptr<LightComponent>& light);
 
 	//ゲッター
 	std::shared_ptr<Graphic> getGraphic();
@@ -61,8 +62,7 @@ private:
 	std::vector<std::shared_ptr<MeshComponent>> mMeshes;
 	std::vector<std::shared_ptr<SpriteComponent>> mSprites;
 	//ライト配列
-	//std::vector<std::shared_ptr<LightComponent>> mLights;
-	Light mLights[4];
+	std::vector<std::shared_ptr<LightComponent>> mLights;
 	//アクター配列
 	std::vector<std::shared_ptr<Actor>> mActors;
 	std::vector<std::shared_ptr<Actor>> mPendingActors;

@@ -24,6 +24,9 @@ public:
 	virtual void updateComponent();
 	int getUpdateOrder() const { return mUpdateOrder; }
 
+	//I—¹ˆ—
+	virtual void endProccess() {};
+
 private:
 	//new‚ğ‹Ö~‚É‚·‚é
 	static void* operator new(size_t size);

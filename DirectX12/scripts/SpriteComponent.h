@@ -13,6 +13,8 @@ public:
     ~SpriteComponent();
 
     void initComponent() override;
+	void endProccess() override;
+
     void create(const std::string filename);
     virtual void draw();
 

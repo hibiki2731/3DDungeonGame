@@ -23,6 +23,12 @@ void MeshComponent::initComponent() {
 	mOwner->getGame()->addMesh(dynamic_pointer_cast<MeshComponent>(shared_from_this()));
 }
 
+void MeshComponent::endProccess()
+{
+	//Game‚©‚çƒƒbƒVƒ…‚ðíœ
+	mOwner->getGame()->removeMesh(dynamic_pointer_cast<MeshComponent>(shared_from_this()));
+}
+
 void MeshComponent::create(const char* filename)
 {	
 

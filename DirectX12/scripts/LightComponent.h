@@ -13,11 +13,13 @@ public:
 	void initComponent() override;
 	void inputComponent() override;
 	void updateComponent() override;
+	void endProccess() override;
 
+	XMFLOAT4 getPosition();
 	void setActive(bool state);
 
 private:
 	bool isActive;
-	Light mLight;
+	XMFLOAT4 mPosition;
 };
 

@@ -1,6 +1,7 @@
 #include "Graphic.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "LightComponent.h"
 
 Graphic::Graphic()
 {
@@ -789,6 +790,8 @@ void Graphic::createSharedConstBuf0()
 	//全メッシュで共有するコピー元でスクリプタヒープを作る
 	createSharedCbvTbvHeap(SharedCb0vHeap, 1);
 	createConstantBufferView(ConstBuf0, SharedCb0vHeap->GetCPUDescriptorHandleForHeapStart());
+
+	for (int i = 0; i < MAX_LIGHT_NUM; i++) CB0Data->pointLightsPos[i] = XMFLOAT4(0, 0, 0, 0);
 }
 
 void Graphic::updateViewProj(XMMATRIX& viewProj)
@@ -801,9 +804,9 @@ void Graphic::updateViewProj(XMMATRIX& viewProj)
 //	CB0Data->lights = lights;
 //}
 
-void Graphic::updateLightPos(Light(&lights)[4])
+void Graphic::updateLightPos(std::vector<std::shared_ptr<LightComponent>>& lights)
 {
-	for(int i = 0; i < 4; i ++) CB0Data->lights[i] = lights[i];
+	for(int i = 0; i < lights.size(); i ++) CB0Data->pointLightsPos[i] = lights[i]->getPosition();
 }
 
 void Graphic::updateCameraPos(XMFLOAT4& cameraPos)

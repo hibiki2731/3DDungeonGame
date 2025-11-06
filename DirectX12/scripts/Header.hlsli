@@ -4,11 +4,13 @@ struct Light
     float4 isActive;
 };
 
+static const int NUM_LIGHTS = 16;
+
 cbuffer b0 : register(b0)
 {
     matrix ViewProj;
     float4 CameraPos;
-    Light Lights[4];
+    float4 pointLightPos[NUM_LIGHTS];
 }
 
 cbuffer b1 : register(b1)

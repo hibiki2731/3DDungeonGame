@@ -8,7 +8,7 @@
 void LightComponent::initComponent()
 {
 	isActive = false;
-	mOwner->getGame()->addLight(mLight, 0);
+	mOwner->getGame()->addLight(std::dynamic_pointer_cast<LightComponent>(shared_from_this()));
 }
 
 void LightComponent::inputComponent()
@@ -22,20 +22,22 @@ void LightComponent::updateComponent()
 		lightPos.x = mOwner->getPosition().x;
 		lightPos.y = mOwner->getPosition().y;
 		lightPos.z = mOwner->getPosition().z;
-		lightPos.w = 1.0f;
+		lightPos.w = isActive;
 
-		//ライトベクトル
-		mLight.position = lightPos;
-		lightPos.x = 0.f;
-		lightPos.y = 1.f;
-		lightPos.z = 2.0f;
-		lightPos.w = 1.0f;
-		Light anotherLight;
-		anotherLight.position = lightPos;
-		mLight.isActive.x = ACTIVE;
-		anotherLight.isActive.x = ACTIVE;
+		mPosition = lightPos;
 
 	}
+}
+
+void LightComponent::endProccess()
+{
+	//Gameからライトを削除
+	mOwner->getGame()->removeLight(std::dynamic_pointer_cast<LightComponent>(shared_from_this()));
+}
+
+XMFLOAT4 LightComponent::getPosition()
+{
+	return mPosition;
 }
 
 void LightComponent::setActive(bool state)

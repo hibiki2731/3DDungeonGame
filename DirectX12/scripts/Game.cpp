@@ -6,6 +6,8 @@
 #include "MeshComponent.h"
 #include "SpriteComponent.h"
 #include "RenderComponent.h"
+#include "LightComponent.h"
+#include "PointLight.h"
 #include "RockWall.h"
 
 
@@ -39,6 +41,7 @@ void Game::init() {
 	mGraphic->clearColor(0.25f, 0.5f, 0.9f);
 
 	std::shared_ptr<Camera> camera = createActor<Camera>(shared_from_this());
+
 
 
 	const char* fbx[] = { 
@@ -80,9 +83,27 @@ void Game::init() {
 	floor1->setPosition(XMFLOAT3(0, 0, 2.0f));
 	auto floor2 = createActor<RockFloor>(shared_from_this());
 	floor2->setPosition(XMFLOAT3(0, 0, 4.0f));
+	auto flor3 = createActor<RockFloor>(shared_from_this());
+	flor3->setPosition(XMFLOAT3(2.0f, 0, 2.0f));
+	auto flor4 = createActor<RockFloor>(shared_from_this());
+	flor4->setPosition(XMFLOAT3(2.0f, 0, 4.0f));
+	auto flor5 = createActor<RockFloor>(shared_from_this());
+	flor5->setPosition(XMFLOAT3(0, 0, 0));
+	auto flor6 = createActor<RockFloor>(shared_from_this());
+	flor6->setPosition(XMFLOAT3(2.0f, 0, 0));
+	auto wall2 = createActor<RockWall>(shared_from_this());
+	wall2->setPosition(XMFLOAT3(0, 0, 4.0f));
+	wall2->setYRot(PI / 2.0f);
 	wall->setYRot(PI / 2.0f);
 	wall1->setPosition(XMFLOAT3(0, 0, 2.0f));
 	wall1->setYRot(PI / 2.0f);
+
+	//auto pointLight1 = createActor<PointLight>(shared_from_this());
+	//pointLight1->setPosition(XMFLOAT3(0.0f, 1.0f, 0.0f));
+	//auto pointLight2 = createActor<PointLight>(shared_from_this());
+	//pointLight2->setPosition(XMFLOAT3(2.0f, 1.0f, 2.0f));
+	//auto pointLight3 = createActor<PointLight>(shared_from_this());
+	//pointLight3->setPosition(XMFLOAT3(0.0f, 1.0f, 4.0f));
 
 }
 
@@ -104,6 +125,10 @@ void Game::removeActor(const std::shared_ptr<Actor>& actor)
 		std::iter_swap(iter, mPendingActors.end() - 1);
 		mPendingActors.pop_back();
 	}
+
+	//œ‹ŽŽž‚Ìˆ—
+	actor->endProccess();
+
 	iter = std::find(mActors.begin(), mActors.end(), actor);
 	if (iter != mActors.end()) {
 		std::iter_swap(iter, mActors.end() - 1);
@@ -138,10 +163,15 @@ void Game::removeSprite(const std::shared_ptr<SpriteComponent>& sprite)
 	}
 }
 
-void Game::addLight(const Light& light, int index)
+void Game::addLight(const std::shared_ptr<LightComponent>& light)
 {
-	mLights[index] = light;
-	mGraphic->updateLightPos(mLights);
+	if (mLights.size() > MAX_LIGHT_NUM) return;
+	mLights.push_back(light);
+}
+
+void Game::removeLight(const std::shared_ptr<LightComponent>& light)
+{
+	mLights.erase(std::remove(mLights.begin(), mLights.end(), light), mLights.end());
 }
 
 std::shared_ptr<Graphic> Game::getGraphic()
@@ -150,10 +180,11 @@ std::shared_ptr<Graphic> Game::getGraphic()
 }
 
 void Game::input()
-{	
+{
 
-
-
+	if (GetAsyncKeyState('I')) {
+		removeActor(mActors[3]);
+	}
 
 	for (auto& actor : mActors) {
 		actor->input();
@@ -168,6 +199,8 @@ void Game::update()
 		actor->update();
 	}
 	mUpdatingActors = false;
+
+	mGraphic->updateLightPos(mLights);
 
 	for (auto pending : mPendingActors) {
 		mActors.emplace_back(pending);
