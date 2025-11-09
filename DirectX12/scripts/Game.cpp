@@ -6,7 +6,7 @@
 #include "MeshComponent.h"
 #include "SpriteComponent.h"
 #include "RenderComponent.h"
-#include "LightComponent.h"
+#include "PointLightComponent.h"
 #include "PointLight.h"
 #include "RockWall.h"
 
@@ -98,12 +98,12 @@ void Game::init() {
 	wall1->setPosition(XMFLOAT3(0, 0, 2.0f));
 	wall1->setYRot(PI / 2.0f);
 
-	//auto pointLight1 = createActor<PointLight>(shared_from_this());
-	//pointLight1->setPosition(XMFLOAT3(0.0f, 1.0f, 0.0f));
-	//auto pointLight2 = createActor<PointLight>(shared_from_this());
-	//pointLight2->setPosition(XMFLOAT3(2.0f, 1.0f, 2.0f));
-	//auto pointLight3 = createActor<PointLight>(shared_from_this());
-	//pointLight3->setPosition(XMFLOAT3(0.0f, 1.0f, 4.0f));
+	auto pointLight1 = createActor<PointLight>(shared_from_this());
+	pointLight1->setPosition(XMFLOAT3(0.0f, 1.0f, 0.0f));
+	auto pointLight2 = createActor<PointLight>(shared_from_this());
+	pointLight2->setPosition(XMFLOAT3(2.0f, 1.0f, 2.0f));
+	auto pointLight3 = createActor<PointLight>(shared_from_this());
+	pointLight3->setPosition(XMFLOAT3(0.0f, 1.0f, 4.0f));
 
 }
 
@@ -163,15 +163,26 @@ void Game::removeSprite(const std::shared_ptr<SpriteComponent>& sprite)
 	}
 }
 
-void Game::addLight(const std::shared_ptr<LightComponent>& light)
+void Game::addPointLight(const std::shared_ptr<PointLightComponent>& light)
 {
-	if (mLights.size() > MAX_LIGHT_NUM) return;
-	mLights.push_back(light);
+	if (mPointLights.size() > MAX_LIGHT_NUM) return;
+	mPointLights.push_back(light);
 }
 
-void Game::removeLight(const std::shared_ptr<LightComponent>& light)
+void Game::removePointLight(const std::shared_ptr<PointLightComponent>& light)
 {
-	mLights.erase(std::remove(mLights.begin(), mLights.end(), light), mLights.end());
+	mPointLights.erase(std::remove(mPointLights.begin(), mPointLights.end(), light), mPointLights.end());
+}
+
+void Game::addSpotLight(const std::shared_ptr<SpotLightComponent>& light)
+{
+	if (mSpotLights.size() > MAX_LIGHT_NUM) return;
+	mSpotLights.push_back(light);
+}
+
+void Game::removeSpotLight(const std::shared_ptr<SpotLightComponent>& light)
+{
+	mSpotLights.erase(std::remove(mSpotLights.begin(), mSpotLights.end(), light), mSpotLights.end());
 }
 
 std::shared_ptr<Graphic> Game::getGraphic()
@@ -200,7 +211,8 @@ void Game::update()
 	}
 	mUpdatingActors = false;
 
-	mGraphic->updateLightPos(mLights);
+	mGraphic->updatePointLight(mPointLights);
+	mGraphic->updateSpotLight(mSpotLights);
 
 	for (auto pending : mPendingActors) {
 		mActors.emplace_back(pending);

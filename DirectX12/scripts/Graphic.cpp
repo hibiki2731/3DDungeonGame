@@ -1,7 +1,8 @@
 #include "Graphic.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#include "LightComponent.h"
+#include "PointLightComponent.h"
+#include "SpotLightComponent.h"
 
 Graphic::Graphic()
 {
@@ -791,7 +792,7 @@ void Graphic::createSharedConstBuf0()
 	createSharedCbvTbvHeap(SharedCb0vHeap, 1);
 	createConstantBufferView(ConstBuf0, SharedCb0vHeap->GetCPUDescriptorHandleForHeapStart());
 
-	for (int i = 0; i < MAX_LIGHT_NUM; i++) CB0Data->pointLightsPos[i] = XMFLOAT4(0, 0, 0, 0);
+	for (int i = 0; i < MAX_LIGHT_NUM; i++) CB0Data->pointLights[i].position = XMFLOAT4(0, 0, 0, 0);
 }
 
 void Graphic::updateViewProj(XMMATRIX& viewProj)
@@ -799,14 +800,29 @@ void Graphic::updateViewProj(XMMATRIX& viewProj)
 	CB0Data->viewProj = viewProj;
 }
 
-//void Graphic::updateLightPos(std::vector<Light> &lights)
-//{
-//	CB0Data->lights = lights;
-//}
-
-void Graphic::updateLightPos(std::vector<std::shared_ptr<LightComponent>>& lights)
+void Graphic::updatePointLight(std::vector<std::shared_ptr<PointLightComponent>>& lights)
 {
-	for(int i = 0; i < lights.size(); i ++) CB0Data->pointLightsPos[i] = lights[i]->getPosition();
+	for (int i = 0; i < lights.size(); i++) {
+		CB0Data->pointLights[i].position = lights[i]->getPosition();
+		CB0Data->pointLights[i].color = lights[i]->getColor();
+		CB0Data->pointLights[i].setValue.x = lights[i]->getActive();
+		CB0Data->pointLights[i].setValue.y = lights[i]->getIntensity();
+		CB0Data->pointLights[i].setValue.z = lights[i]->getRange();
+	}
+}
+
+void Graphic::updateSpotLight(std::vector<std::shared_ptr<SpotLightComponent>>& lights)
+{
+	for (int i = 0; i < lights.size(); i++) {
+		CB0Data->spotLights[i].position = lights[i]->getPosition();
+		CB0Data->spotLights[i].direction = lights[i]->getDirection();
+		CB0Data->spotLights[i].color = lights[i]->getColor();
+		CB0Data->spotLights[i].setValue.x = lights[i]->getActive();
+		CB0Data->spotLights[i].setValue.y = lights[i]->getIntensity();
+		CB0Data->spotLights[i].setValue.z = lights[i]->getRange();
+		CB0Data->spotLights[i].attAngle.x = lights[i]->getUAngle();
+		CB0Data->spotLights[i].attAngle.y = lights[i]->getPAngle();
+	}
 }
 
 void Graphic::updateCameraPos(XMFLOAT4& cameraPos)

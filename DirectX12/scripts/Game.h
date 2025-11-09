@@ -21,7 +21,8 @@ class Component;
 class RenderComponent;
 class MeshComponent;
 class SpriteComponent;
-class LightComponent;
+class PointLightComponent;
+class SpotLightComponent;
 class Player;
 
 class Game : public std::enable_shared_from_this<Game>{
@@ -43,8 +44,10 @@ public:
 	void removeMesh(const std::shared_ptr<MeshComponent>& mesh);
 	void addSprite(const std::shared_ptr<SpriteComponent>& mesh);
 	void removeSprite(const std::shared_ptr<SpriteComponent>& mesh);
-	void addLight(const std::shared_ptr<LightComponent>& light);
-	void removeLight(const std::shared_ptr<LightComponent>& light);
+	void addPointLight(const std::shared_ptr<PointLightComponent>& light);
+	void removePointLight(const std::shared_ptr<PointLightComponent>& light);
+	void addSpotLight(const std::shared_ptr<SpotLightComponent>& light);
+	void removeSpotLight(const std::shared_ptr<SpotLightComponent>& light);
 
 	//ゲッター
 	std::shared_ptr<Graphic> getGraphic();
@@ -62,7 +65,8 @@ private:
 	std::vector<std::shared_ptr<MeshComponent>> mMeshes;
 	std::vector<std::shared_ptr<SpriteComponent>> mSprites;
 	//ライト配列
-	std::vector<std::shared_ptr<LightComponent>> mLights;
+	std::vector<std::shared_ptr<PointLightComponent>> mPointLights;
+	std::vector<std::shared_ptr<SpotLightComponent>> mSpotLights;
 	//アクター配列
 	std::vector<std::shared_ptr<Actor>> mActors;
 	std::vector<std::shared_ptr<Actor>> mPendingActors;
