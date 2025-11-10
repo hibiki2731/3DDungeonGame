@@ -16,6 +16,7 @@ struct SpotLight
 };
 
 static const int NUM_LIGHTS = 16;
+static const float PI = 3.14159265359;
 
 cbuffer b0 : register(b0)
 {

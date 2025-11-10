@@ -13,19 +13,19 @@ void Camera::initActor()
 	mRotSpeed = 1.0f;
 	mCamera = createComponent<CameraComponent>(shared_from_this());
 	mCamera->setActive(true);
-	auto pointLight = createComponent<PointLightComponent>(shared_from_this());
-	pointLight->setActive(true);
-	pointLight->setColor(XMFLOAT4(1.0f, 0.8f, 0.9f, 1.0f));
-	pointLight->setIntensity(1.0f);
-	pointLight->setRange(2.0f);
+	//auto pointLight = createComponent<PointLightComponent>(shared_from_this());
+	//pointLight->setActive(true);
+	//pointLight->setColor(XMFLOAT4(1.0f, 0.8f, 0.9f, 1.0f));
+	//pointLight->setIntensity(1.0f);
+	//pointLight->setRange(2.0f);
 
 	auto spotLight = createComponent<SpotLightComponent>(shared_from_this());
 	spotLight->setActive(true);
 	spotLight->setColor(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f));
 	spotLight->setIntensity(2.0f);
 	spotLight->setRange(10.0f);
-	spotLight->setUAngle(XMConvertToRadians(10.0f));
-	spotLight->setPAngle(XMConvertToRadians(20.0f));
+	spotLight->setUAngle(XMConvertToRadians(20.0f));
+	spotLight->setPAngle(XMConvertToRadians(40.0f));
 
 }
 

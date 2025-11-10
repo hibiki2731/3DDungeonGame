@@ -72,6 +72,30 @@ float3 evaluateSpotLight(
     return lightColor * lightIntensity * att;
 }
 
+float3 evaluateColor
+(
+    float3 lightVector,  //ライトベクトル
+    float3 ViewVector,  //視線ベクトル
+    float3 normalVector, //法線ベクトル
+    float3 diffuseColor,
+    float3 specularColor,
+    float shininess,
+    float3 brightness
+)
+{
+    float3 color = float3(0, 0, 0);
+    
+    //diffuse
+    color += (diffuseColor * brightness) * dot(normalVector, normalize(lightVector)) * 0.8f;
+    
+    //specular
+    float3 halfWayVector = normalize(normalize(lightVector) + normalize(ViewVector));
+    color += specularColor * brightness * pow(dot(halfWayVector, normalVector), shininess) * 0.3f;
+    
+    return color;
+
+}
+
 
 float4 main(
 	in float4 i_svpos : SV_POSITION,
@@ -81,38 +105,31 @@ float4 main(
 	) : SV_TARGET
 {
     float att = 0.0f;
-    float4 outputLight = float4(0, 0, 0, 0);
-    float4 diffuse = float4(0, 0, 0, 0);
-    float4 specular = float4(0, 0, 0, 0);
+    float3 brightness = float3(0, 0, 0);
+    float3 outputColor = float3(0, 0, 0);
     
     //ポイントライト
     for (int i = 0; i < NUM_LIGHTS; i++)
     {
         if (pointLights[i].setValue.x == 1)
-            outputLight += float4(evaluatePointLight(i_wpos.xyz, pointLights[i].position.xyz, pointLights[i].color.xyz, pointLights[i].setValue.y, 1.0f / (pointLights[i].setValue.z * pointLights[i].setValue.z)), 1.0f);
-        else
-            continue;
+        {
+            brightness = evaluatePointLight(i_wpos.xyz, pointLights[i].position.xyz, pointLights[i].color.xyz, pointLights[i].setValue.y, 1.0f / (pointLights[i].setValue.z * pointLights[i].setValue.z));
+            outputColor += evaluateColor(pointLights[i].position.xyz - i_wpos.xyz, CameraPos.xyz - i_wpos.xyz, i_wnormal.xyz, Diffuse.xyz, Specular.xyz, Specular.w, brightness);
+        }
+        else continue;
     }
     
     //スポットライト
     for (int i = 0; i < NUM_LIGHTS; i++)
     {
         if (spotLights[i].setValue.x == 1)
-            outputLight += float4(evaluateSpotLight(i_wpos.xyz, spotLights[i].position.xyz, 1.0f / (spotLights[i].setValue.z * spotLights[i].setValue.z), spotLights[i].direction.xyz, spotLights[i].color.xyz, spotLights[i].setValue.y, cos(spotLights[i].attAngle.x), cos(spotLights[i].attAngle.y)), 1.0f);
-        else
-            continue;
+        {
+            brightness = evaluateSpotLight(i_wpos.xyz, spotLights[i].position.xyz, 1.0f / (spotLights[i].setValue.z * spotLights[i].setValue.z), spotLights[i].direction.xyz, spotLights[i].color.xyz, spotLights[i].setValue.y, cos(spotLights[i].attAngle.x), cos(spotLights[i].attAngle.y));
+            outputColor += evaluateColor(pointLights[i].position.xyz - i_wpos.xyz, CameraPos.xyz - i_wpos.xyz, i_wnormal.xyz, Diffuse.xyz, Specular.xyz, Specular.w, brightness);
+
+        }
+        else continue;
     }
     
-    ////拡散反射
-    //    float brightness = max(0, dot(i_wnormal, normalize(lightdir)));
-    //    diffuse = saturate(diffuse + saturate(float4(Ambient.xyz + Diffuse.xyz * brightness / (lightdist * lightdist) * 3.0f, Diffuse.a)));
-    
-    ////鏡面反射
-    //    float4 reflectlight = reflect(normalize(lightdir), i_wnormal);
-    //    float4 viewvec = normalize(i_wpos - CameraPos);
-    //    float3 specularpower = pow(max(0, dot(reflectlight, viewvec)), 10.0f);
-    //    specular = min(0.8, specular + float4(specularpower, 1.0f) * Specular / (lightdist * lightdist) * 3.0f);
-    //}
-    
-    return Texture.Sample(Sampler, i_uv) * outputLight;
+    return Texture.Sample(Sampler, i_uv) * float4(outputColor, 1.0f);
 }
