@@ -97,7 +97,7 @@ void MeshComponent::create(const char* filename)
 
 
 			//コンスタントバッファ２をつくる
-			Hr = mGraphic->createBuf(mGraphic->alignedSize(sizeof(CB2)), Parts[k].ConstBuf2);
+			Hr = mGraphic->createBuf(mGraphic->alignedSize(sizeof(MaterialConstBuf)), Parts[k].ConstBuf2);
 			assert(SUCCEEDED(Hr));
 
 			//マップして更新。unmapしない。

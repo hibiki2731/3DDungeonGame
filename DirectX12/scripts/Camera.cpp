@@ -4,7 +4,10 @@
 #include "SpotLightComponent.h"
 #include "Math.h"
 #include "timer.h"
+#include "TextComponent.h"
 #include <windows.h>
+#include "Game.h"
+#include "Graphic.h"
 
 void Camera::initActor()
 {
@@ -13,11 +16,6 @@ void Camera::initActor()
 	mRotSpeed = 1.0f;
 	mCamera = createComponent<CameraComponent>(shared_from_this());
 	mCamera->setActive(true);
-	//auto pointLight = createComponent<PointLightComponent>(shared_from_this());
-	//pointLight->setActive(true);
-	//pointLight->setColor(XMFLOAT4(1.0f, 0.8f, 0.9f, 1.0f));
-	//pointLight->setIntensity(1.0f);
-	//pointLight->setRange(2.0f);
 
 	auto spotLight = createComponent<SpotLightComponent>(shared_from_this());
 	spotLight->setActive(true);
@@ -26,6 +24,13 @@ void Camera::initActor()
 	spotLight->setRange(10.0f);
 	spotLight->setUAngle(XMConvertToRadians(20.0f));
 	spotLight->setPAngle(XMConvertToRadians(40.0f));
+
+	auto text = createComponent<TextComponent>(shared_from_this());
+	D2D_SIZE_F rtSize = mGame->getGraphic()->getD2DRenderTarget()->GetSize();
+	text->setBaseLine(rtSize.width / 2.0f, rtSize.height / 2.0f);
+	text->setFontSize(64);
+	text->setText(L"abcdefghijjj\njjjjklm\nnopqrstuvwxyz!?\n‚ ‚¢‚¤‚¦‚¨‚©‚«‚­‚¯‚±");
+	text->showText();
 
 }
 

@@ -32,7 +32,7 @@ private:
     ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
     //コンスタントバッファ1(World Matrix)
-    CB1* Cb1;
+    World3DConstBuf* Cb1;
     ComPtr<ID3D12Resource> ConstBuf1;
     ComPtr<ID3D12DescriptorHeap> Cb1vHeap;//全パーツでシェアする
 
@@ -44,7 +44,7 @@ private:
         ComPtr<ID3D12Resource> VertexBuf;
         D3D12_VERTEX_BUFFER_VIEW VertexBufView;
         //コンスタントバッファ2(マテリアル)
-        CB2* Cb2;//マップしたアドレスを入れる
+        MaterialConstBuf* Cb2;//マップしたアドレスを入れる
         ComPtr<ID3D12Resource> ConstBuf2;
         //テクスチャバッファ
         ComPtr<ID3D12Resource> TextureBuf;

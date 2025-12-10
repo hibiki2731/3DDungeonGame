@@ -66,9 +66,6 @@
     <ClCompile Include="scripts\PointLight.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\LightComponent.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="scripts\RenderComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -79,6 +76,18 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\RockWall.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\FontTextComponent.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\PointLightComponent.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\SpotLightComponent.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\TextComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -98,7 +107,7 @@
     <ClInclude Include="scripts\Actor.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Buffer.h">
+    <ClInclude Include="scripts\Definition.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\Game.h">
@@ -137,9 +146,6 @@
     <ClInclude Include="scripts\PointLight.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\LightComponent.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="scripts\RenderComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -150,6 +156,18 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\RockWall.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\FontTextComponent.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\PointLightComponent.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\SpotLightComponent.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\TextComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -164,6 +182,12 @@
       <Filter>hlsl</Filter>
     </FxCompile>
     <FxCompile Include="scripts\2DVertexShader.hlsl">
+      <Filter>hlsl</Filter>
+    </FxCompile>
+    <FxCompile Include="scripts\FontPixelShader.hlsl">
+      <Filter>hlsl</Filter>
+    </FxCompile>
+    <FxCompile Include="scripts\FontVertexShader.hlsl">
       <Filter>hlsl</Filter>
     </FxCompile>
   </ItemGroup>
