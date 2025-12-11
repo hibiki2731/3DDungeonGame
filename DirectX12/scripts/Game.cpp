@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "UI.h"
 #include "Camera.h"
+#include "MessageWindow.h"
 #include "MeshComponent.h"
 #include "SpriteComponent.h"
 #include "RenderComponent.h"
@@ -10,6 +11,7 @@
 #include "PointLight.h"
 #include "RockWall.h"
 #include "TextComponent.h"
+
 
 
 
@@ -42,6 +44,7 @@ void Game::init() {
 	mGraphic->init();
 	mGraphic->clearColor(0.25f, 0.5f, 0.9f);
 
+	//カメラ作成
 	std::shared_ptr<Camera> camera = createActor<Camera>(shared_from_this());
 
 
@@ -77,7 +80,8 @@ void Game::init() {
 	//タイマー初期化
 	initDeltaTime();
 
-	//std::shared_ptr<Player> player = createActor<Player>(shared_from_this());
+	//アクター作成例
+	auto messageWindow = createActor<MessageWindow>(shared_from_this());
 	auto wall = createActor<RockWall>(shared_from_this());
 	auto wall1 = createActor<RockWall>(shared_from_this());
 	auto floor = createActor<RockFloor>(shared_from_this());

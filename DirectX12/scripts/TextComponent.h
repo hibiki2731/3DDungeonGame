@@ -17,7 +17,7 @@ public:
 	//セッター
 	void setText(const std::wstring& text);
 	void setBaseLine(float x, float y);
-	void setFontSize(UINT size);
+	void setFontSize(FLOAT size);
 
 	//ゲッター
 	bool getIsActive();
@@ -32,7 +32,7 @@ private:
 
 	float mBaseLineX;
 	float mBaseLineY;
-	UINT mFontSize;
+	FLOAT mFontSize;
 	const WCHAR* mFontName;
 	D2D1_RECT_F mTextRect;
 

@@ -87,7 +87,7 @@ void TextComponent::setBaseLine(float x, float y)
 	mBaseLineY = y;
 }
 
-void TextComponent::setFontSize(UINT size)
+void TextComponent::setFontSize(FLOAT size)
 {
 	mFontSize = size;
 }
