@@ -5,6 +5,8 @@
 #include "Math.h"
 #include "timer.h"
 #include <windows.h>
+#include "Game.h"
+#include "Graphic.h"
 
 void Camera::initActor()
 {
@@ -13,11 +15,6 @@ void Camera::initActor()
 	mRotSpeed = 1.0f;
 	mCamera = createComponent<CameraComponent>(shared_from_this());
 	mCamera->setActive(true);
-	//auto pointLight = createComponent<PointLightComponent>(shared_from_this());
-	//pointLight->setActive(true);
-	//pointLight->setColor(XMFLOAT4(1.0f, 0.8f, 0.9f, 1.0f));
-	//pointLight->setIntensity(1.0f);
-	//pointLight->setRange(2.0f);
 
 	auto spotLight = createComponent<SpotLightComponent>(shared_from_this());
 	spotLight->setActive(true);

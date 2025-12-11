@@ -25,29 +25,34 @@ struct SpotLightData {
 
 };
 
-//コンスタントバッファ０-----------------------------------------------------------------
-struct CB0 {
-    XMMATRIX viewProj;
-    XMFLOAT4 cameraPos;
-    PointLightData pointLights[MAX_LIGHT_NUM];
-	SpotLightData spotLights[MAX_LIGHT_NUM];
+//3D用バッファ
+struct Base3DConstBuf {
+	XMMATRIX viewProj;  //ビュー射影行列
+	XMFLOAT4 cameraPos; //xyz:カメラ位置、w:未使用
+	PointLightData pointLights[MAX_LIGHT_NUM];  //ポイントライト配列
+	SpotLightData spotLights[MAX_LIGHT_NUM];  //スポットライト配列
 };
 
-//１つのメッシュに１つのCB1
-struct CB1 {
-    XMMATRIX world;
+//3Dオブジェクトのワールド行列
+struct World3DConstBuf {
+	XMMATRIX world;  //ワールド行列
 };
 
-//１つのメッシュに複数のCB2
-struct CB2 {
+//メッシュごとのマテリアル情報
+struct MaterialConstBuf {
     XMFLOAT4 ambient;
     XMFLOAT4 diffuse;
-
     XMFLOAT4 specular;
 };
 
 //2D用バッファ
-struct CB3 {
+struct SpriteConstBuf {
 	XMMATRIX world;
 	XMFLOAT4 rect; //xy:位置、zw:幅高さ
+};
+
+//フォント用バッファ
+struct FontConstBuffer {
+	XMMATRIX world;
+    XMFLOAT4 effect; //x:色
 };

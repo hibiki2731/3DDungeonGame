@@ -7,7 +7,7 @@
 
 #include "input.h"
 #include "BIN_FILE12.h"
-#include "Buffer.h"
+#include "Definition.h"
 #include "FBXConverter.h"
 #include "timer.h"
 #include "Graphic.h"
@@ -24,6 +24,7 @@ class SpriteComponent;
 class PointLightComponent;
 class SpotLightComponent;
 class Player;
+class TextComponent;
 
 class Game : public std::enable_shared_from_this<Game>{
 public:
@@ -48,6 +49,8 @@ public:
 	void removePointLight(const std::shared_ptr<PointLightComponent>& light);
 	void addSpotLight(const std::shared_ptr<SpotLightComponent>& light);
 	void removeSpotLight(const std::shared_ptr<SpotLightComponent>& light);
+	void addText(const std::shared_ptr<TextComponent>& text);
+	void removeText(const std::shared_ptr<TextComponent>& text);
 
 	//ゲッター
 	std::shared_ptr<Graphic> getGraphic();
@@ -64,6 +67,8 @@ private:
 	//メッシュ配列
 	std::vector<std::shared_ptr<MeshComponent>> mMeshes;
 	std::vector<std::shared_ptr<SpriteComponent>> mSprites;
+	//テキスト配列
+	std::vector<std::shared_ptr<TextComponent>> mTexts;
 	//ライト配列
 	std::vector<std::shared_ptr<PointLightComponent>> mPointLights;
 	std::vector<std::shared_ptr<SpotLightComponent>> mSpotLights;

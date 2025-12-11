@@ -1,13 +1,21 @@
 #pragma once
 #pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "dxgi.lib")
+#pragma comment(lib, "dwrite.lib")
 #include <DirectXMath.h>
 #include <d3d12.h>
+#include <d3d11on12.h>
+#include <d2d1.h>
+#include <d2d1_3.h>
 #include <dxgi1_6.h>
+#include <dwrite.h>
 #include <wrl/client.h>
 #include <vector>
-#include "Buffer.h"
+#include "Definition.h"
 #include "BIN_FILE12.h"
+#include <winuser.h>
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
@@ -24,8 +32,8 @@ class Graphic
 {
 public:
 	enum STATE {
-		RENDER3D,
-		RENDER2D
+		RENDER_3D,
+		RENDER_2D,
 	};
 
 	Graphic();
@@ -48,12 +56,14 @@ public:
 	void updateViewProj(XMMATRIX& viewProj);
 	void updatePointLight(std::vector<std::shared_ptr<PointLightComponent>>& lights);
 	void updateSpotLight(std::vector<std::shared_ptr<SpotLightComponent>>& lights);
-	//void updatePointLight(std::vector<Light> &lights);
 	void updateCameraPos(XMFLOAT4& cameraPos);
 	
 	void clearColor(float r, float g, float b);
-	void beginRender();
-	void endRender();
+	void begin3DRender();
+	void end3DRender();
+	void begin2DRender();
+	void end2DRender();
+	void moveToNextFrame();
 
 	bool quit();
 	int msg_wparam();
@@ -64,7 +74,15 @@ public:
 	float getAspect();
 	UINT getCbvTbvIncSize();
 	ComPtr<ID3D12GraphicsCommandList>& getCommandList();
+	ComPtr<ID3D12CommandQueue>& getCommandQueue();
+	ComPtr<ID3D12CommandAllocator>& getCommandAllocator();
 	ComPtr<ID3D12DescriptorHeap>& getCb0vHeap();
+	ComPtr<ID3D12Device>& getDevice();
+	float getClientWidth();
+	float getClientHeight();
+	ComPtr<ID2D1DeviceContext>& getD2DDeviceContext();
+	ComPtr<IDWriteFactory>& getDWriteFactory();
+	ComPtr<ID2D1Bitmap1>& getD2DRenderTarget();
 
 	//Setter
 	void setRenderType(STATE state);
@@ -79,6 +97,7 @@ private:
 	HRESULT createDSbuf();
 	HRESULT createDSbv();
 	HRESULT createPipeline();
+	HRESULT createD2D();
 
 
 	
@@ -101,6 +120,11 @@ private:
 	
 	//デバイス
 	ComPtr<ID3D12Device> Device;
+	ComPtr<ID2D1Device> mD2DDevice;
+	//デバイスコンテキスト
+	ComPtr<ID2D1DeviceContext> mD2DDeviceContext;
+	//ファクトリー
+	ComPtr<ID2D1Factory1> mD2DFactory;
 	//コマンド
 	ComPtr<ID3D12CommandAllocator> CommandAllocator;
 	ComPtr<ID3D12GraphicsCommandList> CommandList;
@@ -133,9 +157,16 @@ private:
 	D3D12_RECT ScissorRect;
 
 	//コンスタントバッファ0
-	CB0* CB0Data;
+	Base3DConstBuf* CB0Data;
 	ComPtr<ID3D12Resource> ConstBuf0;
 	ComPtr<ID3D12DescriptorHeap> SharedCb0vHeap;
+
+	//2D描画
+	ComPtr<ID3D11On12Device> mD3D11On12Device;
+	ComPtr<ID3D11DeviceContext> mD3D11DeviceContext;
+	ComPtr<IDWriteFactory> mDWriteFactory;
+	ComPtr<ID2D1Bitmap1> mD2DRenderTargets[2];
+	ComPtr<ID3D11Resource> mWrappedBackBuffers[2];
 
 };
 

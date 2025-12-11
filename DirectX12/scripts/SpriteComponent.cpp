@@ -72,9 +72,9 @@ void SpriteComponent::create(const std::string filename)
 		IndexBufView.SizeInBytes = sizeInByte;//全バイト数
 		IndexBufView.Format = DXGI_FORMAT_R16_UINT;//UINT16
 	}
-	//コンスタントバッファ1(World Matrix)
+	//コンスタントバッファ(World Matrix)
 	{
-		//コンスタントバッファ1をつくる
+		//コンスタントバッファをつくる
 		mGraphic->createBuf(mGraphic->alignedSize(sizeof(Cb3)), ConstBuf3);
 		mGraphic->mapBuf((void**)&Cb3, ConstBuf3);
 	}
@@ -112,7 +112,7 @@ void SpriteComponent::draw()
 	//ディスクリプタヒープをＧＰＵにセット
 	UINT numDescriptorHeaps = 1;
 	mCommandList->SetDescriptorHeaps(numDescriptorHeaps, CbvTbvHeap.GetAddressOf());
-	//パーツごとに描画
+
 	//頂点をセット
 	mCommandList->IASetVertexBuffers(0, 1, &VertexBufView);
 

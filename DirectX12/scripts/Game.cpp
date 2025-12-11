@@ -3,12 +3,16 @@
 #include "Player.h"
 #include "UI.h"
 #include "Camera.h"
+#include "MessageWindow.h"
 #include "MeshComponent.h"
 #include "SpriteComponent.h"
 #include "RenderComponent.h"
 #include "PointLightComponent.h"
 #include "PointLight.h"
 #include "RockWall.h"
+#include "TextComponent.h"
+
+
 
 
 Game::Game(){
@@ -40,6 +44,7 @@ void Game::init() {
 	mGraphic->init();
 	mGraphic->clearColor(0.25f, 0.5f, 0.9f);
 
+	//カメラ作成
 	std::shared_ptr<Camera> camera = createActor<Camera>(shared_from_this());
 
 
@@ -75,7 +80,8 @@ void Game::init() {
 	//タイマー初期化
 	initDeltaTime();
 
-	//std::shared_ptr<Player> player = createActor<Player>(shared_from_this());
+	//アクター作成例
+	auto messageWindow = createActor<MessageWindow>(shared_from_this());
 	auto wall = createActor<RockWall>(shared_from_this());
 	auto wall1 = createActor<RockWall>(shared_from_this());
 	auto floor = createActor<RockFloor>(shared_from_this());
@@ -185,6 +191,16 @@ void Game::removeSpotLight(const std::shared_ptr<SpotLightComponent>& light)
 	mSpotLights.erase(std::remove(mSpotLights.begin(), mSpotLights.end(), light), mSpotLights.end());
 }
 
+void Game::addText(const std::shared_ptr<TextComponent>& text)
+{
+	mTexts.emplace_back(text);
+}
+
+void Game::removeText(const std::shared_ptr<TextComponent>& fontText)
+{
+	mTexts.erase(std::remove(mTexts.begin(), mTexts.end(), fontText), mTexts.end());
+}
+
 std::shared_ptr<Graphic> Game::getGraphic()
 {
 	return mGraphic;
@@ -238,17 +254,29 @@ void Game::draw()
 {
 	//描画
 	//3D描画
-	mGraphic->beginRender();
-	mGraphic->setRenderType(Graphic::RENDER3D);
+	mGraphic->begin3DRender();
+	mGraphic->setRenderType(Graphic::RENDER_3D);
 	for (auto& mesh : mMeshes) {
 		mesh->draw();
 	}
 
 	//2D描
-	mGraphic->setRenderType(Graphic::RENDER2D);
+	mGraphic->setRenderType(Graphic::RENDER_2D);
 	for (auto& sprite : mSprites) {
 		sprite->draw();
 	}
-	mGraphic->endRender();
+
+	mGraphic->end3DRender();
+
+	////テキスト描画
+	mGraphic->begin2DRender();
+	for (auto& text : mTexts) {
+		text->draw();
+	}
+
+	mGraphic->end2DRender();
+
+	mGraphic->moveToNextFrame();
+
 
 }

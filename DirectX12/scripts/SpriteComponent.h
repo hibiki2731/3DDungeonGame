@@ -34,9 +34,8 @@ protected:
     ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
     //コンスタントバッファ1(World Matrix)
-    CB3* Cb3;
+    SpriteConstBuf* Cb3;
     ComPtr<ID3D12Resource> ConstBuf3;
-    ComPtr<ID3D12DescriptorHeap> Cb1vHeap;//全パーツでシェアする
 
     //頂点バッファ
     ComPtr<ID3D12Resource> VertexBuf;
