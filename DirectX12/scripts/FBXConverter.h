@@ -3,6 +3,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include "Math.h"
 
 class FBXConverter
 {
@@ -24,7 +25,7 @@ private:
 
 	//ÉÅÉbÉVÉÖÇÃLoad
 	int Idx0, Idx1, Idx2;
-	void LoadPositions(FbxMesh* mesh, int k);
+	void LoadPosAndNorm(FbxMesh* mesh, int k);
 	void LoadNormals(FbxMesh* mesh, int k);
 	void LoadTexcoods(FbxMesh* mesh, int k);
 	void LoadIndices(FbxMesh* mesh, int k);

@@ -31,16 +31,16 @@ void Camera::inputActor()
 
 
 	if (GetAsyncKeyState('A')) {
-		mPosition = mPosition + rotateY(normalZ, mRotation.y + PI / 2.0f) * mMoveSpeed * deltaTime;
+		mPosition = mPosition + Math::rotateY(normalZ, mRotation.y + PI / 2.0f) * mMoveSpeed * deltaTime;
 	}
 	if (GetAsyncKeyState('D')) {
-		mPosition = mPosition + rotateY(normalZ,  mRotation.y - PI/2.0f) * mMoveSpeed * deltaTime;
+		mPosition = mPosition + Math::rotateY(normalZ,  mRotation.y - PI/2.0f) * mMoveSpeed * deltaTime;
 	}
 	if (GetAsyncKeyState('W')) {
-		mPosition = mPosition + rotateY(normalZ, mRotation.y) * mMoveSpeed * deltaTime;
+		mPosition = mPosition + Math::rotateY(normalZ, mRotation.y) * mMoveSpeed * deltaTime;
 	}
 	if (GetAsyncKeyState('S')) {
-		mPosition = mPosition - rotateY(normalZ, mRotation.y) * mMoveSpeed * deltaTime;
+		mPosition = mPosition - Math::rotateY(normalZ, mRotation.y) * mMoveSpeed * deltaTime;
 	}
 	if (GetAsyncKeyState(VK_UP)) {
 		mRotation = mRotation - XMFLOAT3(mRotSpeed * deltaTime, 0, 0);

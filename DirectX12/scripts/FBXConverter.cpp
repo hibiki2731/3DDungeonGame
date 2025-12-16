@@ -53,8 +53,7 @@ void FBXConverter::fbxToTxt(const char* fbxFilename, const char* txtFilename, fl
 	Parts = new PARTS[NumParts];
 	for (int k = 0; k < NumParts; k++) {
 		auto* mesh = fbx_scene->GetSrcObject<FbxMesh>(k);
-		LoadPositions(mesh, k);
-		LoadNormals(mesh, k);
+		LoadPosAndNorm(mesh, k);
 		LoadTexcoods(mesh, k);
 		LoadIndices(mesh, k);
 		LoadMaterialName(mesh, k);
@@ -171,22 +170,50 @@ void FBXConverter::LoadMaterial(FbxSurfaceMaterial* material) {
 }
 
 //メッシュ読み込み
-void FBXConverter::LoadPositions(FbxMesh* mesh, int k) {
-	//頂点座標の取得
+void FBXConverter::LoadPosAndNorm(FbxMesh* mesh, int k) {
 	FbxVector4* positions = mesh->GetControlPoints();
+
+	FbxNode* node = mesh->GetNode();
+	
+	//頂点座標の取得
+	FbxVector4 translation = Math::scale(node->LclTranslation.Get(), FbxVector4(0.01, 0.01, 0.01, 1.0)); //100倍した値で返ってくるので、0.01倍する
+	FbxVector4 preTrans = translation;
+	FbxVector4 rotation = Math::scale(node->LclRotation.Get(), FbxVector4(PI / 180, PI / 180, PI / 180, 1.0)); //度数で返ってくるのでラジアンへ変換
+	FbxVector4 scale = Math::scale(node->LclScaling.Get(), FbxVector4(0.01, 0.01, 0.01, 1.0)); //%の値が返ってくるので、0.01倍する
+
 	//インデックスの取得
 	int* indices = mesh->GetPolygonVertices();
 	//頂点数の取得
 	int polygonVertexCount = mesh->GetPolygonVertexCount();
 	//メンバのfloat配列確保
 	Parts[k].Positions.reserve(polygonVertexCount * 3);
+
 	//頂点座標をメンバに保存
 	for (int i = 0; i < polygonVertexCount; i++) {
 		int index = indices[i];
-		Parts[k].Positions.emplace_back((float)positions[index][Idx0]);
-		Parts[k].Positions.emplace_back((float)positions[index][Idx1]);
-		Parts[k].Positions.emplace_back((float)positions[index][Idx2]);
+		FbxVector4 position = positions[index];
+
+		//座標変換
+		position = Math::translate(Math::rotateZ(Math::rotateY(Math::rotateX(Math::scale(positions[index], scale), rotation[0]), rotation[1]), rotation[2]), translation);
+
+		Parts[k].Positions.emplace_back((float)(position[Idx0]));
+		Parts[k].Positions.emplace_back((float)(position[Idx1]));
+		Parts[k].Positions.emplace_back((float)(-1 * position[Idx2]));	//左手系に変換
 	}
+
+
+	FbxArray<FbxVector4> normals;
+	mesh->GetPolygonVertexNormals(normals);
+	Parts[k].Normals.reserve(normals.Size() * 3);
+	for (int i = 0; i < normals.Size(); i++) {
+		//座標変換
+		normals[i] = Math::normalize(Math::translate(Math::rotateZ(Math::rotateY(Math::rotateX(Math::scale(normals[i], scale), rotation[0]), rotation[1]), rotation[2]), translation));
+
+		Parts[k].Normals.emplace_back((float)(normals[i][Idx0]));
+		Parts[k].Normals.emplace_back((float)(normals[i][Idx1]));
+		Parts[k].Normals.emplace_back((float)(-1 * normals[i][Idx2]));	//左手系に変換
+	}
+
 }
 
 void FBXConverter::LoadNormals(FbxMesh* mesh, int k) {

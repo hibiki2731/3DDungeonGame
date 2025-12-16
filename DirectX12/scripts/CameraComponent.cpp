@@ -20,9 +20,9 @@ void CameraComponent::updateComponent()
 {
 	if (isActive) {
 		mFront = { 0.0f, 0.0f, 1.0f };
-		mFront = rotateX(mFront, mOwner->getRotation().x);
-		mFront = rotateY(mFront, mOwner->getRotation().y);
-		mFront = rotateZ(mFront, mOwner->getRotation().z);
+		mFront = Math::rotateX(mFront, mOwner->getRotation().x);
+		mFront = Math::rotateY(mFront, mOwner->getRotation().y);
+		mFront = Math::rotateZ(mFront, mOwner->getRotation().z);
 		mFocus = mOwner->getPosition() + mFront;
 		XMFLOAT3 eye = mOwner->getPosition();
 

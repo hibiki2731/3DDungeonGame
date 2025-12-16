@@ -86,11 +86,11 @@ float3 evaluateColor
     float3 color = float3(0, 0, 0);
     
     //diffuse
-    color += (diffuseColor * brightness) * dot(normalVector, normalize(lightVector)) * 0.8f;
+    color += (diffuseColor * brightness) * max(0, dot(normalVector, normalize(lightVector))) * 0.8f;
     
     //specular
     float3 halfWayVector = normalize(normalize(lightVector) + normalize(ViewVector));
-    color += specularColor * brightness * pow(dot(halfWayVector, normalVector), shininess) * 0.3f;
+    color += specularColor * brightness * pow(max(0, dot(halfWayVector, normalVector)), shininess) * 0.3f;
     
     return color;
 
@@ -120,12 +120,12 @@ float4 main(
     }
     
     //スポットライト
-    for (int i = 0; i < NUM_LIGHTS; i++)
+    for (int j = 0; j < NUM_LIGHTS; j++)
     {
-        if (spotLights[i].setValue.x == 1)
+        if (spotLights[j].setValue.x == 1)
         {
-            brightness = evaluateSpotLight(i_wpos.xyz, spotLights[i].position.xyz, 1.0f / (spotLights[i].setValue.z * spotLights[i].setValue.z), spotLights[i].direction.xyz, spotLights[i].color.xyz, spotLights[i].setValue.y, cos(spotLights[i].attAngle.x), cos(spotLights[i].attAngle.y));
-            outputColor += evaluateColor(pointLights[i].position.xyz - i_wpos.xyz, CameraPos.xyz - i_wpos.xyz, i_wnormal.xyz, Diffuse.xyz, Specular.xyz, Specular.w, brightness);
+            brightness = evaluateSpotLight(i_wpos.xyz, spotLights[j].position.xyz, 1.0f / (spotLights[j].setValue.z * spotLights[j].setValue.z), spotLights[j].direction.xyz, spotLights[j].color.xyz, spotLights[j].setValue.y, cos(spotLights[j].attAngle.x), cos(spotLights[j].attAngle.y));
+            outputColor += evaluateColor(spotLights[j].position.xyz - i_wpos.xyz, CameraPos.xyz - i_wpos.xyz, i_wnormal.xyz, Diffuse.xyz, Specular.xyz, Specular.w, brightness);
 
         }
         else continue;

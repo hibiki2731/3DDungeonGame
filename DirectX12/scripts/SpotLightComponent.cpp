@@ -28,9 +28,9 @@ void SpotLightComponent::updateComponent()
 		mPosition.z = mOwner->getPosition().z;
 		// ライトの向きをオーナーの前方ベクトルに設定
 		XMFLOAT3 forward = { 0.0f, 0.0f, 1.0f }; // オーナーの前方ベクトル
-		forward = rotateX(forward, mOwner->getRotation().x);
-		forward = rotateY(forward, mOwner->getRotation().y);
-		forward = rotateZ(forward, mOwner->getRotation().z);
+		forward = Math::rotateX(forward, mOwner->getRotation().x);
+		forward = Math::rotateY(forward, mOwner->getRotation().y);
+		forward = Math::rotateZ(forward, mOwner->getRotation().z);
 		mDirection.x = forward.x;
 		mDirection.y = forward.y;
 		mDirection.z = forward.z;

@@ -16,10 +16,5 @@ void main(
     i_normal.w = 0;
     o_wnormal = normalize(mul(World, i_normal));
     
-    //float4 lightDir = o_wpos - LightPos;
-    //float lightDist = length(lightDir);
-    //float brightness = dot(normal, normalize(lightDir));
-    //o_diffuse = saturate(float4(Ambient.xyz + Diffuse.xyz * brightness / (lightDist * lightDist) * 3, Diffuse.a));
-    
     o_uv = i_uv;
 }

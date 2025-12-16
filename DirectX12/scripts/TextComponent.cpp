@@ -48,7 +48,7 @@ void TextComponent::showText()
 		mFontSize * (mText.size() / mMaxRow + 1)
 	);
 
-    HRESULT hr = mGraphic->getD2DDeviceContext()->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &mTextBrush);
+    HRESULT hr = mGraphic->getD2DDeviceContext()->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &mTextBrush);
 	assert(SUCCEEDED(hr));
     hr = mGraphic->getDWriteFactory()->CreateTextFormat(
         mFontName,

@@ -10,6 +10,7 @@ void RockWall_side::initActor()
 void RockWall::initActor()
 {
 	auto mesh = createComponent<MeshComponent>(shared_from_this());
+	//mesh->create("assets\\rockObj\\rockWall.txt");
 	mesh->create("assets\\rockObj\\rockWall.txt");
 }
 

@@ -144,6 +144,7 @@ void MeshComponent::draw()
 {
 	//ワールドマトリックス
 	XMMATRIX world = XMMatrixIdentity()
+		* XMMatrixScaling(mOwner->getScale().x, mOwner->getScale().y, mOwner->getScale().z)
 		* XMMatrixRotationX(mOwner->getRotation().x)
 		* XMMatrixRotationY(mOwner->getRotation().y)
 		* XMMatrixRotationZ(mOwner->getRotation().z)

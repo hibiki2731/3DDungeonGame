@@ -198,6 +198,7 @@
     <ClCompile Include="scripts\Player.cpp" />
     <ClCompile Include="scripts\RenderComponent.cpp" />
     <ClCompile Include="scripts\RockWall.cpp" />
+    <ClCompile Include="scripts\Slime.cpp" />
     <ClCompile Include="scripts\SpotLightComponent.cpp" />
     <ClCompile Include="scripts\SpriteComponent.cpp" />
     <ClCompile Include="scripts\TextComponent.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="scripts\Player.h" />
     <ClInclude Include="scripts\RenderComponent.h" />
     <ClInclude Include="scripts\RockWall.h" />
+    <ClInclude Include="scripts\Slime.h" />
     <ClInclude Include="scripts\SpotLightComponent.h" />
     <ClInclude Include="scripts\SpriteComponent.h" />
     <ClInclude Include="scripts\stb_image.h" />

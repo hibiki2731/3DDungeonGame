@@ -11,6 +11,7 @@
 #include "PointLight.h"
 #include "RockWall.h"
 #include "TextComponent.h"
+#include "Slime.h"
 
 
 
@@ -50,19 +51,15 @@ void Game::init() {
 
 
 	const char* fbx[] = { 
-		"assets\\Models\\FBX format\\room-corner.fbx",
-		"assets\\rock_side\\wall_side.fbx",
-		"assets\\desk_refined.fbx",
 		"assets\\rockObj\\rockWall.fbx",
 		"assets\\rockObj\\rockFloor.fbx",
+		"assets\\slime.fbx"
 	};
 
 	const char* text[] = { 
-		"assets\\Models\\FBX format\\room-corner.txt",
-		"assets\\rock_side\\wall_side.txt",
-		"assets\\desk_refined.txt",
 		"assets\\rockObj\\rockWall.txt",
 		"assets\\rockObj\\rockFloor.txt",
+		"assets\\slime.txt"
 	};
 
 #if 1
@@ -71,10 +68,17 @@ void Game::init() {
 	const int fbxNum = _countof(fbx);
 	int i;
 	//フリー素材
-	fbxConverter.fbxToTxt(fbx[0], text[0], 0.005f, 0.005f, 0.005f, 2, 1, 0); //横、縦、奥行
+	//fbxConverter.fbxToTxt(fbx[0], text[0], 0.005f, 0.005f, 0.005f, 2, 1, 0); //横、縦、奥行
 	//blender
-	for (i = 1; i < fbxNum; i++) {
-		fbxConverter.fbxToTxt(fbx[i], text[i], 1.0f, 1.0f, 1.0f, 0, 2, 1); //横、縦、奥行
+	for (i = 0; i < fbxNum; i++) {
+		//if (i == 2) {
+		//	fbxConverter.fbxToTxt(fbx[i], text[i], 0.3f, 0.3f, 0.3f, 0, 2, 1); //横、縦、奥行
+		//	continue;
+		//}
+
+		//fbxConverter.fbxToTxt(fbx[i], text[i], 1.0f, 1.0f, 1.0f, 0, 2, 1); //横、縦、奥行
+		fbxConverter.fbxToTxt(fbx[i], text[i], 1.0f, 1.0f, 1.0f, 0, 1, 2); //横、縦、奥行
+		
 	}
 #endif
 	//タイマー初期化
@@ -82,6 +86,7 @@ void Game::init() {
 
 	//アクター作成例
 	auto messageWindow = createActor<MessageWindow>(shared_from_this());
+	messageWindow->setCamera(camera);
 	auto wall = createActor<RockWall>(shared_from_this());
 	auto wall1 = createActor<RockWall>(shared_from_this());
 	auto floor = createActor<RockFloor>(shared_from_this());
@@ -98,18 +103,47 @@ void Game::init() {
 	auto flor6 = createActor<RockFloor>(shared_from_this());
 	flor6->setPosition(XMFLOAT3(2.0f, 0, 0));
 	auto wall2 = createActor<RockWall>(shared_from_this());
-	wall2->setPosition(XMFLOAT3(0, 0, 4.0f));
-	wall2->setYRot(PI / 2.0f);
-	wall->setYRot(PI / 2.0f);
-	wall1->setPosition(XMFLOAT3(0, 0, 2.0f));
-	wall1->setYRot(PI / 2.0f);
+	//wall2->setPosition(XMFLOAT3(0, 0, 4.0f));
+	//wall2->setYRot(PI);
+	//wall->setYRot(PI);
+	//wall1->setPosition(XMFLOAT3(0, 0, 2.0f));
+	//wall1->setYRot(PI);
+
+	//auto wall3 = createActor<RockWall>(shared_from_this());
+	//wall3->setPosition(XMFLOAT3(2.0f, 0, 0));
+	//auto wall4 = createActor<RockWall>(shared_from_this());
+	//wall4->setPosition(XMFLOAT3(2.0f, 0, 2.0f));
+	//auto wall5 = createActor<RockWall>(shared_from_this());
+	//wall5->setPosition(XMFLOAT3(2.0f, 0, 4.0f));
+
+	//auto wall6 = createActor<RockWall>(shared_from_this());
+	//wall6->setPosition(XMFLOAT3(0, 0, 0));
+	//wall6->setYRot(PI / 2.0f);
+	//auto wall7 = createActor<RockWall>(shared_from_this());
+	//wall7->setPosition(XMFLOAT3(0, 0, 2.0f));
+	//wall7->setYRot(PI / 2.0f);
+	//auto wall8 = createActor<RockWall>(shared_from_this());
+	//wall8->setPosition(XMFLOAT3(0, 0, 4.0f));
+	//wall8->setYRot(PI / 2.0f);
+
+	//auto wall9 = createActor<RockWall>(shared_from_this());
+	//wall9->setPosition(XMFLOAT3(2.0f, 0, 0));
+	//wall9->setYRot(-PI / 2.0f);
+	//auto wall10 = createActor<RockWall>(shared_from_this());
+	//wall10->setPosition(XMFLOAT3(2.0f, 0, 2.0f));
+	//wall10->setYRot(-PI / 2.0f);
+	//auto wall11 = createActor<RockWall>(shared_from_this());
+	//wall11->setPosition(XMFLOAT3(2.0f, 0, 4.0f));
+	//wall11->setYRot(-PI / 2.0f);
 
 	auto pointLight1 = createActor<PointLight>(shared_from_this());
-	pointLight1->setPosition(XMFLOAT3(0.0f, 1.0f, 0.0f));
+	pointLight1->setPosition(XMFLOAT3(0.0f, 2.0f, 0.0f));
 	auto pointLight2 = createActor<PointLight>(shared_from_this());
-	pointLight2->setPosition(XMFLOAT3(2.0f, 1.0f, 2.0f));
+	pointLight2->setPosition(XMFLOAT3(2.0f, 2.0f, 2.0f));
 	auto pointLight3 = createActor<PointLight>(shared_from_this());
-	pointLight3->setPosition(XMFLOAT3(0.0f, 1.0f, 4.0f));
+	pointLight3->setPosition(XMFLOAT3(0.0f, 2.0f, 4.0f));
+	auto slime = createActor<Slime>(shared_from_this());
+	slime->setPosition(XMFLOAT3(0.0f, 0.0f, 3.0f));
 
 }
 
