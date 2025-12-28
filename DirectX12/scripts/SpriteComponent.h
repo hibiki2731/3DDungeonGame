@@ -19,11 +19,18 @@ public:
     virtual void draw();
 
 	//描画範囲のセッター
-    void setRect(const XMFLOAT4& rect);
+	void setPosition(const XMFLOAT2& position);
+	void setScale(const XMFLOAT2& scale);
+    void setSpriteSize(const XMFLOAT2& size);
+	void setBordarSize(const float size);
 
 protected:
     //描画範囲
-	XMFLOAT4 mRect;//xy:位置、zw:幅高さ
+    XMFLOAT2 mPosition;
+	XMFLOAT2 mScale;
+    XMFLOAT2 mSpriteSize;
+	XMFLOAT2 mTextureSize;
+	float mBordarSize;
 
     //デバック用
     HRESULT Hr;

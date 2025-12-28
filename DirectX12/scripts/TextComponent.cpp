@@ -22,6 +22,7 @@ void TextComponent::initComponent()
 		mMaxRow * mFontSize,
 		mFontSize
 	);
+	mTextColor = D2D1::ColorF(D2D1::ColorF::White);
 	mText = L"";
 
 	mOwner->getGame()->addText(std::dynamic_pointer_cast<TextComponent>(shared_from_this()));
@@ -48,7 +49,7 @@ void TextComponent::showText()
 		mFontSize * (mText.size() / mMaxRow + 1)
 	);
 
-    HRESULT hr = mGraphic->getD2DDeviceContext()->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White), &mTextBrush);
+    HRESULT hr = mGraphic->getD2DDeviceContext()->CreateSolidColorBrush(mTextColor, &mTextBrush);
 	assert(SUCCEEDED(hr));
     hr = mGraphic->getDWriteFactory()->CreateTextFormat(
         mFontName,
@@ -90,6 +91,11 @@ void TextComponent::setBaseLine(float x, float y)
 void TextComponent::setFontSize(FLOAT size)
 {
 	mFontSize = size;
+}
+
+void TextComponent::setTextColor(const D2D1::ColorF& color)
+{
+	mTextColor = color;
 }
 
 bool TextComponent::getIsActive()

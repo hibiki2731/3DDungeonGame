@@ -18,11 +18,13 @@ public:
 	void setText(const std::wstring& text);
 	void setBaseLine(float x, float y);
 	void setFontSize(FLOAT size);
+	void setTextColor(const D2D1::ColorF& color);
 
 	//ÉQÉbÉ^Å[
 	bool getIsActive();
 
 private:
+	D2D1::ColorF mTextColor = D2D1::ColorF(0, 0, 0);
 	std::shared_ptr<Graphic> mGraphic;
 	ComPtr<ID2D1SolidColorBrush> mTextBrush;
 	ComPtr<IDWriteTextFormat> mTextFormat;

@@ -48,7 +48,11 @@ struct MaterialConstBuf {
 //2D用バッファ
 struct SpriteConstBuf {
 	XMMATRIX world;
-	XMFLOAT4 rect; //xy:位置、zw:幅高さ
+	XMFLOAT2 windowSize; //xy:ウィンドウサイズ
+	XMFLOAT2 spriteSize; //xy:サイズ (px)
+	XMFLOAT2 textureSize; //xy:テクスチャサイズ (px)
+	float bordarSize; //9スライス用ボーダーサイズ (px)
+	float padding; //パディング
 };
 
 //フォント用バッファ

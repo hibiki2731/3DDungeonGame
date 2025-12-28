@@ -1,6 +1,10 @@
 #include "MessageWindow.h"
 #include "TextComponent.h"
+#include "SpriteComponent.h"
+#include "Graphic.h"
 #include "Camera.h"
+#include "Game.h"
+
 
 void MessageWindow::initActor()
 {
@@ -8,9 +12,16 @@ void MessageWindow::initActor()
 	mMessage = message;
 	mText = createComponent<TextComponent>(shared_from_this());
 	mText->setText(mMessage);
-	mText->setBaseLine(100.0f, 400.0f);
+	mText->setBaseLine(100.0f, 10.0f);
 	mText->setFontSize(24.0f);
+	mText->setTextColor(D2D1::ColorF(D2D1::ColorF::Black));
 	mText->showText();
+
+	auto window = createComponent<SpriteComponent>(shared_from_this());
+	window->create("assets\\Default\\Panel\\panel-001.png");
+	window->setBordarSize(12.0f);
+	window->setSpriteSize(XMFLOAT2(600.0f, 50.0f));
+
 }
 
 void MessageWindow::inputActor()

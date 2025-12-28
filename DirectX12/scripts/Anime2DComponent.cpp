@@ -99,8 +99,6 @@ void Anime2DComponent::draw()
 		;
 	Cb3->world = world;
 
-	Cb3->rect = mRect;
-
 	//ディスクリプタヒープをＧＰＵにセット
 	UINT numDescriptorHeaps = 1;
 	mCommandList->SetDescriptorHeaps(numDescriptorHeaps, CbvTbvHeap.GetAddressOf());

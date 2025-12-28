@@ -831,6 +831,141 @@ HRESULT Graphic::createShaderResource(const std::string& filename, ComPtr<ID3D12
 	return hr;
 }
 
+XMFLOAT2 Graphic::createShaderResourceGetSize(const std::string& filename, ComPtr<ID3D12Resource>& shaderResource)
+{
+
+	//ファイルを読み込み、生データを取り出す
+	unsigned char* pixels = nullptr;
+	int width = 0, height = 0, bytePerPixel = 4;
+	pixels = stbi_load(filename.c_str(), &width, &height, nullptr, bytePerPixel);
+	assert(pixels != nullptr);
+
+	//１行のピッチを256の倍数にしておく(バッファサイズは256の倍数でなければいけない)
+	const UINT64 alignedRowPitch = (width * bytePerPixel + 0xff) & ~0xff;
+
+	//アップロード用中間バッファをつくり、生データをコピーしておく
+	ComPtr<ID3D12Resource> uploadBuf;
+	{
+		//テクスチャではなくフツーのバッファとしてつくる
+		D3D12_HEAP_PROPERTIES prop = {};
+		prop.Type = D3D12_HEAP_TYPE_UPLOAD;
+		prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+		prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+		prop.CreationNodeMask = 1;
+		prop.VisibleNodeMask = 1;
+		D3D12_RESOURCE_DESC desc = {};
+		desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+		desc.Alignment = 0;
+		desc.Width = alignedRowPitch * height;
+		desc.Height = 1;
+		desc.DepthOrArraySize = 1;
+		desc.MipLevels = 1;
+		desc.Format = DXGI_FORMAT_UNKNOWN;
+		desc.SampleDesc = { 1,0 };//通常テクスチャなのでアンチェリしない
+		desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+		desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+		HRESULT hr = Device->CreateCommittedResource(
+			&prop,
+			D3D12_HEAP_FLAG_NONE,
+			&desc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(&uploadBuf));
+		assert(SUCCEEDED(hr));
+
+		//生データをuploadbuffに一旦コピーします
+		uint8_t* mapBuf = nullptr;
+		hr = uploadBuf->Map(0, nullptr, (void**)&mapBuf);//マップ
+		auto srcAddress = pixels;
+		auto originalRowPitch = width * bytePerPixel;
+		for (int y = 0; y < height; ++y) {
+			memcpy(mapBuf, srcAddress, originalRowPitch);
+			//1行ごとの辻褄を合わせてやる
+			srcAddress += originalRowPitch;
+			mapBuf += alignedRowPitch;
+		}
+		uploadBuf->Unmap(0, nullptr);//アンマップ
+	}
+
+	//そして、最終コピー先であるテクスチャバッファ_bを作る
+	{
+		D3D12_HEAP_PROPERTIES prop = {};
+		prop.Type = D3D12_HEAP_TYPE_DEFAULT;
+		prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+		prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+		prop.CreationNodeMask = 1;
+		prop.VisibleNodeMask = 1;
+		D3D12_RESOURCE_DESC desc = {};
+		desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+		desc.Alignment = 0;
+		desc.Width = width;
+		desc.Height = height;
+		desc.DepthOrArraySize = 1;
+		desc.MipLevels = 1;
+		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		desc.SampleDesc.Count = 1;
+		desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+		desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+		HRESULT hr = Device->CreateCommittedResource(
+			&prop,
+			D3D12_HEAP_FLAG_NONE,
+			&desc,
+			D3D12_RESOURCE_STATE_COPY_DEST,
+			nullptr,
+			IID_PPV_ARGS(shaderResource.ReleaseAndGetAddressOf()));
+		assert(SUCCEEDED(hr));
+	}
+	//uploadBufからtextureBufへコピーする長い道のりが始まります
+
+	//まずコピー元ロケーションの準備・フットプリント指定
+	D3D12_TEXTURE_COPY_LOCATION src = {};
+	src.pResource = uploadBuf.Get();
+	src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+	src.PlacedFootprint.Footprint.Width = static_cast<UINT>(width);
+	src.PlacedFootprint.Footprint.Height = static_cast<UINT>(height);
+	src.PlacedFootprint.Footprint.Depth = static_cast<UINT>(1);
+	src.PlacedFootprint.Footprint.RowPitch = static_cast<UINT>(alignedRowPitch);
+	src.PlacedFootprint.Footprint.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	//コピー先ロケーションの準備・サブリソースインデックス指定
+	D3D12_TEXTURE_COPY_LOCATION dst = {};
+	dst.pResource = shaderResource.Get();
+	dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+	dst.SubresourceIndex = 0;
+
+	//コマンドリストでコピーを予約しますよ！！！
+	CommandList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
+	//コピー先からテクスチャリソースに切り替える
+	D3D12_RESOURCE_BARRIER barrier = {};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = shaderResource.Get();
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	CommandList->ResourceBarrier(1, &barrier);
+	//uploadBufの内容を破棄する
+	CommandList->DiscardResource(uploadBuf.Get(), nullptr);
+	//コマンドリストを閉じて
+	CommandList->Close();
+	//実行
+	ID3D12CommandList* commandLists[] = { CommandList.Get() };
+	CommandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+	//リソースがGPUに転送されるまで待機する
+	waitGPU();
+
+	//コマンドアロケータをリセット
+	HRESULT hr = CommandAllocator->Reset();
+	assert(SUCCEEDED(hr));
+	//コマンドリストをリセット
+	hr = CommandList->Reset(CommandAllocator.Get(), nullptr);
+	assert(SUCCEEDED(hr));
+
+	//開放
+	stbi_image_free(pixels);
+
+	return XMFLOAT2((float)width, (float)height);
+}
+
 HRESULT Graphic::createCbvTbvHeap(ComPtr<ID3D12DescriptorHeap>& cbvTbvHeap, UINT numDescriptors)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC desc = {};

@@ -45,6 +45,7 @@ public:
 	void unmapBuf(ComPtr<ID3D12Resource>& buffer);
 	UINT alignedSize(UINT size);
 	HRESULT createShaderResource(const std::string& filename, ComPtr<ID3D12Resource>& shaderResource);
+	XMFLOAT2 createShaderResourceGetSize(const std::string& filename, ComPtr<ID3D12Resource>& shaderResource);
 	HRESULT createCbvTbvHeap(ComPtr<ID3D12DescriptorHeap>& cbvTbvHeap, UINT numDescriptors);
 	HRESULT createSharedCbvTbvHeap(ComPtr<ID3D12DescriptorHeap>& cbvTbvHeap, UINT numDescriptors);
 	void copySharedCbvTbvHeap(ComPtr<ID3D12DescriptorHeap> const& cbvTbvHeap, D3D12_CPU_DESCRIPTOR_HANDLE hDestHeap);

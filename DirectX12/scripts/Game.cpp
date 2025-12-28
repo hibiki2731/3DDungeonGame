@@ -53,30 +53,22 @@ void Game::init() {
 	const char* fbx[] = { 
 		"assets\\rockObj\\rockWall.fbx",
 		"assets\\rockObj\\rockFloor.fbx",
-		"assets\\slime.fbx"
+		"assets\\slime.fbx",
 	};
 
 	const char* text[] = { 
 		"assets\\rockObj\\rockWall.txt",
 		"assets\\rockObj\\rockFloor.txt",
-		"assets\\slime.txt"
+		"assets\\slime.txt",
 	};
 
-#if 1
+#ifdef DEBUG
 	//FBX→テキスト変換
 	FBXConverter fbxConverter;
 	const int fbxNum = _countof(fbx);
 	int i;
 	//フリー素材
-	//fbxConverter.fbxToTxt(fbx[0], text[0], 0.005f, 0.005f, 0.005f, 2, 1, 0); //横、縦、奥行
-	//blender
 	for (i = 0; i < fbxNum; i++) {
-		//if (i == 2) {
-		//	fbxConverter.fbxToTxt(fbx[i], text[i], 0.3f, 0.3f, 0.3f, 0, 2, 1); //横、縦、奥行
-		//	continue;
-		//}
-
-		//fbxConverter.fbxToTxt(fbx[i], text[i], 1.0f, 1.0f, 1.0f, 0, 2, 1); //横、縦、奥行
 		fbxConverter.fbxToTxt(fbx[i], text[i], 1.0f, 1.0f, 1.0f, 0, 1, 2); //横、縦、奥行
 		
 	}
