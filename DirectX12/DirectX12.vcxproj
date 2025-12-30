@@ -182,7 +182,7 @@
   <ItemGroup>
     <ClCompile Include="scripts\Actor.cpp" />
     <ClCompile Include="scripts\Anime2DComponent.cpp" />
-    <ClCompile Include="scripts\Camera.cpp" />
+    <ClCompile Include="scripts\PlayerCamera.cpp" />
     <ClCompile Include="scripts\CameraComponent.cpp" />
     <ClCompile Include="scripts\Component.cpp" />
     <ClCompile Include="scripts\FBXConverter.cpp" />
@@ -190,6 +190,7 @@
     <ClCompile Include="scripts\Game.cpp" />
     <ClCompile Include="scripts\Graphic.cpp" />
     <ClCompile Include="scripts\input.cpp" />
+    <ClCompile Include="scripts\MapManager.cpp" />
     <ClCompile Include="scripts\MessageWindow.cpp" />
     <ClCompile Include="scripts\PointLight.cpp" />
     <ClCompile Include="scripts\PointLightComponent.cpp" />
@@ -197,7 +198,7 @@
     <ClCompile Include="scripts\MeshComponent.cpp" />
     <ClCompile Include="scripts\Player.cpp" />
     <ClCompile Include="scripts\RenderComponent.cpp" />
-    <ClCompile Include="scripts\RockWall.cpp" />
+    <ClCompile Include="scripts\RockObject.cpp" />
     <ClCompile Include="scripts\Slime.cpp" />
     <ClCompile Include="scripts\SpotLightComponent.cpp" />
     <ClCompile Include="scripts\SpriteComponent.cpp" />
@@ -210,7 +211,7 @@
     <ClInclude Include="scripts\Actor.h" />
     <ClInclude Include="scripts\Anime2DComponent.h" />
     <ClInclude Include="scripts\Definition.h" />
-    <ClInclude Include="scripts\Camera.h" />
+    <ClInclude Include="scripts\PlayerCamera.h" />
     <ClInclude Include="scripts\CameraComponent.h" />
     <ClInclude Include="scripts\Component.h" />
     <ClInclude Include="scripts\FBXConverter.h" />
@@ -218,6 +219,7 @@
     <ClInclude Include="scripts\Game.h" />
     <ClInclude Include="scripts\Graphic.h" />
     <ClInclude Include="scripts\input.h" />
+    <ClInclude Include="scripts\MapManager.h" />
     <ClInclude Include="scripts\MessageWindow.h" />
     <ClInclude Include="scripts\PointLight.h" />
     <ClInclude Include="scripts\PointLightComponent.h" />
@@ -225,7 +227,7 @@
     <ClInclude Include="scripts\MeshComponent.h" />
     <ClInclude Include="scripts\Player.h" />
     <ClInclude Include="scripts\RenderComponent.h" />
-    <ClInclude Include="scripts\RockWall.h" />
+    <ClInclude Include="scripts\RockObject.h" />
     <ClInclude Include="scripts\Slime.h" />
     <ClInclude Include="scripts\SpotLightComponent.h" />
     <ClInclude Include="scripts\SpriteComponent.h" />

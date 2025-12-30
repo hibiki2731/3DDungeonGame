@@ -3,6 +3,8 @@
 using namespace DirectX;
 
 const int MAX_LIGHT_NUM = 16;
+const float MAPTIPSIZE = 2;
+const float EPSILON = 0.0001f;
 
 enum LightStat {
     INACTIVE = 0,

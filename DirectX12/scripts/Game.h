@@ -25,6 +25,7 @@ class PointLightComponent;
 class SpotLightComponent;
 class Player;
 class TextComponent;
+class MapManager;
 
 class Game : public std::enable_shared_from_this<Game>{
 public:
@@ -76,6 +77,8 @@ private:
 	std::vector<std::shared_ptr<Actor>> mActors;
 	std::vector<std::shared_ptr<Actor>> mPendingActors;
 
+	//マップ関連
+	std::shared_ptr<MapManager> mMapManager;
 	bool mUpdatingActors;
 	
 };

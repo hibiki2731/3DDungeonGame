@@ -2,7 +2,6 @@
 #include "TextComponent.h"
 #include "SpriteComponent.h"
 #include "Graphic.h"
-#include "Camera.h"
 #include "Game.h"
 
 
@@ -30,15 +29,15 @@ void MessageWindow::inputActor()
 
 void MessageWindow::updateActor()
 {
-	std::wstring message = L"x:" + std::to_wstring(mCamera->getPosition().x) +
-		L" y:" + std::to_wstring(mCamera->getPosition().y) +
-		L" z:" + std::to_wstring(mCamera->getPosition().z);
+	std::wstring message = L"x:" + std::to_wstring(mActor->getPosition().x) +
+		L" y:" + std::to_wstring(mActor->getPosition().y) +
+		L" z:" + std::to_wstring(mActor->getPosition().z);
 
 	mMessage = message;
 	mText->setText(mMessage);
 }
 
-void MessageWindow::setCamera(const std::shared_ptr<Camera>& camera)
+void MessageWindow::setActor(const std::shared_ptr<Actor>& actor)
 {
-	mCamera = camera;
+	mActor = actor;
 }

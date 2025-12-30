@@ -15,6 +15,11 @@ XMFLOAT3 operator*(const XMFLOAT3& v1, const float& val) {
 	return XMFLOAT3(v1.x * val, v1.y * val, v1.z * val);
 }
 
+float Math::length(const XMFLOAT3& v)
+{
+	return  std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+}
+
 XMFLOAT3 Math::rotateY(const XMFLOAT3& v1, const float& rot)
 {
 	return XMFLOAT3(v1.x * cosf(rot) - v1.z * sinf(rot), v1.y, v1.x * sinf(rot) + v1.z * cosf(rot));
@@ -28,6 +33,17 @@ XMFLOAT3 Math::rotateX(const XMFLOAT3& v1, const float& rot)
 XMFLOAT3 Math::rotateZ(const XMFLOAT3& v1, const float& rot)
 {
 	return XMFLOAT3(v1.x * cosf(rot) - v1.y * sinf(rot), v1.x * sinf(rot) + v1.y * cosf(rot),  v1.z);
+}
+
+XMFLOAT3 Math::normalize(const XMFLOAT3& v)
+{
+	double length = Math::length(v);
+	return XMFLOAT3(v.x / length, v.y / length, v.z / length);
+}
+
+XMFLOAT3 Math::lerp(const XMFLOAT3& start, const XMFLOAT3& end, const float& ratio)
+{
+	return XMFLOAT3(std::lerp(start.x, end.x, ratio), std::lerp(start.y, end.y, ratio), std::lerp(start.z, end.z, ratio));
 }
 
 FbxVector4 Math::translate(const FbxVector4& v, const FbxVector4& translation)

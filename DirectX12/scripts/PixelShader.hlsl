@@ -1,6 +1,8 @@
 //出力ファイルをassets/%(Filename).csoに変更
 #include <Header.hlsli>
 #define MIN_DIST (0.01)
+#define MIN_LIGHT_INTENSITY (0.2)
+#define MAX_LIGHT_INTENSITY (2.5)
 
 //ポイントライト
 //ポイントライトのカリングをスムーズに
@@ -68,7 +70,7 @@ float3 evaluateSpotLight(
     float3 unnnormalizedLightVector = lightPos - worldPos;
     float3 L = normalize(unnnormalizedLightVector);
     float att = getAngleAttenuation(dot(-L, lightForward), lightInnerCos, lightOuterCos);
-    att += getDistanceAttenuation(unnnormalizedLightVector, lightInvRadiusSq);
+    att *= getDistanceAttenuation(unnnormalizedLightVector, lightInvRadiusSq);
     return lightColor * lightIntensity * att;
 }
 
@@ -130,6 +132,15 @@ float4 main(
         }
         else continue;
     }
+    
+    
+    //光が強すぎる場合の補正
+    if (outputColor.r > MAX_LIGHT_INTENSITY || outputColor.g > MAX_LIGHT_INTENSITY || outputColor.b > MAX_LIGHT_INTENSITY)
+    {
+        outputColor = outputColor / max(outputColor.r, max(outputColor.g, outputColor.b)) * MAX_LIGHT_INTENSITY; //最大の色成分をMAX_LIGHT_INTENSITYに合わせる
+    }
+    //光が弱すぎる場合の補正
+    outputColor = max(outputColor, MIN_LIGHT_INTENSITY);
     
     return Texture.Sample(Sampler, i_uv) * float4(outputColor, 1.0f);
 }
