@@ -12,12 +12,12 @@
 
 void PlayerCamera::initActor()
 {
-	mPosition = { 0, 1.0f, 0.0f };
+	mPosition = { 0, 0.5f, 0.0f };
 	mTargetPos = mPosition;
 	mTargetRot = mRotation;
 	isMoving = false;
 	mMoveSpeed = 5.0f;
-	mRotSpeed = 4.0f;
+	mRotSpeed = 4.5f;
 	mCamera = createComponent<CameraComponent>(shared_from_this());
 	mCamera->setActive(true);
 

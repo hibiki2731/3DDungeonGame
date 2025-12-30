@@ -13,7 +13,7 @@ enum TileType {
 	FLOOR = 1,
 };
 
-enum EntityType {
+enum ObjectType {
 	EMPTY = 0,
 	SLIME = 1,
 };
@@ -30,10 +30,11 @@ public:
 
 private:
 	void loadMap(Stage stage);
-	void createObjects();
+	void createWall();
+	void createObject();
 
 	std::vector<int> mMapData;
-	std::vector<int> mEntityData;
+	std::vector<int> mObjectData;
 	int mMapSize;
 	Stage mStage;
 	std::shared_ptr<Game> mGame;

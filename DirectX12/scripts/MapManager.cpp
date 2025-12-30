@@ -2,6 +2,7 @@
 #include "RockObject.h"
 #include "Game.h"
 #include "Definition.h"
+#include "Slime.h"
 #include <fstream>
 #include <cassert>
 
@@ -16,7 +17,8 @@ MapManager::MapManager(const std::shared_ptr<Game>& game)
 void MapManager::createMap()
 {
 	loadMap(mStage);	//マップデータの読み込み
-	createObjects();	//オブジェクトの生成
+	createWall();	//マップの壁、床の生成
+	createObject(); //オブジェクトの生成
 }
 
 void MapManager::setStage(Stage stage)
@@ -49,11 +51,23 @@ void MapManager::loadMap(Stage stage)
 			mMapData[y * mMapSize + x] = tileNum;
 		}
 	}
+	//オブジェクトデータの読み込み
+	mObjectData.resize(mMapSize* mMapSize);
+	for (int y = 0; y < mMapSize; y++)
+	{
+		for (int x = 0; x < mMapSize; x++)
+		{
+			int objectNum = 0;
+			file >> objectNum;
+			mObjectData[y * mMapSize + x] = objectNum;
+		}
+	}
+
 	file.close();
 
 }
 
-void MapManager::createObjects()
+void MapManager::createWall()
 {
 	for (int y = 0; y < mMapSize; y++)
 	{
@@ -108,6 +122,27 @@ void MapManager::createObjects()
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * (mMapSize - y - 1))));
 			}
 
+
+		}
+	}
+}
+
+void MapManager::createObject()
+{
+	int objectNum = 0;
+	for (int y = 0; y < mMapSize; y++){
+		for (int x = 0; x < mMapSize; x++) {
+			objectNum = mObjectData[y * mMapSize + x];
+
+			switch (objectNum) {
+			case ObjectType::EMPTY:
+				break;
+			case ObjectType::SLIME:
+				//スライムの生成
+				std::shared_ptr<Slime> slime = createActor<Slime>(mGame);
+				slime->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * (mMapSize - y - 1))));
+				break;
+			}
 
 		}
 	}
