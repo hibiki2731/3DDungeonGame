@@ -3,11 +3,11 @@
 
 class CameraComponent;
 
-class Camera : public Actor
+class PlayerCamera : public Actor
 {
 public:
-	Camera() {};
-	~Camera() {};
+	PlayerCamera() {};
+	~PlayerCamera() {};
 
 	void initActor() override;
 
@@ -17,6 +17,11 @@ public:
 private:
 	float mMoveSpeed;
 	float mRotSpeed;
+
+	//ˆÚ“®ˆ——p
+	XMFLOAT3 mTargetPos;
+	XMFLOAT3 mTargetRot;
+	float isMoving;
 
 	std::shared_ptr<CameraComponent> mCamera;
 };

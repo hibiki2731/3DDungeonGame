@@ -14,9 +14,12 @@ XMFLOAT3 operator*(const XMFLOAT3& v1, const float& val);
 
 class Math {
 public:
+	static float length(const XMFLOAT3& v);
 	static XMFLOAT3 rotateY(const XMFLOAT3& v1, const float& rot);
 	static XMFLOAT3 rotateX(const XMFLOAT3& v1, const float& rot);
 	static XMFLOAT3 rotateZ(const XMFLOAT3& v1, const float& rot);
+	static XMFLOAT3 normalize(const XMFLOAT3& v);
+	static XMFLOAT3 lerp(const XMFLOAT3& start, const XMFLOAT3& end, const float& ratio);
 
 	static FbxVector4 translate(const FbxVector4& v, const FbxVector4& translation);
 

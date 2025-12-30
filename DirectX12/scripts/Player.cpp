@@ -1,41 +1,67 @@
 #include "Player.h"
-#include "Component.h"
-#include "MeshComponent.h"
+#include "CameraComponent.h"
+#include "PointLightComponent.h"
+#include "SpotLightComponent.h"
+#include "Math.h"
+#include "timer.h"
+#include <windows.h>
+#include "Game.h"
+#include "Graphic.h"
+
+
 
 Player::~Player()
 {
 }
 
-void Player::inputActor()
-{/*
-	XMFLOAT3 rot = getRotation();
-	XMFLOAT3 updateRot = { 0, 0, 0 };
+void Player::initActor()
+{
+	mMoveSpeed = 1.0f;
+	mRotSpeed = 1.0f;
+	mPosition = { 0, 1.0f, 0.0f };
+	mCamera = createComponent<CameraComponent>(shared_from_this());
+	mCamera->setActive(true);
 
-	if (GetAsyncKeyState(VK_RIGHT)) {
-		updateRot.y += 0.7f * deltaTime;
+	auto spotLight = createComponent<SpotLightComponent>(shared_from_this());
+	spotLight->setActive(true);
+	spotLight->setColor(XMFLOAT4(1.0f, 0.9f, 0.8f, 1.0f));
+	spotLight->setIntensity(30.0f);
+	spotLight->setRange(50.0f);
+	spotLight->setUAngle(XMConvertToRadians(10.0f));
+	spotLight->setPAngle(XMConvertToRadians(40.0f));
+}
+
+void Player::inputActor()
+{
+	if (GetAsyncKeyState('A')) {
+		mPosition = mPosition + Math::rotateY(normalZ, mRotation.y + PI / 2.0f) * mMoveSpeed * deltaTime;
 	}
-	if (GetAsyncKeyState(VK_LEFT)) {
-		updateRot.y -= 0.7f * deltaTime;
+	if (GetAsyncKeyState('D')) {
+		mPosition = mPosition + Math::rotateY(normalZ, mRotation.y - PI / 2.0f) * mMoveSpeed * deltaTime;
+	}
+	if (GetAsyncKeyState('W')) {
+		mPosition = mPosition + Math::rotateY(normalZ, mRotation.y) * mMoveSpeed * deltaTime;
+	}
+	if (GetAsyncKeyState('S')) {
+		mPosition = mPosition - Math::rotateY(normalZ, mRotation.y) * mMoveSpeed * deltaTime;
 	}
 	if (GetAsyncKeyState(VK_UP)) {
-		updateRot.x += 0.7f * deltaTime;
+		mRotation = mRotation - XMFLOAT3(mRotSpeed * deltaTime, 0, 0);
 	}
 	if (GetAsyncKeyState(VK_DOWN)) {
-		updateRot.x -= 0.7f * deltaTime;
+		mRotation = mRotation + XMFLOAT3(mRotSpeed * deltaTime, 0, 0);
 	}
-	rot = rot + updateRot;
-	setRotation(rot);*/
+	if (GetAsyncKeyState(VK_RIGHT)) {
+		mRotation = mRotation - XMFLOAT3(0, mRotSpeed * deltaTime, 0);
+	}
+	if (GetAsyncKeyState(VK_LEFT)) {
+		mRotation = mRotation + XMFLOAT3(0, mRotSpeed * deltaTime, 0);
+	}
+
 }
 
 void Player::updateActor()
 {
-}
-
-void Player::initActor()
-{
-	 auto mesh = createComponent<MeshComponent>(shared_from_this());
-	 //mesh->create("assets\\rock_side\\wall_side.txt");
-	 mesh->create("assets\\Models\\FBX format\\room-corner.txt");
 }
 
 Player::Player()
