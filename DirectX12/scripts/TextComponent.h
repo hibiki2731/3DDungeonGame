@@ -10,6 +10,8 @@ public:
 	~TextComponent();
 	void initComponent() override;
 	void draw();
+
+	void endProccess() override;
 	//テキストの表示、非表示
 	void showText();
 	void closeText();

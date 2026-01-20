@@ -1,20 +1,33 @@
 #pragma once
-#include "Math.h"
-#include "timer.h"
 #include "Actor.h"
-#include "CameraComponent.h"
+#include <vector>
 
-class Player : public Actor {
+class CameraComponent;
+class CharacterComponent;
+
+class Player : public Actor
+{
 public:
-	//コンストラクタは使わない
-	Player();
-	~Player();
-	void inputActor() override;
-	void updateActor() override;
+	Player() {};
+	~Player() {};
+
 	void initActor() override;
 
+	void inputActor() override;
+	void updateActor() override;
+
 private:
-	std::shared_ptr<CameraComponent> mCamera;
+	void attack();
+
 	float mMoveSpeed;
 	float mRotSpeed;
+
+	//移動処理用
+	XMFLOAT3 mTargetPos;
+	XMFLOAT3 mTargetRot;
+	float isMoving;
+
+	std::shared_ptr<CameraComponent> mCamera;
+	std::shared_ptr<CharacterComponent> mCharacter;
 };
+

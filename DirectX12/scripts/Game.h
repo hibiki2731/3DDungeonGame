@@ -26,6 +26,7 @@ class SpotLightComponent;
 class Player;
 class TextComponent;
 class MapManager;
+class CharacterComponent;
 
 class Game : public std::enable_shared_from_this<Game>{
 public:
@@ -52,9 +53,13 @@ public:
 	void removeSpotLight(const std::shared_ptr<SpotLightComponent>& light);
 	void addText(const std::shared_ptr<TextComponent>& text);
 	void removeText(const std::shared_ptr<TextComponent>& text);
+	void addCharacter(const std::shared_ptr<CharacterComponent>& character);
+	void removeCharacter(const std::shared_ptr<CharacterComponent>& character);
 
 	//ゲッター
 	std::shared_ptr<Graphic> getGraphic();
+	std::shared_ptr<std::vector<std::shared_ptr<CharacterComponent>>> getCharacters();
+	std::shared_ptr<MapManager> getMapManager();
 
 private:
 
@@ -76,6 +81,8 @@ private:
 	//アクター配列
 	std::vector<std::shared_ptr<Actor>> mActors;
 	std::vector<std::shared_ptr<Actor>> mPendingActors;
+	//キャラクター配列
+	std::shared_ptr<std::vector<std::shared_ptr<CharacterComponent>>> mCharacters = nullptr; 
 
 	//マップ関連
 	std::shared_ptr<MapManager> mMapManager;

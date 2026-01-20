@@ -182,7 +182,8 @@
   <ItemGroup>
     <ClCompile Include="scripts\Actor.cpp" />
     <ClCompile Include="scripts\Anime2DComponent.cpp" />
-    <ClCompile Include="scripts\PlayerCamera.cpp" />
+    <ClCompile Include="scripts\CharacterComponent.cpp" />
+    <ClCompile Include="scripts\Player.cpp" />
     <ClCompile Include="scripts\CameraComponent.cpp" />
     <ClCompile Include="scripts\Component.cpp" />
     <ClCompile Include="scripts\FBXConverter.cpp" />
@@ -196,7 +197,6 @@
     <ClCompile Include="scripts\PointLightComponent.cpp" />
     <ClCompile Include="scripts\Math.cpp" />
     <ClCompile Include="scripts\MeshComponent.cpp" />
-    <ClCompile Include="scripts\Player.cpp" />
     <ClCompile Include="scripts\RenderComponent.cpp" />
     <ClCompile Include="scripts\RockObject.cpp" />
     <ClCompile Include="scripts\Slime.cpp" />
@@ -210,8 +210,9 @@
   <ItemGroup>
     <ClInclude Include="scripts\Actor.h" />
     <ClInclude Include="scripts\Anime2DComponent.h" />
+    <ClInclude Include="scripts\CharacterComponent.h" />
     <ClInclude Include="scripts\Definition.h" />
-    <ClInclude Include="scripts\PlayerCamera.h" />
+    <ClInclude Include="scripts\Player.h" />
     <ClInclude Include="scripts\CameraComponent.h" />
     <ClInclude Include="scripts\Component.h" />
     <ClInclude Include="scripts\FBXConverter.h" />
@@ -225,7 +226,6 @@
     <ClInclude Include="scripts\PointLightComponent.h" />
     <ClInclude Include="scripts\Math.h" />
     <ClInclude Include="scripts\MeshComponent.h" />
-    <ClInclude Include="scripts\Player.h" />
     <ClInclude Include="scripts\RenderComponent.h" />
     <ClInclude Include="scripts\RockObject.h" />
     <ClInclude Include="scripts\Slime.h" />

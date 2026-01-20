@@ -9,7 +9,7 @@
 MapManager::MapManager(const std::shared_ptr<Game>& game)
 {
 	mMapData.clear();
-	mMapSize = 0;
+	mMapSize = 1;
 	mGame = game;
 	mStage = MAP1;
 }
@@ -24,6 +24,51 @@ void MapManager::createMap()
 void MapManager::setStage(Stage stage)
 {
 	mStage = stage;
+}
+
+void MapManager::setMapDataAt(int x, int y, int data)
+{
+	mMapData[y * mMapSize + x] = data;
+}
+
+void MapManager::setMapDataAt(int index, int data)
+{
+	mMapData[index] = data;
+}
+
+void MapManager::setObjectDataAt(int x, int y, int data)
+{
+	mObjectData[y * mMapSize + x] = data;
+}
+
+void MapManager::setObjectDataAt(int index, int data)
+{
+	mObjectData[index] = data;
+}
+
+int MapManager::getMapSize()
+{
+	return mMapSize;
+}
+
+int MapManager::getMapDataAt(int x, int y)
+{
+	return mMapData[y * mMapSize + x];
+}
+
+int MapManager::getMapDataAt(int index)
+{
+	return mMapData[index];
+}
+
+int MapManager::getObjectDataAt(int x, int y)
+{
+	return mObjectData[y * mMapSize + x];
+}
+
+int MapManager::getObjectDataAt(int index)
+{
+	return mObjectData[index];
 }
 
 void MapManager::loadMap(Stage stage)

@@ -2,7 +2,7 @@
 #include "Actor.h"
 #include "Player.h"
 #include "UI.h"
-#include "PlayerCamera.h"
+#include "Player.h"
 #include "MessageWindow.h"
 #include "MeshComponent.h"
 #include "SpriteComponent.h"
@@ -14,11 +14,13 @@
 #include "Slime.h"
 #include "MapManager.h"
 
+#define DEBUG
 
 
 
 Game::Game(){
 	mUpdatingActors = false;
+	mCharacters = std::make_shared<std::vector<std::shared_ptr<CharacterComponent>>>();
 }
 
 Game::~Game() {}
@@ -71,16 +73,17 @@ void Game::init() {
 	}
 #endif
 
-	//カメラ作成
-	std::shared_ptr<PlayerCamera> camera = createActor<PlayerCamera>(shared_from_this());
 
 	//タイマー初期化
 	initDeltaTime();
 
 	//mapの生成
-	std::shared_ptr<MapManager> mapManager = std::make_shared<MapManager>(shared_from_this());
-	mapManager->setStage(Stage::MAP1);
-	mapManager->createMap();
+	mMapManager = std::make_shared<MapManager>(shared_from_this());
+	mMapManager->setStage(Stage::MAP1);
+	mMapManager->createMap();
+
+	//カメラ作成
+	std::shared_ptr<Player> camera = createActor<Player>(shared_from_this());
 
 	//アクター作成例
 	auto messageWindow = createActor<MessageWindow>(shared_from_this());
@@ -176,17 +179,37 @@ void Game::removeText(const std::shared_ptr<TextComponent>& fontText)
 	mTexts.erase(std::remove(mTexts.begin(), mTexts.end(), fontText), mTexts.end());
 }
 
+void Game::addCharacter(const std::shared_ptr<CharacterComponent>& character)
+{
+	mCharacters->emplace_back(character);
+}
+
+void Game::removeCharacter(const std::shared_ptr<CharacterComponent>& character)
+{
+	auto iter = std::find(mCharacters->begin(), mCharacters->end(), character);
+	if (iter != mCharacters->end()) {
+		std::iter_swap(iter, mCharacters->end() - 1);
+		mCharacters->pop_back();
+	}
+}
+
 std::shared_ptr<Graphic> Game::getGraphic()
 {
 	return mGraphic;
 }
 
+std::shared_ptr<std::vector<std::shared_ptr<CharacterComponent>>> Game::getCharacters()
+{
+	return mCharacters;
+}
+
+std::shared_ptr<MapManager> Game::getMapManager()
+{
+	return mMapManager;
+}
+
 void Game::input()
 {
-
-	if (GetAsyncKeyState('I')) {
-		removeActor(mActors[3]);
-	}
 
 	for (auto& actor : mActors) {
 		actor->input();

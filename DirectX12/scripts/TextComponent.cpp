@@ -40,6 +40,11 @@ void TextComponent::draw()
    );  
 }
 
+void TextComponent::endProccess()
+{
+	mOwner->getGame()->removeText(std::dynamic_pointer_cast<TextComponent>(shared_from_this()));
+}
+
 void TextComponent::showText()
 {
 	mTextRect = D2D1::RectF(
