@@ -13,6 +13,8 @@
 #include "TextComponent.h"
 #include "Slime.h"
 #include "MapManager.h"
+#include "EnemyComponent.h"
+#include "DamageText.h"
 
 #define DEBUG
 
@@ -20,7 +22,7 @@
 
 Game::Game(){
 	mUpdatingActors = false;
-	mCharacters = std::make_shared<std::vector<std::shared_ptr<CharacterComponent>>>();
+	mEnemies = std::make_shared<std::vector<std::shared_ptr<EnemyComponent>>>();
 }
 
 Game::~Game() {}
@@ -83,11 +85,14 @@ void Game::init() {
 	mMapManager->createMap();
 
 	//カメラ作成
-	std::shared_ptr<Player> camera = createActor<Player>(shared_from_this());
+	mPlayer = createActor<Player>(shared_from_this());
 
 	//アクター作成例
 	auto messageWindow = createActor<MessageWindow>(shared_from_this());
-	messageWindow->setActor(std::dynamic_pointer_cast<Actor>(camera));
+	messageWindow->setPlayer(mPlayer); //デバッグ用
+
+	//damageTextの初期化
+	mDamageTextManager = std::make_shared<DamageTextManager>(shared_from_this());
 
 }
 
@@ -171,7 +176,7 @@ void Game::removeSpotLight(const std::shared_ptr<SpotLightComponent>& light)
 
 void Game::addText(const std::shared_ptr<TextComponent>& text)
 {
-	mTexts.emplace_back(text);
+	mTexts.push_back(text);
 }
 
 void Game::removeText(const std::shared_ptr<TextComponent>& fontText)
@@ -179,17 +184,17 @@ void Game::removeText(const std::shared_ptr<TextComponent>& fontText)
 	mTexts.erase(std::remove(mTexts.begin(), mTexts.end(), fontText), mTexts.end());
 }
 
-void Game::addCharacter(const std::shared_ptr<CharacterComponent>& character)
+void Game::addEnemy(const std::shared_ptr<EnemyComponent>& enemy)
 {
-	mCharacters->emplace_back(character);
+	mEnemies->push_back(enemy);
 }
 
-void Game::removeCharacter(const std::shared_ptr<CharacterComponent>& character)
+void Game::removeEnemy(const std::shared_ptr<EnemyComponent>& enemy)
 {
-	auto iter = std::find(mCharacters->begin(), mCharacters->end(), character);
-	if (iter != mCharacters->end()) {
-		std::iter_swap(iter, mCharacters->end() - 1);
-		mCharacters->pop_back();
+	auto iter = std::find(mEnemies->begin(), mEnemies->end(), enemy);
+	if (iter != mEnemies->end()) {
+		std::iter_swap(iter, mEnemies->end() - 1);
+		mEnemies->pop_back();
 	}
 }
 
@@ -198,14 +203,41 @@ std::shared_ptr<Graphic> Game::getGraphic()
 	return mGraphic;
 }
 
-std::shared_ptr<std::vector<std::shared_ptr<CharacterComponent>>> Game::getCharacters()
+std::shared_ptr<std::vector<std::shared_ptr<EnemyComponent>>> Game::getEnemies()
 {
-	return mCharacters;
+	return mEnemies;
 }
 
 std::shared_ptr<MapManager> Game::getMapManager()
 {
 	return mMapManager;
+}
+
+std::shared_ptr<DamageTextManager> Game::getDamageTextManager()
+{
+	return mDamageTextManager;
+}
+
+std::shared_ptr<EnemyComponent> Game::getEnemyFromIndexPos(const std::vector<int>& indexPos)
+{
+	if (indexPos.size() != 2) assert(false);
+
+	for (auto& enemy : *mEnemies) {
+		std::vector<int> charIndexPos = enemy->getIndexPos();
+		if (charIndexPos[0] == indexPos[0] && charIndexPos[1] == indexPos[1]) {
+			return enemy;
+		}
+	}
+	return nullptr;
+}
+
+std::shared_ptr<EnemyComponent> Game::getEnemyFromIndexPos(int index)
+{
+	int mapSize = mMapManager->getMapSize();
+	std::vector<int> indexPos(2);
+	indexPos[0] = index % mapSize;
+	indexPos[1] = index / mapSize;
+	return getEnemyFromIndexPos(indexPos);
 }
 
 void Game::input()
@@ -225,6 +257,7 @@ void Game::update()
 	}
 	mUpdatingActors = false;
 
+	//光源の更新
 	mGraphic->updatePointLight(mPointLights);
 	mGraphic->updateSpotLight(mSpotLights);
 
@@ -246,6 +279,8 @@ void Game::update()
 		removeActor(actor);
 	}
 
+	mDamageTextManager->update();
+
 }
 
 void Game::draw()
@@ -258,11 +293,15 @@ void Game::draw()
 		mesh->draw();
 	}
 
-	//2D描
+	//2D描画
 	mGraphic->setRenderType(Graphic::RENDER_2D);
 	for (auto& sprite : mSprites) {
 		sprite->draw();
 	}
+
+	//ダメージエフェクト
+	mGraphic->setRenderType(Graphic::RENDER_DT);
+	mDamageTextManager->draw();
 
 	mGraphic->end3DRender();
 
@@ -273,6 +312,7 @@ void Game::draw()
 	}
 
 	mGraphic->end2DRender();
+
 
 	mGraphic->moveToNextFrame();
 

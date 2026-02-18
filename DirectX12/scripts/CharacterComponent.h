@@ -5,13 +5,6 @@
 
 using namespace DirectX;
 
-enum Direction {
-	DOWN = 1,
-	RIGHT = 2,
-	UP = 4,
-	LEFT =8,
-};
-
 
 class CharacterComponent : public Component
 {
@@ -30,11 +23,9 @@ public:
 	int getDefense();
 	int getDirection();
 	bool getAlive();
-	XMFLOAT2 getIndexPos();
+	std::vector<int>& getIndexPos();
 	int getIndexPosInt();
 	std::shared_ptr<MapManager> getMapManager();
-	std::shared_ptr<CharacterComponent> getCharacterFromIndexPos(XMFLOAT2 indexPos);
-	std::shared_ptr<CharacterComponent> getCharacterFromIndexPos(int index);
 
 	//setter
 	void setMaxHP(int maxHP);
@@ -42,15 +33,15 @@ public:
 	void setPower(int power);
 	void setDefense(int defense);
 	void setDirection(int direction);
-	void setIndexPos(XMFLOAT2 indexPos);
-	void setIndexPos(int index);
+	void setIndexPos(const std::vector<int>& indexPos);
+	void setIndexPosInt(int indexPos);
 
 	void giveDamage(int damage);
 	void turnRight();
 	void turnLeft();
 
 
-private:
+protected:
 	//ステータス
 	int mMaxHP;
 	int mHP;
@@ -62,10 +53,7 @@ private:
 	int mDirection; //左上右下 0000
 
 	//位置
-	XMFLOAT2 mIndexPos;
-
-	//キャラクター配列
-	std::shared_ptr<std::vector<std::shared_ptr<CharacterComponent>>> mCharacters;
+	std::vector<int> mIndexPos; //{x, y}
 
 	std::shared_ptr<MapManager> mMapManager;
 };

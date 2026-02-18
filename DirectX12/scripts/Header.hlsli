@@ -35,6 +35,8 @@ cbuffer b2 : register(b2)
     float4 Ambient;
     float4 Diffuse;
     float4 Specular;
+    float3 FlashColor;
+    float FlashIntensity;
 }
 
 Texture2D<float4> Texture : register(t0); //テクスチャ0盤

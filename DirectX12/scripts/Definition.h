@@ -6,6 +6,14 @@ const int MAX_LIGHT_NUM = 16;
 const float MAPTIPSIZE = 2;
 const float EPSILON = 0.0001f;
 
+
+enum Direction {
+	DOWN = 1,
+	RIGHT = 2,
+	UP = 4,
+	LEFT = 8,
+};
+
 enum LightStat {
     INACTIVE = 0,
     ACTIVE = 1,
@@ -45,6 +53,8 @@ struct MaterialConstBuf {
     XMFLOAT4 ambient;
     XMFLOAT4 diffuse;
     XMFLOAT4 specular;
+	XMFLOAT3 flashColor;
+	float flashIntensity;
 };
 
 //2D用バッファ
@@ -61,4 +71,10 @@ struct SpriteConstBuf {
 struct FontConstBuffer {
 	XMMATRIX world;
     XMFLOAT4 effect; //x:色
+};
+
+//ビルボード処理用コンスタントバッファ
+struct BillboardConstBuf {
+	XMMATRIX view;  //ビュー行列
+	XMMATRIX proj;  //プロジェクション行列
 };

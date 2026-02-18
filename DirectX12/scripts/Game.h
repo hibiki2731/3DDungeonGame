@@ -26,7 +26,8 @@ class SpotLightComponent;
 class Player;
 class TextComponent;
 class MapManager;
-class CharacterComponent;
+class EnemyComponent;
+class DamageTextManager;
 
 class Game : public std::enable_shared_from_this<Game>{
 public:
@@ -45,29 +46,32 @@ public:
 	//メッシュの追加
 	void addMesh(const std::shared_ptr<MeshComponent>& mesh);
 	void removeMesh(const std::shared_ptr<MeshComponent>& mesh);
+	//スプライトの追加
 	void addSprite(const std::shared_ptr<SpriteComponent>& mesh);
 	void removeSprite(const std::shared_ptr<SpriteComponent>& mesh);
+	//点光源の追加
 	void addPointLight(const std::shared_ptr<PointLightComponent>& light);
 	void removePointLight(const std::shared_ptr<PointLightComponent>& light);
+	//スポットライトの追加
 	void addSpotLight(const std::shared_ptr<SpotLightComponent>& light);
 	void removeSpotLight(const std::shared_ptr<SpotLightComponent>& light);
+	//テキストの追加
 	void addText(const std::shared_ptr<TextComponent>& text);
 	void removeText(const std::shared_ptr<TextComponent>& text);
-	void addCharacter(const std::shared_ptr<CharacterComponent>& character);
-	void removeCharacter(const std::shared_ptr<CharacterComponent>& character);
+	//エネミーの追加
+	void addEnemy(const std::shared_ptr<EnemyComponent>& enemy);
+	void removeEnemy(const std::shared_ptr<EnemyComponent>& enemy);
 
 	//ゲッター
 	std::shared_ptr<Graphic> getGraphic();
-	std::shared_ptr<std::vector<std::shared_ptr<CharacterComponent>>> getCharacters();
+	std::shared_ptr<std::vector<std::shared_ptr<EnemyComponent>>> getEnemies();
 	std::shared_ptr<MapManager> getMapManager();
+	std::shared_ptr<DamageTextManager> getDamageTextManager();
+	std::shared_ptr<EnemyComponent> getEnemyFromIndexPos(const std::vector<int>& indexPos);
+	std::shared_ptr<EnemyComponent> getEnemyFromIndexPos(int index);
+
 
 private:
-
-	//ループ内処理
-	void input();
-	void update();
-	void draw();
-
 	//グラフィック
 	std::shared_ptr<Graphic> mGraphic;
 	//メッシュ配列
@@ -82,10 +86,20 @@ private:
 	std::vector<std::shared_ptr<Actor>> mActors;
 	std::vector<std::shared_ptr<Actor>> mPendingActors;
 	//キャラクター配列
-	std::shared_ptr<std::vector<std::shared_ptr<CharacterComponent>>> mCharacters = nullptr; 
+	std::shared_ptr<std::vector<std::shared_ptr<EnemyComponent>>> mEnemies = nullptr; 
+	//ダメージエフェクト用
+	std::shared_ptr<DamageTextManager> mDamageTextManager;
 
 	//マップ関連
 	std::shared_ptr<MapManager> mMapManager;
 	bool mUpdatingActors;
-	
+
+	//プレイヤー
+	std::shared_ptr<Player> mPlayer;
+
+	//ループ内処理
+	void input();
+	void update();
+	void draw();
+
 };

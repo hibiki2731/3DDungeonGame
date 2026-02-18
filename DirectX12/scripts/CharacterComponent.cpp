@@ -11,9 +11,8 @@ void CharacterComponent::initComponent()
 	isAlive = true;
 
 	mDirection = 1;
-	mIndexPos = XMFLOAT2(0.0f, 0.0f);
+	mIndexPos = std::vector<int>(2,0);
 
-	mOwner->getGame()->addCharacter(std::dynamic_pointer_cast<CharacterComponent>(shared_from_this()));
 	mMapManager = mOwner->getGame()->getMapManager();
 }
 
@@ -27,7 +26,6 @@ void CharacterComponent::updateComponent()
 
 void CharacterComponent::endProccess()
 {
-	mOwner->getGame()->removeCharacter(std::dynamic_pointer_cast<CharacterComponent>(shared_from_this()));
 }
 
 int CharacterComponent::getHP()
@@ -55,40 +53,19 @@ bool CharacterComponent::getAlive()
 	return isAlive;
 }
 
-XMFLOAT2 CharacterComponent::getIndexPos()
+std::vector<int>& CharacterComponent::getIndexPos()
 {
 	return mIndexPos;
 }
 
 int CharacterComponent::getIndexPosInt()
 {
-	return mIndexPos.y * mMapManager->getMapSize() + mIndexPos.x;
+	return mIndexPos[1] * mMapManager->getMapSize() + mIndexPos[0];
 }
 
 std::shared_ptr<MapManager> CharacterComponent::getMapManager()
 {
 	return mMapManager;
-}
-
-std::shared_ptr<CharacterComponent> CharacterComponent::getCharacterFromIndexPos(XMFLOAT2 indexPos)
-{
-	auto characters = mOwner->getGame()->getCharacters();
-	for (auto& character : *characters) {
-		XMFLOAT2 charIndexPos = character->getIndexPos();
-		if (charIndexPos.x == indexPos.x && charIndexPos.y == indexPos.y) {
-			return character;
-		}
-	}
-	return nullptr;
-}
-
-std::shared_ptr<CharacterComponent> CharacterComponent::getCharacterFromIndexPos(int index)
-{
-	int mapSize = mMapManager->getMapSize();
-	XMFLOAT2 indexPos;
-	indexPos.x = index % mapSize;
-	indexPos.y = index / mapSize;
-	return getCharacterFromIndexPos(indexPos);
 }
 
 void CharacterComponent::setMaxHP(int maxHP)
@@ -116,16 +93,16 @@ void CharacterComponent::setDirection(int direction)
 	mDirection = direction;
 }
 
-void CharacterComponent::setIndexPos(XMFLOAT2 indexPos)
+void CharacterComponent::setIndexPos(const std::vector<int>& indexPos)
 {
+	if (indexPos.size() != 2) assert(false);
 	mIndexPos = indexPos;
 }
 
-void CharacterComponent::setIndexPos(int index)
+void CharacterComponent::setIndexPosInt(int indexPos)
 {
-	int mapSize = mMapManager->getMapSize();
-	mIndexPos.x = index % mapSize;
-	mIndexPos.y = index / mapSize;
+	mIndexPos[0] = indexPos % mMapManager->getMapSize();
+	mIndexPos[1] = indexPos / mMapManager->getMapSize();
 }
 
 void CharacterComponent::giveDamage(int damage)

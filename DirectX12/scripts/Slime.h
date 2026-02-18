@@ -1,7 +1,7 @@
 #pragma once
 #include "Actor.h"
 
-class CharacterComponent;
+class EnemyComponent;
 
 class Slime : public Actor
 {
@@ -11,6 +11,6 @@ public:
 	void inputActor() override;
 
 private:
-	std::shared_ptr<class CharacterComponent> mCharacter;
+	std::shared_ptr<class EnemyComponent> mEnemy;
 };
 

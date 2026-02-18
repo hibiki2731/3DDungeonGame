@@ -5,6 +5,8 @@
 #include "Math.h"
 #include "timer.h"
 #include "CharacterComponent.h"
+#include "DamageText.h"
+#include "EnemyComponent.h"
 #include <windows.h>
 #include <algorithm>
 #include <cmath>
@@ -32,7 +34,6 @@ void Player::initActor()
 
 	mCharacter = createComponent<CharacterComponent>(shared_from_this());
 	mCharacter->setDirection(Direction::UP);
-	mCharacter->setIndexPos(XMFLOAT2(0.0f, 0.0f));
 
 }
 
@@ -96,34 +97,25 @@ void Player::updateActor()
 		XMFLOAT3 diffPos = mTargetPos - mPosition;
 		XMFLOAT3 diffRot = mTargetRot - mRotation;
 
-		//閾値
-		float posMoveThreshold_a = 0.3f;
-		float posMoveThreshold_b = 0.03f;
-		float rotMoveThreshold_a = 0.3f;
-		float rotMoveThreshold_b = 0.025f;
+		float moveLength = deltaTime * mMoveSpeed;
+		float rotLength = deltaTime * mRotSpeed;
 
 		//位置の更新
-		if (fabsf(diffPos.x) > posMoveThreshold_a || fabsf(diffPos.y) > posMoveThreshold_a || fabsf(diffPos.z) > posMoveThreshold_a) {
-			XMFLOAT3 delta = diffPos * deltaTime * mMoveSpeed;
-			mPosition = mPosition + delta;
-		}
-		else if(fabsf(diffPos.x) > posMoveThreshold_b || fabsf(diffPos.y) > posMoveThreshold_b || fabsf(diffPos.z) > posMoveThreshold_b){
-			mPosition = mPosition + Math::normalize(diffPos) * posMoveThreshold_b;
+		if (fabsf(diffPos.x) > moveLength || fabsf(diffPos.y) >moveLength || fabsf(diffPos.z) >moveLength) {
+			mPosition = mPosition + Math::normalize(diffPos) * moveLength;
 		}
 		else {
 			mPosition = mTargetPos;
 		}
 		////回転の更新
-		if (fabsf(diffRot.x) > rotMoveThreshold_a || fabsf(diffRot.y) > rotMoveThreshold_a || fabsf(diffRot.z) > rotMoveThreshold_a) {
+		if (fabsf(diffRot.x) > rotLength || fabsf(diffRot.y) > rotLength || fabsf(diffRot.z) > rotLength) {
 
-			mRotation = mRotation + diffRot * deltaTime * mRotSpeed;
+			mRotation = mRotation + Math::normalize(diffRot) * rotLength;
 		}
-		else if (fabsf(diffRot.x) > rotMoveThreshold_b || fabsf(diffRot.y) > rotMoveThreshold_b || fabsf(diffRot.z) > rotMoveThreshold_b) {
-			mRotation = mRotation + Math::normalize(diffRot) * rotMoveThreshold_b;
-		}
-		else{
+		else {
 			mRotation = mTargetRot;
 		}
+
 		//移動終了判定
 		if (mPosition.x == mTargetPos.x &&
 			mPosition.y == mTargetPos.y &&
@@ -134,34 +126,91 @@ void Player::updateActor()
 
 			isMoving = false;
 
-			//オブジェクトデータの更新
+			//インデックス位置の更新
+			std::vector<int> preIndexPos = mCharacter->getIndexPos();
+			//インデックス座標の更新
+			preIndexPos[0] = static_cast<int>(std::round(mPosition.x / MAPTIPSIZE));
+			preIndexPos[1] = static_cast<int>(std::round(mPosition.z / MAPTIPSIZE));
+			mCharacter->setIndexPos(preIndexPos);
+
+			//マップ上のオブジェクトデータ更新
 			mCharacter->getMapManager()->setObjectDataAt(mCharacter->getIndexPosInt(), ObjectType::EMPTY);
-			mCharacter->setIndexPos(mPosition.x / MAPTIPSIZE + (mCharacter->getMapManager()->getMapSize() * (mPosition.z / MAPTIPSIZE)));
 			mCharacter->getMapManager()->setObjectDataAt(mCharacter->getIndexPosInt(), ObjectType::PLAYER);
 		}
 	}
+
+	if (mActionTimer > 0.0f) mActionTimer -= deltaTime;
+}
+
+int Player::getDirection()
+{
+	return mCharacter->getDirection();
 }
 
 void Player::attack()
 {
-	std::shared_ptr<CharacterComponent> target = nullptr;
+	if (mActionTimer > 0.0f) return;
+	if (isMoving) return;
+
+	//前方のエネミーを取得
+	std::shared_ptr<EnemyComponent> target = nullptr;
 	switch (mCharacter->getDirection()) {
 	case Direction::UP:
-		target = mCharacter->getCharacterFromIndexPos(XMFLOAT2(mCharacter->getIndexPos().x, mCharacter->getIndexPos().y + 1.0f));
+		target = getGame()->getEnemyFromIndexPos(std::vector<int>{mCharacter->getIndexPos()[0], mCharacter->getIndexPos()[1] + 1});
 		break;
 	case Direction::DOWN:
-		target = mCharacter->getCharacterFromIndexPos(XMFLOAT2(mCharacter->getIndexPos().x, mCharacter->getIndexPos().y - 1.0f));
+		target = getGame()->getEnemyFromIndexPos(std::vector<int>{mCharacter->getIndexPos()[0], mCharacter->getIndexPos()[1] - 1});
 		break;
 	case Direction::RIGHT:
-		target = mCharacter->getCharacterFromIndexPos(XMFLOAT2(mCharacter->getIndexPos().x + 1.0f, mCharacter->getIndexPos().y));
+		target = getGame()->getEnemyFromIndexPos(std::vector<int>{mCharacter->getIndexPos()[0] + 1, mCharacter->getIndexPos()[1]});
 		break;
 	case Direction::LEFT:
-		target = mCharacter->getCharacterFromIndexPos(XMFLOAT2(mCharacter->getIndexPos().x - 1.0f, mCharacter->getIndexPos().y));
+		target = getGame()->getEnemyFromIndexPos(std::vector<int>{mCharacter->getIndexPos()[0] - 1, mCharacter->getIndexPos()[1]});
 		break;
 	}
 
-	if (target == nullptr) return;
+	if (target == nullptr) { 
+		return; 
+	}
 
+	//ダメージの計算
 	int damage = max(mCharacter->getPower() - target->getDefense(), 0);
-	target->giveDamage(damage);
+	//target->giveDamage(damage); //ダメージを与える
+	target->giveDamage(0); //ダメージを与える
+
+	//ダメージエフェクト
+	target->startFlash(); //敵を点滅させる
+	calcDamageText(target->getPosition(), damage);
+
+	mActionTimer = 1.0f;
+}
+
+void Player::calcDamageText(const XMFLOAT3& targetPos, int val)
+{
+	XMFLOAT3 textPos = targetPos;
+	textPos.y += 0.5f; //少しだけ上に
+
+	XMFLOAT3 front = Math::rotateY(XMFLOAT3(0.0f, 0.0f, 1.0f), mRotation.y);//前方ベクトル
+	XMFLOAT3 right = Math::rotateY(front, -XM_PIDIV2);//右ベクトル
+	textPos = textPos - front;	//敵オブジェクトより手前に
+
+	int digit = 0;			//桁数
+	int value = val;		//表示したい数値
+	std::vector<int> num;	//各桁の値
+
+	//桁数と各桁の値を取得
+	while (value > 0) {
+		digit++;
+		num.push_back(value % 10);
+		value = value / 10;
+	}
+
+	float DTHalfSize = mGame->getDamageTextManager()->getSize() * 0.5f;
+	//数値が画面中心に来るよう調整
+	textPos = textPos + (right * DTHalfSize * 0.5 * (digit - 1));
+	//桁ごとの表示位置の調整
+	for (int i = 0; i < digit; i++) {
+		mGame->getDamageTextManager()->createDamageText(textPos, num[i]);
+		textPos = textPos - right * DTHalfSize;
+	}
 }
