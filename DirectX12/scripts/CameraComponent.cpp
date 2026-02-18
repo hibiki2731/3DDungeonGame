@@ -2,6 +2,7 @@
 #include "Actor.h"
 #include "Game.h"
 #include "Math.h"
+#include "DamageText.h"
 #include <windows.h>
 
 void CameraComponent::initComponent()
@@ -31,6 +32,7 @@ void CameraComponent::updateComponent()
 		//プロジェクションマトリックス
 		XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, mOwner->getGame()->getGraphic()->getAspect(), 0.01f, 50.0f);
 		XMMATRIX viewProj = view * proj;
+		mOwner->getGame()->getDamageTextManager()->updateView(view);
 		mOwner->getGame()->getGraphic()->updateViewProj(viewProj);
 
 		XMFLOAT4 cameraPos;

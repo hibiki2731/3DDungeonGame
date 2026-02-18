@@ -15,7 +15,8 @@ enum TileType {
 
 enum ObjectType {
 	EMPTY = 0,
-	SLIME = 1,
+	PLAYER = 1,
+	SLIME = 2,
 };
 
 class MapManager
@@ -26,7 +27,19 @@ public:
 
 	void createMap();
 	
+	//setter
 	void setStage(Stage stage);
+	void setMapDataAt(int x, int y, int data);
+	void setMapDataAt(int index, int data);
+	void setObjectDataAt(int x, int y, int data);
+	void setObjectDataAt(int index, int data);
+
+	//getter
+	int getMapSize();
+	int getMapDataAt(int x, int y);
+	int getMapDataAt(int index);
+	int getObjectDataAt(int x, int y);
+	int getObjectDataAt(int index);
 
 private:
 	void loadMap(Stage stage);

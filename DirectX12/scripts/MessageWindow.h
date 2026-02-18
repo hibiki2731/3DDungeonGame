@@ -3,6 +3,7 @@
 #include <string>
 
 class TextComponent;
+class Player;
 
 class MessageWindow : public Actor
 {
@@ -15,12 +16,14 @@ public:
 	void inputActor() override;
 	void updateActor() override;
 
-	void setActor(const std::shared_ptr<Actor>& actor);
+	void setTarget(const std::shared_ptr<Actor>& actor);
+	void setPlayer(const std::shared_ptr<Player>& player);
 
 private:
 
 	std::wstring mMessage;
-	std::shared_ptr<Actor> mActor;
+	std::shared_ptr<Actor> mTarget;
+	std::shared_ptr<Player> mPlayer;
 	std::shared_ptr<TextComponent> mText;
 };
 

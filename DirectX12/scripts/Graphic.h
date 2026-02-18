@@ -34,6 +34,7 @@ public:
 	enum STATE {
 		RENDER_3D,
 		RENDER_2D,
+		RENDER_DT,
 	};
 
 	Graphic();
@@ -152,8 +153,10 @@ private:
 	//パイプライン
 	ComPtr<ID3D12RootSignature> RootSignature;
 	ComPtr<ID3D12RootSignature> RootSignature2D;
+	ComPtr<ID3D12RootSignature> RootSignatureDT;
 	ComPtr<ID3D12PipelineState> PipelineState;
 	ComPtr<ID3D12PipelineState> PipelineState2D;
+	ComPtr<ID3D12PipelineState> PipelineStateDT;
 	D3D12_VIEWPORT Viewport;
 	D3D12_RECT ScissorRect;
 

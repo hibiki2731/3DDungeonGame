@@ -1,4 +1,5 @@
 #include "Anime2DComponent.h"
+#include "Game.h"
 #include "Actor.h"
 #include <string>
 
@@ -116,6 +117,11 @@ void Anime2DComponent::draw()
 	mCommandList->IASetIndexBuffer(&IndexBufView);
 	mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
+}
+
+void Anime2DComponent::endProccess()
+{
+	mOwner->getGame()->removeSprite(std::dynamic_pointer_cast<SpriteComponent>(shared_from_this()));
 }
 
 void Anime2DComponent::setTextureIndex(int index)

@@ -158,6 +158,34 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.1</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.1</ShaderModel>
     </FxCompile>
+    <FxCompile Include="scripts\DTGeometryShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">assets/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">assets/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="scripts\DTPixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">assets/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">assets/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="scripts\DTVertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">assets/%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">assets\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
     <FxCompile Include="scripts\PixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
@@ -182,7 +210,10 @@
   <ItemGroup>
     <ClCompile Include="scripts\Actor.cpp" />
     <ClCompile Include="scripts\Anime2DComponent.cpp" />
-    <ClCompile Include="scripts\PlayerCamera.cpp" />
+    <ClCompile Include="scripts\CharacterComponent.cpp" />
+    <ClCompile Include="scripts\DamageText.cpp" />
+    <ClCompile Include="scripts\EnemyComponent.cpp" />
+    <ClCompile Include="scripts\Player.cpp" />
     <ClCompile Include="scripts\CameraComponent.cpp" />
     <ClCompile Include="scripts\Component.cpp" />
     <ClCompile Include="scripts\FBXConverter.cpp" />
@@ -196,7 +227,6 @@
     <ClCompile Include="scripts\PointLightComponent.cpp" />
     <ClCompile Include="scripts\Math.cpp" />
     <ClCompile Include="scripts\MeshComponent.cpp" />
-    <ClCompile Include="scripts\Player.cpp" />
     <ClCompile Include="scripts\RenderComponent.cpp" />
     <ClCompile Include="scripts\RockObject.cpp" />
     <ClCompile Include="scripts\Slime.cpp" />
@@ -210,8 +240,11 @@
   <ItemGroup>
     <ClInclude Include="scripts\Actor.h" />
     <ClInclude Include="scripts\Anime2DComponent.h" />
+    <ClInclude Include="scripts\CharacterComponent.h" />
+    <ClInclude Include="scripts\DamageText.h" />
     <ClInclude Include="scripts\Definition.h" />
-    <ClInclude Include="scripts\PlayerCamera.h" />
+    <ClInclude Include="scripts\EnemyComponent.h" />
+    <ClInclude Include="scripts\Player.h" />
     <ClInclude Include="scripts\CameraComponent.h" />
     <ClInclude Include="scripts\Component.h" />
     <ClInclude Include="scripts\FBXConverter.h" />
@@ -225,7 +258,6 @@
     <ClInclude Include="scripts\PointLightComponent.h" />
     <ClInclude Include="scripts\Math.h" />
     <ClInclude Include="scripts\MeshComponent.h" />
-    <ClInclude Include="scripts\Player.h" />
     <ClInclude Include="scripts\RenderComponent.h" />
     <ClInclude Include="scripts\RockObject.h" />
     <ClInclude Include="scripts\Slime.h" />
@@ -238,6 +270,7 @@
     <ClInclude Include="scripts\WinMain.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="scripts\DTHeader.hlsli" />
     <None Include="scripts\Header.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

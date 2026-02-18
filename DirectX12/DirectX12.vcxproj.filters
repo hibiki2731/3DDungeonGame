@@ -57,9 +57,6 @@
     <ClCompile Include="scripts\Anime2DComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\PlayerCamera.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="scripts\CameraComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -94,6 +91,15 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\MapManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\CharacterComponent.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\EnemyComponent.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\DamageText.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -143,9 +149,6 @@
     <ClInclude Include="scripts\Anime2DComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\PlayerCamera.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="scripts\CameraComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -182,6 +185,15 @@
     <ClInclude Include="scripts\MapManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="scripts\CharacterComponent.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\EnemyComponent.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\DamageText.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="scripts\PixelShader.hlsl">
@@ -196,9 +208,21 @@
     <FxCompile Include="scripts\2DVertexShader.hlsl">
       <Filter>hlsl</Filter>
     </FxCompile>
+    <FxCompile Include="scripts\DTVertexShader.hlsl">
+      <Filter>hlsl</Filter>
+    </FxCompile>
+    <FxCompile Include="scripts\DTPixelShader.hlsl">
+      <Filter>hlsl</Filter>
+    </FxCompile>
+    <FxCompile Include="scripts\DTGeometryShader.hlsl">
+      <Filter>hlsl</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="scripts\Header.hlsli">
+      <Filter>hlsl</Filter>
+    </None>
+    <None Include="scripts\DTHeader.hlsli">
       <Filter>hlsl</Filter>
     </None>
   </ItemGroup>

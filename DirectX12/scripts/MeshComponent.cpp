@@ -60,10 +60,10 @@ void MeshComponent::create(const char* filename)
 			int numVertices = 0;
 			file >> numVertices;//頂点数
 			//　vector配列に読み込む
-			UINT numElementsPerVertex = 8;
-			int numElements = numVertices * numElementsPerVertex;
-			std::vector<float>vertices(numElements);
-			for (int i = 0; i < numElements; i++) {
+			UINT NumElementsPerVertex = 8;
+			int NumElements = numVertices * NumElementsPerVertex;
+			std::vector<float>vertices(NumElements);
+			for (int i = 0; i < NumElements; i++) {
 				file >> vertices[i];
 			}
 
@@ -71,7 +71,7 @@ void MeshComponent::create(const char* filename)
 			Parts[k].NumVertices = numVertices;
 
 			//頂点バッファをつくる
-			UINT sizeInByte = sizeof(float) * numElements;//全バイト数
+			UINT sizeInByte = sizeof(float) * NumElements;//全バイト数
 			Hr = mGraphic->createBuf(sizeInByte, Parts[k].VertexBuf);
 			assert(SUCCEEDED(Hr));
 
@@ -82,7 +82,7 @@ void MeshComponent::create(const char* filename)
 			//位置バッファのビューを初期化しておく。（ディスクリプタヒープに作らなくてよい）
 			Parts[k].VertexBufView.BufferLocation = Parts[k].VertexBuf->GetGPUVirtualAddress();
 			Parts[k].VertexBufView.SizeInBytes = sizeInByte;//全バイト数
-			Parts[k].VertexBufView.StrideInBytes = sizeof(float) * numElementsPerVertex;//１頂点のバイト数
+			Parts[k].VertexBufView.StrideInBytes = sizeof(float) * NumElementsPerVertex;//１頂点のバイト数
 		}
 		//コンスタントバッファ２
 		{
@@ -106,6 +106,9 @@ void MeshComponent::create(const char* filename)
 			Parts[k].Cb2->ambient = ambient;
 			Parts[k].Cb2->diffuse = diffuse;
 			Parts[k].Cb2->specular = specular;
+
+			Parts[k].Cb2->flashColor = XMFLOAT3(1.0f, 1.0f, 1.0f);	//白く光る
+			Parts[k].Cb2->flashIntensity = 0.0f;					//最初は光らない
 		}
 		//テクスチャバッファ
 		{
@@ -168,5 +171,12 @@ void MeshComponent::draw()
 		mCommandList->SetGraphicsRootDescriptorTable(0, hCbvTbvHeap);
 		//描画。インデックスを使用しない
 		mCommandList->DrawInstanced(Parts[k].NumVertices, 1, 0, 0);
+	}
+}
+
+void MeshComponent::updateFlashIntensity(float intensity)
+{
+	for (int k = 0; k < NumParts; k++) {
+		Parts[k].Cb2->flashIntensity = intensity;
 	}
 }

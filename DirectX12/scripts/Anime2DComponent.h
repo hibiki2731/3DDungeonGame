@@ -11,6 +11,8 @@ public:
 	virtual void create(const std::string filename, int textureNum);
 	virtual void draw() override;
 
+	void endProccess() override;
+
 
 	void setTextureIndex(int index);
 

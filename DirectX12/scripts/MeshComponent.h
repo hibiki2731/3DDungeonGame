@@ -20,6 +20,9 @@ public:
 
     void create(const char* filename);
 	void draw();
+
+    void updateFlashIntensity(float intensity);
+
 private:
 
     HRESULT Hr;

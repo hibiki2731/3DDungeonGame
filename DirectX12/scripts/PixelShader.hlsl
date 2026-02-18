@@ -133,7 +133,6 @@ float4 main(
         else continue;
     }
     
-    
     //Œõ‚ª‹­‚·‚¬‚éê‡‚Ì•â³
     if (outputColor.r > MAX_LIGHT_INTENSITY || outputColor.g > MAX_LIGHT_INTENSITY || outputColor.b > MAX_LIGHT_INTENSITY)
     {
@@ -141,6 +140,9 @@ float4 main(
     }
     //Œõ‚ªã‚·‚¬‚éê‡‚Ì•â³
     outputColor = max(outputColor, MIN_LIGHT_INTENSITY);
+    
+    //“_–Åˆ—
+    outputColor = lerp(outputColor, FlashColor, FlashIntensity);
     
     return Texture.Sample(Sampler, i_uv) * float4(outputColor, 1.0f);
 }
