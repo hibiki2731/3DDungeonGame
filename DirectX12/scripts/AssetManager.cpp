@@ -5,6 +5,8 @@
 AssetManager::AssetManager(const std::shared_ptr<Graphic>& graphic)
 {
 	mGraphic = graphic;
+	mCBEndIndex = mGraphic->alignedSize(sizeof(Base3DData));
+	mHeapEndIndex = 0;
 }
 
 AssetManager::~AssetManager()
@@ -120,6 +122,16 @@ void AssetManager::create(ObjectName objectName)
 	mLoadData[objectName] = meshData;
 }
 
+int AssetManager::getCBEndIndex()
+{
+	return mCBEndIndex;
+}
+
+int AssetManager::getHeapEndIndex()
+{
+	return mHeapEndIndex;
+}
+
 std::shared_ptr<MeshData> AssetManager::getMeshData(ObjectName objectName)
 {
 	auto iter = mLoadData.find(objectName);
@@ -130,6 +142,16 @@ std::shared_ptr<MeshData> AssetManager::getMeshData(ObjectName objectName)
 		create(objectName);
 		return mLoadData[objectName];
 	}
+}
+
+void AssetManager::proceedCBIndex(int size)
+{
+	mCBEndIndex += size;
+}
+
+void AssetManager::proceedHeapIndex(int size)
+{
+	mHeapEndIndex += size;
 }
 
 

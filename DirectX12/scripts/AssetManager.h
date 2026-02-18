@@ -31,10 +31,27 @@ public:
 
 	void create(ObjectName objectName);
 
+	//getter
+	int getCBEndIndex();
+	int getHeapEndIndex();
 	std::shared_ptr<MeshData> getMeshData(ObjectName objectName);
 
+	//コンスタントバッファの最後尾のインデックスを進める
+	void proceedCBIndex(int size);
+	void proceedHeapIndex(int size);
+
+
 private:
+	struct ClearedMemory {
+		int index;
+		int size;
+	};
+
+	int mCBEndIndex; //コンスタントバッファの使用済みメモリの最後尾インデックス
+	int mHeapEndIndex; //ディスクリプタヒープの最後尾インデックス
+
 	std::shared_ptr<Graphic> mGraphic;
 	std::map<ObjectName, std::shared_ptr<MeshData>> mLoadData;
+	std::vector<ClearedMemory> mClearedMemory; //解放されたメモリ
 };
 

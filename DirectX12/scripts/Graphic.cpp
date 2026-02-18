@@ -3,8 +3,9 @@
 #include "stb_image.h"
 #include "PointLightComponent.h"
 #include "SpotLightComponent.h"
+#include "Game.h"
 
-Graphic::Graphic()
+Graphic::Graphic(const std::shared_ptr<Game>& game)
 {
 	ClearColor[0] = 1.0f;
 	ClearColor[1] = 0.4f;
@@ -12,6 +13,7 @@ Graphic::Graphic()
 	ClearColor[3] = 1.0f;
 
 	BackBufIdx = 0;
+	mGame = game;
 }
 
 void Graphic::init() {
@@ -46,12 +48,13 @@ void Graphic::init() {
 	hr = createPipeline();
 	assert(SUCCEEDED(hr));
 
+	//共有用ディスクリプタヒープ、コンスタントバッファの作成
+	hr = createCbvAndHeap();
+	assert(SUCCEEDED(hr));
+
 	//D2Dの初期化
 	hr = createD2D();
 	assert(SUCCEEDED(hr));
-
-	//コンスタントバッファ0の作成
-	createSharedConstBuf0();
 
 	ShowWindow(hWnd, SW_SHOW);
 }
@@ -765,6 +768,26 @@ HRESULT Graphic::createD2D()
 	return S_OK;
 }
 
+HRESULT Graphic::createCbvAndHeap()
+{
+	HRESULT hr = createCbvTbvHeap(mCbvTbvHeap, 10000); //共有用のヒープを作成
+	hr = createBuf(1 << 20, mConstantBuf);	//コンスタントバッファを1MB作成
+	hr = mConstantBuf->Map(0, nullptr, reinterpret_cast<void**>(&mConstantData));	//マップする
+
+	return hr;
+}
+
+void Graphic::updateBase3DData()
+{
+	//光源の更新
+	updateSpotLight(mGame->getSpotLights());
+	updatePointLight(mGame->getPointLights());
+
+	//更新したデータをコンスタントバッファへコピー
+	memcpy(mConstantData, &Base3DData, sizeof(Base3DData));
+
+}
+
 HRESULT Graphic::createBuf(UINT sizeInBytes, ComPtr<ID3D12Resource>& buffer)
 {
 	D3D12_HEAP_PROPERTIES prop = {};
@@ -1099,7 +1122,7 @@ HRESULT Graphic::createCbvTbvHeap(ComPtr<ID3D12DescriptorHeap>& cbvTbvHeap, UINT
 {
 	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
 	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	desc.NumDescriptors = numDescriptors;//コンスタントバッファビュー２つとテクスチャバッファビュー１つ
+	desc.NumDescriptors = numDescriptors;
 	desc.NodeMask = 0;
 	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	return Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(cbvTbvHeap.ReleaseAndGetAddressOf()));
@@ -1150,6 +1173,23 @@ void Graphic::createConstantBufferView(ComPtr<ID3D12Resource> const& constantBuf
 	Device->CreateConstantBufferView(&desc, handle);
 }
 
+void Graphic::createConstantBufferView(int cbIndex, int cbSize, int heapIndex)
+{
+	D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
+	desc.BufferLocation = mConstantBuf->GetGPUVirtualAddress() + cbIndex;
+	desc.SizeInBytes = static_cast<UINT>(cbSize); //256バイトアライメント
+	
+	auto hCbvTbvHeap = mCbvTbvHeap->GetCPUDescriptorHandleForHeapStart();
+	hCbvTbvHeap.ptr += getCbvTbvIncSize() * heapIndex;
+
+	Device->CreateConstantBufferView(&desc, hCbvTbvHeap);
+}
+
+void Graphic::createBase3DBufferView(int heapIndex)
+{
+	createConstantBufferView(0, alignedSize(sizeof(Base3DData)), heapIndex);
+}
+
 void Graphic::createShaderResourceView(ComPtr<ID3D12Resource> const& shaderResource, D3D12_CPU_DESCRIPTOR_HANDLE handle)
 {
 	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
@@ -1157,54 +1197,57 @@ void Graphic::createShaderResourceView(ComPtr<ID3D12Resource> const& shaderResou
 	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
 	desc.Texture2D.MipLevels = 1;//ミップマップは使用しないので1
+
 	Device->CreateShaderResourceView(shaderResource.Get(), &desc, handle);
 }
 
-void Graphic::createSharedConstBuf0()
+void Graphic::createShaderResourceView(ComPtr<ID3D12Resource> const& shaderResource, int heapIndex)
 {
-	//コンスタントバッファ0を作る
-	createBuf(alignedSize(sizeof(Base3DConstBuf)), ConstBuf0);
-	mapBuf((void**)&CB0Data, ConstBuf0);
-	//全メッシュで共有するコピー元でスクリプタヒープを作る
-	createSharedCbvTbvHeap(SharedCb0vHeap, 1);
-	createConstantBufferView(ConstBuf0, SharedCb0vHeap->GetCPUDescriptorHandleForHeapStart());
+	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
+	desc.Format = shaderResource->GetDesc().Format;
+	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;//2Dテクスチャ
+	desc.Texture2D.MipLevels = 1;//ミップマップは使用しないので1
 
-	for (int i = 0; i < MAX_LIGHT_NUM; i++) CB0Data->pointLights[i].position = XMFLOAT4(0, 0, 0, 0);
+	auto hCbvTbvHeap = mCbvTbvHeap->GetCPUDescriptorHandleForHeapStart();
+	hCbvTbvHeap.ptr += getCbvTbvIncSize() * heapIndex;
+
+	Device->CreateShaderResourceView(shaderResource.Get(), &desc, hCbvTbvHeap);
 }
 
 void Graphic::updateViewProj(XMMATRIX& viewProj)
 {
-	CB0Data->viewProj = viewProj;
+	Base3DData.viewProj = viewProj;
 }
 
-void Graphic::updatePointLight(std::vector<std::shared_ptr<PointLightComponent>>& lights)
+void Graphic::updatePointLight(const std::vector<std::shared_ptr<PointLightComponent>>& lights)
 {
 	for (int i = 0; i < lights.size(); i++) {
-		CB0Data->pointLights[i].position = lights[i]->getPosition();
-		CB0Data->pointLights[i].color = lights[i]->getColor();
-		CB0Data->pointLights[i].setValue.x = lights[i]->getActive();
-		CB0Data->pointLights[i].setValue.y = lights[i]->getIntensity();
-		CB0Data->pointLights[i].setValue.z = lights[i]->getRange();
+		Base3DData.pointLights[i].position = lights[i]->getPosition();
+		Base3DData.pointLights[i].color = lights[i]->getColor();
+		Base3DData.pointLights[i].setValue.x = lights[i]->getActive();
+		Base3DData.pointLights[i].setValue.y = lights[i]->getIntensity();
+		Base3DData.pointLights[i].setValue.z = lights[i]->getRange();
 	}
 }
 
-void Graphic::updateSpotLight(std::vector<std::shared_ptr<SpotLightComponent>>& lights)
+void Graphic::updateSpotLight(const std::vector<std::shared_ptr<SpotLightComponent>>& lights)
 {
 	for (int i = 0; i < lights.size(); i++) {
-		CB0Data->spotLights[i].position = lights[i]->getPosition();
-		CB0Data->spotLights[i].direction = lights[i]->getDirection();
-		CB0Data->spotLights[i].color = lights[i]->getColor();
-		CB0Data->spotLights[i].setValue.x = lights[i]->getActive();
-		CB0Data->spotLights[i].setValue.y = lights[i]->getIntensity();
-		CB0Data->spotLights[i].setValue.z = lights[i]->getRange();
-		CB0Data->spotLights[i].attAngle.x = lights[i]->getUAngle();
-		CB0Data->spotLights[i].attAngle.y = lights[i]->getPAngle();
+		Base3DData.spotLights[i].position = lights[i]->getPosition();
+		Base3DData.spotLights[i].direction = lights[i]->getDirection();
+		Base3DData.spotLights[i].color = lights[i]->getColor();
+		Base3DData.spotLights[i].setValue.x = lights[i]->getActive();
+		Base3DData.spotLights[i].setValue.y = lights[i]->getIntensity();
+		Base3DData.spotLights[i].setValue.z = lights[i]->getRange();
+		Base3DData.spotLights[i].attAngle.x = lights[i]->getUAngle();
+		Base3DData.spotLights[i].attAngle.y = lights[i]->getPAngle();
 	}
 }
 
 void Graphic::updateCameraPos(XMFLOAT4& cameraPos)
 {
-	CB0Data->cameraPos = cameraPos;
+	Base3DData.cameraPos = cameraPos;
 }
 
 void Graphic::clearColor(float r, float g, float b)
@@ -1247,6 +1290,10 @@ void Graphic::begin3DRender()
 	CommandList->RSSetScissorRects(1, &ScissorRect);
 
 	CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);//三角形リスト
+
+	//ディスクリプタヒープをＧＰＵにセット
+	UINT numDescriptorHeaps = 1;
+	CommandList->SetDescriptorHeaps(numDescriptorHeaps, mCbvTbvHeap.GetAddressOf());
 
 }
 
@@ -1362,11 +1409,6 @@ ComPtr<ID3D12CommandAllocator>& Graphic::getCommandAllocator()
 	return CommandAllocator;
 }
 
-ComPtr<ID3D12DescriptorHeap>& Graphic::getCb0vHeap()
-{
-	return SharedCb0vHeap;
-}
-
 ComPtr<ID3D12Device>& Graphic::getDevice()
 {
 	return Device;
@@ -1395,6 +1437,16 @@ ComPtr<IDWriteFactory>& Graphic::getDWriteFactory()
 ComPtr<ID2D1Bitmap1>& Graphic::getD2DRenderTarget()
 {
 	return mD2DRenderTargets[BackBufIdx];
+}
+
+UINT8* Graphic::getConstantData()
+{
+	return mConstantData;
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE Graphic::getHeapHandle()
+{
+	return mCbvTbvHeap->GetGPUDescriptorHandleForHeapStart();
 }
 
 void Graphic::setRenderType(STATE state)

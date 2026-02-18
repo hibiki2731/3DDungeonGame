@@ -10,12 +10,13 @@
 #include "Definition.h"
 #include "FBXConverter.h"
 #include "timer.h"
-#include "Graphic.h"
+#include <wrl/client.h>
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
 
 //前方宣言
+class Graphic;
 class Actor;
 class Component;
 class RenderComponent;
@@ -71,7 +72,8 @@ public:
 	std::shared_ptr<EnemyComponent> getEnemyFromIndexPos(const std::vector<int>& indexPos);
 	std::shared_ptr<EnemyComponent> getEnemyFromIndexPos(int index);
 	std::shared_ptr<AssetManager> getAssetManager();
-
+	std::vector<std::shared_ptr<PointLightComponent>> getPointLights();
+	std::vector<std::shared_ptr<SpotLightComponent>> getSpotLights();
 
 private:
 	//グラフィック

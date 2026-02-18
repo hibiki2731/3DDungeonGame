@@ -29,14 +29,14 @@ cbuffer b0 : register(b0)
 cbuffer b1 : register(b1)
 {
     matrix World;
+    float3 FlashColor;
+    float FlashIntensity;
 }
 cbuffer b2 : register(b2)
 {
     float4 Ambient;
     float4 Diffuse;
     float4 Specular;
-    float3 FlashColor;
-    float FlashIntensity;
 }
 
 Texture2D<float4> Texture : register(t0); //テクスチャ0盤

@@ -22,6 +22,7 @@ using Microsoft::WRL::ComPtr;
 
 class PointLightComponent;
 class SpotLightComponent;
+class Game;
 
 struct Vertex {
 	XMFLOAT3 pos; //xyz座標
@@ -37,7 +38,7 @@ public:
 		RENDER_DT,
 	};
 
-	Graphic();
+	Graphic(const std::shared_ptr<Game>& game);
 
 	void init();	
 	HRESULT createBuf(UINT sizeInBytes, ComPtr<ID3D12Resource>& buffer);
@@ -53,12 +54,10 @@ public:
 	void createVertexBufferView(ComPtr<ID3D12Resource> const& vertexBuf, UINT sizeInBytes, UINT strideInBytes, D3D12_VERTEX_BUFFER_VIEW& vertexBufferView);
 	void createIndexBufferView(ComPtr<ID3D12Resource> const& indexBuf, UINT sizeInBytes, D3D12_INDEX_BUFFER_VIEW& indexBufferView);
 	void createConstantBufferView(ComPtr<ID3D12Resource> const& constantBuf, D3D12_CPU_DESCRIPTOR_HANDLE handle);
+	void createConstantBufferView(int cbIndex, int cbSize, int heapIndex);
+	void createBase3DBufferView(int heapIndex);
 	void createShaderResourceView(ComPtr<ID3D12Resource> const& shaderResource, D3D12_CPU_DESCRIPTOR_HANDLE handle);
-	void createSharedConstBuf0();
-	void updateViewProj(XMMATRIX& viewProj);
-	void updatePointLight(std::vector<std::shared_ptr<PointLightComponent>>& lights);
-	void updateSpotLight(std::vector<std::shared_ptr<SpotLightComponent>>& lights);
-	void updateCameraPos(XMFLOAT4& cameraPos);
+	void createShaderResourceView(ComPtr<ID3D12Resource> const& shaderResource, int heapIndex);
 	
 	void clearColor(float r, float g, float b);
 	void begin3DRender();
@@ -78,16 +77,24 @@ public:
 	ComPtr<ID3D12GraphicsCommandList>& getCommandList();
 	ComPtr<ID3D12CommandQueue>& getCommandQueue();
 	ComPtr<ID3D12CommandAllocator>& getCommandAllocator();
-	ComPtr<ID3D12DescriptorHeap>& getCb0vHeap();
 	ComPtr<ID3D12Device>& getDevice();
 	float getClientWidth();
 	float getClientHeight();
 	ComPtr<ID2D1DeviceContext>& getD2DDeviceContext();
 	ComPtr<IDWriteFactory>& getDWriteFactory();
 	ComPtr<ID2D1Bitmap1>& getD2DRenderTarget();
+	UINT8* getConstantData();
+	D3D12_GPU_DESCRIPTOR_HANDLE getHeapHandle();
 
 	//Setter
 	void setRenderType(STATE state);
+
+	//update
+	void updateBase3DData(); //cameraの更新後に実行しなければいけない
+	void updateViewProj(XMMATRIX& viewProj);
+	void updatePointLight(const std::vector<std::shared_ptr<PointLightComponent>>& lights);
+	void updateSpotLight(const std::vector<std::shared_ptr<SpotLightComponent>>& lights);
+	void updateCameraPos(XMFLOAT4& cameraPos);
 
 private:
 	HRESULT createDevice();
@@ -100,7 +107,7 @@ private:
 	HRESULT createDSbv();
 	HRESULT createPipeline();
 	HRESULT createD2D();
-
+	HRESULT createCbvAndHeap();
 
 	
 
@@ -160,10 +167,8 @@ private:
 	D3D12_VIEWPORT Viewport;
 	D3D12_RECT ScissorRect;
 
-	//コンスタントバッファ0
-	Base3DConstBuf* CB0Data;
-	ComPtr<ID3D12Resource> ConstBuf0;
-	ComPtr<ID3D12DescriptorHeap> SharedCb0vHeap;
+	//全3Dオブジェクト共通のデータ
+	Base3DData Base3DData;
 
 	//2D描画
 	ComPtr<ID3D11On12Device> mD3D11On12Device;
@@ -171,6 +176,13 @@ private:
 	ComPtr<IDWriteFactory> mDWriteFactory;
 	ComPtr<ID2D1Bitmap1> mD2DRenderTargets[2];
 	ComPtr<ID3D11Resource> mWrappedBackBuffers[2];
+
+	//共有して使用するヒープ、コンスタントバッファ
+	ComPtr<ID3D12DescriptorHeap> mCbvTbvHeap;
+	ComPtr<ID3D12Resource> mConstantBuf;
+	UINT8* mConstantData;	//生データ
+
+	std::shared_ptr<Game> mGame;
 
 };
 

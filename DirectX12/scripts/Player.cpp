@@ -175,8 +175,7 @@ void Player::attack()
 
 	//ダメージの計算
 	int damage = max(mCharacter->getPower() - target->getDefense(), 0);
-	//target->giveDamage(damage); //ダメージを与える
-	target->giveDamage(0); //ダメージを与える
+	target->giveDamage(damage); //ダメージを与える
 
 	//ダメージエフェクト
 	target->startFlash(); //敵を点滅させる
