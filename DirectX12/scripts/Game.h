@@ -28,6 +28,7 @@ class TextComponent;
 class MapManager;
 class EnemyComponent;
 class DamageTextManager;
+class AssetManager;
 
 class Game : public std::enable_shared_from_this<Game>{
 public:
@@ -69,6 +70,7 @@ public:
 	std::shared_ptr<DamageTextManager> getDamageTextManager();
 	std::shared_ptr<EnemyComponent> getEnemyFromIndexPos(const std::vector<int>& indexPos);
 	std::shared_ptr<EnemyComponent> getEnemyFromIndexPos(int index);
+	std::shared_ptr<AssetManager> getAssetManager();
 
 
 private:
@@ -96,6 +98,9 @@ private:
 
 	//プレイヤー
 	std::shared_ptr<Player> mPlayer;
+
+	//AssetManager
+	std::shared_ptr<AssetManager> mAssetManager;
 
 	//ループ内処理
 	void input();

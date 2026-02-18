@@ -29,7 +29,7 @@ void MeshComponent::endProccess()
 	mOwner->getGame()->removeMesh(dynamic_pointer_cast<MeshComponent>(shared_from_this()));
 }
 
-void MeshComponent::create(const char* filename)
+void MeshComponent::create(ObjectName objectName)
 {	
 
 	//world matrix用コンスタントバッファ1をつくる
@@ -39,89 +39,40 @@ void MeshComponent::create(const char* filename)
 	mGraphic->createSharedCbvTbvHeap(Cb1vHeap, 1);
 	mGraphic->createConstantBufferView(ConstBuf1, Cb1vHeap->GetCPUDescriptorHandleForHeapStart());
 
-	//メッシュのテキストデータを開く
-	std::ifstream file(filename);
-	assert(!file.fail());
-
+	//メッシュデータの取得
+	std::shared_ptr<MeshData> meshData = mOwner->getGame()->getAssetManager()->getMeshData(objectName);
+	
 	//メッシュパーツ数を読み込み、メモリを確保
-	file >> NumParts;
+	NumParts = meshData->NumParts;
 	Parts = new PARTS[NumParts];
 
 	//パーツごとに各バッファをつくる
 	for (int k = 0; k < NumParts; k++) {
 		//頂点バッファ
 		{
-			//生データをファイルからvector配列に読み込む
-			//　データチェック
-			std::string dataType;
-			file >> dataType;
-			assert(dataType == "vertices");
-			//　頂点数
-			int numVertices = 0;
-			file >> numVertices;//頂点数
-			//　vector配列に読み込む
-			UINT NumElementsPerVertex = 8;
-			int NumElements = numVertices * NumElementsPerVertex;
-			std::vector<float>vertices(NumElements);
-			for (int i = 0; i < NumElements; i++) {
-				file >> vertices[i];
-			}
-
-			//インデックスを使用しない描画の時に、これを使用するので取っておく
-			Parts[k].NumVertices = numVertices;
-
-			//頂点バッファをつくる
-			UINT sizeInByte = sizeof(float) * NumElements;//全バイト数
-			Hr = mGraphic->createBuf(sizeInByte, Parts[k].VertexBuf);
-			assert(SUCCEEDED(Hr));
-
-			//頂点バッファに生データをコピー
-			Hr = mGraphic->updateBuf(vertices.data(), sizeInByte, Parts[k].VertexBuf);
-			assert(SUCCEEDED(Hr));
-
-			//位置バッファのビューを初期化しておく。（ディスクリプタヒープに作らなくてよい）
-			Parts[k].VertexBufView.BufferLocation = Parts[k].VertexBuf->GetGPUVirtualAddress();
-			Parts[k].VertexBufView.SizeInBytes = sizeInByte;//全バイト数
-			Parts[k].VertexBufView.StrideInBytes = sizeof(float) * NumElementsPerVertex;//１頂点のバイト数
+			Parts[k].NumVertices = meshData->NumVertices[k];
+			Parts[k].VertexBufView = meshData->VertexBufView[k];
 		}
-		//コンスタントバッファ２
+		//マテリアル用コンスタントバッファ
 		{
-			//生データをファイルからvector配列に読み込む
-			std::string dataType;
-			file >> dataType;
-			assert(dataType == "material");
-			XMFLOAT4 ambient, diffuse, specular;
-			file >> ambient.x >> ambient.y >> ambient.z >> ambient.w;
-			file >> diffuse.x >> diffuse.y >> diffuse.z >> diffuse.w;
-			file >> specular.x >> specular.y >> specular.z >> specular.w;
-
-
-			//コンスタントバッファ２をつくる
+			//コンスタントバッファをつくる
 			Hr = mGraphic->createBuf(mGraphic->alignedSize(sizeof(MaterialConstBuf)), Parts[k].ConstBuf2);
 			assert(SUCCEEDED(Hr));
 
 			//マップして更新。unmapしない。
 			Hr = mGraphic->mapBuf((void**)&Parts[k].Cb2, Parts[k].ConstBuf2);
 			assert(SUCCEEDED(Hr));
-			Parts[k].Cb2->ambient = ambient;
-			Parts[k].Cb2->diffuse = diffuse;
-			Parts[k].Cb2->specular = specular;
+			Parts[k].Cb2->ambient = meshData->Material[k * 3];
+			Parts[k].Cb2->diffuse = meshData->Material[k * 3 + 1];
+			Parts[k].Cb2->specular = meshData->Material[k * 3 + 2];
 
 			Parts[k].Cb2->flashColor = XMFLOAT3(1.0f, 1.0f, 1.0f);	//白く光る
 			Parts[k].Cb2->flashIntensity = 0.0f;					//最初は光らない
 		}
 		//テクスチャバッファ
 		{
-			//ファイル名を読み込む
-			std::string dataType;
-			file >> dataType;
-			assert(dataType == "texture");
-			std::string filename;
-			std::getline(file, filename);
-			filename.erase(0, 1); //先頭の" "を削除
-
 			//ファイルを読み込み、テクスチャバッファをつくる
-			Hr = mGraphic->createShaderResource(filename, Parts[k].TextureBuf);
+			Hr = mGraphic->createShaderResource(meshData->TextureName[k], Parts[k].TextureBuf);
 			assert(SUCCEEDED(Hr));
 			
 		}

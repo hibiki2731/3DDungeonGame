@@ -79,6 +79,9 @@ void Game::init() {
 	//タイマー初期化
 	initDeltaTime();
 
+	//assetManagerの初期化
+	mAssetManager = std::make_shared<AssetManager>(mGraphic);
+
 	//mapの生成
 	mMapManager = std::make_shared<MapManager>(shared_from_this());
 	mMapManager->setStage(Stage::MAP1);
@@ -238,6 +241,11 @@ std::shared_ptr<EnemyComponent> Game::getEnemyFromIndexPos(int index)
 	indexPos[0] = index % mapSize;
 	indexPos[1] = index / mapSize;
 	return getEnemyFromIndexPos(indexPos);
+}
+
+std::shared_ptr<AssetManager> Game::getAssetManager()
+{
+	return mAssetManager;
 }
 
 void Game::input()

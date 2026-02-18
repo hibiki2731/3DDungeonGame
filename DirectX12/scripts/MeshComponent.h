@@ -2,11 +2,11 @@
 #pragma once
 
 //#define USE_INDEX
-#include <map>
 #include <memory>
 #include <d3d12.h>
 #include <DirectXMath.h>
 #include "Graphic.h"
+#include "AssetManager.h"
 #include "Component.h"
 
 class MeshComponent : public Component
@@ -18,7 +18,7 @@ public:
     void initComponent() override;
 	void endProccess() override;
 
-    void create(const char* filename);
+    void create(ObjectName objectName);
 	void draw();
 
     void updateFlashIntensity(float intensity);
@@ -44,7 +44,6 @@ private:
     struct PARTS {
         //頂点バッファ
         UINT NumVertices;
-        ComPtr<ID3D12Resource> VertexBuf;
         D3D12_VERTEX_BUFFER_VIEW VertexBufView;
         //コンスタントバッファ2(マテリアル)
         MaterialConstBuf* Cb2;//マップしたアドレスを入れる
