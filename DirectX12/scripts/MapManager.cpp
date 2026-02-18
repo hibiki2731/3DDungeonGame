@@ -11,7 +11,7 @@ MapManager::MapManager(const std::shared_ptr<Game>& game)
 	mMapData.clear();
 	mMapSize = 1;
 	mGame = game;
-	mStage = MAP1;
+	mStage = Stage::MAP1;
 }
 
 void MapManager::createMap()
@@ -77,7 +77,7 @@ void MapManager::loadMap(Stage stage)
 
 	//ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
 	switch (stage) {
-	case MAP1:
+	case Stage::MAP1:
 		file.open("assets\\mapdata\\stage1.txt");
 		break;
 	}

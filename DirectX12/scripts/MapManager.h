@@ -4,21 +4,23 @@
 
 class Game;
 
-enum Stage {
+enum class Stage {
 	MAP1,
 };
-
-enum TileType {
-	WALL = 0,
-	FLOOR = 1,
+struct TileType {
+	enum Type {
+		WALL = 0,
+		FLOOR = 1,
+	};
 };
 
-enum ObjectType {
-	EMPTY = 0,
-	PLAYER = 1,
-	SLIME = 2,
+struct ObjectType {
+	enum Type {
+		EMPTY = 0,
+		PLAYER = 1,
+		SLIME = 2,
+	};
 };
-
 class MapManager
 {
 public:

@@ -36,7 +36,7 @@ struct SpotLightData {
 };
 
 //3D用バッファ
-struct Base3DConstBuf {
+struct Base3DData {
 	XMMATRIX viewProj;  //ビュー射影行列
 	XMFLOAT4 cameraPos; //xyz:カメラ位置、w:未使用
 	PointLightData pointLights[MAX_LIGHT_NUM];  //ポイントライト配列
@@ -46,6 +46,8 @@ struct Base3DConstBuf {
 //3Dオブジェクトのワールド行列
 struct World3DConstBuf {
 	XMMATRIX world;  //ワールド行列
+	XMFLOAT3 flashColor;
+	float flashIntensity;
 };
 
 //メッシュごとのマテリアル情報
@@ -53,8 +55,6 @@ struct MaterialConstBuf {
     XMFLOAT4 ambient;
     XMFLOAT4 diffuse;
     XMFLOAT4 specular;
-	XMFLOAT3 flashColor;
-	float flashIntensity;
 };
 
 //2D用バッファ

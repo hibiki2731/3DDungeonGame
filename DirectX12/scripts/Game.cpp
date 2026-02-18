@@ -15,6 +15,7 @@
 #include "MapManager.h"
 #include "EnemyComponent.h"
 #include "DamageText.h"
+#include "Graphic.h"
 
 #define DEBUG
 
@@ -46,7 +47,7 @@ int Game::endProcess()
 }
 
 void Game::init() {
-	mGraphic = std::make_shared<Graphic>();
+	mGraphic = std::make_shared<Graphic>(shared_from_this());
 	mGraphic->init();
 	mGraphic->clearColor(0.25f, 0.5f, 0.9f);
 
@@ -78,6 +79,9 @@ void Game::init() {
 
 	//タイマー初期化
 	initDeltaTime();
+
+	//assetManagerの初期化 meshComponentを作成する前に初期化
+	mAssetManager = std::make_shared<AssetManager>(mGraphic);
 
 	//mapの生成
 	mMapManager = std::make_shared<MapManager>(shared_from_this());
@@ -240,6 +244,21 @@ std::shared_ptr<EnemyComponent> Game::getEnemyFromIndexPos(int index)
 	return getEnemyFromIndexPos(indexPos);
 }
 
+std::shared_ptr<AssetManager> Game::getAssetManager()
+{
+	return mAssetManager;
+}
+
+std::vector<std::shared_ptr<PointLightComponent>> Game::getPointLights()
+{
+	return mPointLights;
+}
+
+std::vector<std::shared_ptr<SpotLightComponent>> Game::getSpotLights()
+{
+	return mSpotLights;
+}
+
 void Game::input()
 {
 
@@ -256,10 +275,6 @@ void Game::update()
 		actor->update();
 	}
 	mUpdatingActors = false;
-
-	//光源の更新
-	mGraphic->updatePointLight(mPointLights);
-	mGraphic->updateSpotLight(mSpotLights);
 
 	for (auto pending : mPendingActors) {
 		mActors.emplace_back(pending);
@@ -278,6 +293,9 @@ void Game::update()
 	for (auto actor : deadActors) {
 		removeActor(actor);
 	}
+
+	//Base3DDataの更新
+	mGraphic->updateBase3DData();
 
 	mDamageTextManager->update();
 

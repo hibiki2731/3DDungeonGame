@@ -7,7 +7,7 @@
 void Slime::initActor()
 {
 	auto mesh = createComponent<MeshComponent>(shared_from_this());
-	mesh->create("assets\\slime.txt");
+	mesh->create(ObjectName::SLIME);
 	setScale(XMFLOAT3(0.3f, 0.3f, 0.3f));
 
 	mEnemy = createComponent<EnemyComponent>(shared_from_this());

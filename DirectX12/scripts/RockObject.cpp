@@ -4,17 +4,17 @@
 void RockWall_side::initActor()
 {
 	auto mesh = createComponent<MeshComponent>(shared_from_this());
-	mesh->create("assets\\rock_side\\wall_side.txt");
+	mesh->create(ObjectName::ROCK_WALL_SIDE);
 }
 
 void RockWall::initActor()
 {
 	auto mesh = createComponent<MeshComponent>(shared_from_this());
-	mesh->create("assets\\rockObj\\rockWall.txt");
+	mesh->create(ObjectName::ROCK_WALL);
 }
 
 void RockFloor::initActor()
 {
 	auto mesh = createComponent<MeshComponent>(shared_from_this());
-	mesh->create("assets\\rockObj\\rockFloor.txt");
+	mesh->create(ObjectName::ROCK_FLOOR);
 }
