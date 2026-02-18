@@ -2,6 +2,7 @@
 #include <map>
 #include <vector>
 #include <memory>
+#include <algorithm>
 #include "Graphic.h"
 
 struct MeshData {
@@ -32,17 +33,21 @@ public:
 	void create(ObjectName objectName);
 
 	//getter
-	int getCBEndIndex();
-	int getHeapEndIndex();
-	std::shared_ptr<MeshData> getMeshData(ObjectName objectName);
+	int getCBEndIndex(int size);//必要なサイズを引数に取る
+	int getHeapEndIndex(int size); //必要なサイズを引数に取る
+	std::shared_ptr<MeshData> getMeshData(ObjectName objectName); 
 
-	//コンスタントバッファの最後尾のインデックスを進める
-	void proceedCBIndex(int size);
-	void proceedHeapIndex(int size);
+	void deleteMemory(int index, int size);
+	void deleteHeap(int index, int size);
 
 
 private:
 	struct ClearedMemory {
+		int index;
+		int size;
+	};
+
+	struct ClearedHeap {
 		int index;
 		int size;
 	};
@@ -53,5 +58,6 @@ private:
 	std::shared_ptr<Graphic> mGraphic;
 	std::map<ObjectName, std::shared_ptr<MeshData>> mLoadData;
 	std::vector<ClearedMemory> mClearedMemory; //解放されたメモリ
+	std::vector<ClearedHeap> mClearedHeap; //解放されたメモリ
 };
 

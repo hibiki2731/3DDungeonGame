@@ -9,7 +9,6 @@
 
 MeshComponent::~MeshComponent()
 {
-	delete[] Parts;
 }
 
 void MeshComponent::initComponent() {
@@ -24,6 +23,9 @@ void MeshComponent::endProccess()
 {
 	//Gameからメッシュを削除
 	mOwner->getGame()->removeMesh(dynamic_pointer_cast<MeshComponent>(shared_from_this()));
+	delete[] Parts;
+	mOwner->getGame()->getAssetManager()->deleteMemory(mCBIndex, mCBSize);
+	mOwner->getGame()->getAssetManager()->deleteHeap(mHeapIndex, mHeapSize);
 }
 
 void MeshComponent::create(ObjectName objectName)
@@ -33,10 +35,10 @@ void MeshComponent::create(ObjectName objectName)
 	std::shared_ptr<MeshData> meshData = mOwner->getGame()->getAssetManager()->getMeshData(objectName);
 	
 	//コンスタントバッファのインデックスを取得
-	mCBIndex = mOwner->getGame()->getAssetManager()->getCBEndIndex();
 	mCBSize = (meshData->NumParts + 1) * 256;
-	mHeapIndex = mOwner->getGame()->getAssetManager()->getHeapEndIndex();
+	mCBIndex = mOwner->getGame()->getAssetManager()->getCBEndIndex(mCBSize);
 	mHeapSize = NumDescriptors * meshData->NumParts;
+	mHeapIndex = mOwner->getGame()->getAssetManager()->getHeapEndIndex(mHeapSize);
 
 	//メッシュパーツ数を読み込み、メモリを確保
 	NumParts = meshData->NumParts;
@@ -80,10 +82,6 @@ void MeshComponent::create(ObjectName objectName)
 		mGraphic->createConstantBufferView(mCBIndex + 256 * (k + 1), 256, heapIndex); heapIndex++;
 		mGraphic->createShaderResourceView(Parts[k].TextureBuf, heapIndex); heapIndex++;
 	}
-
-	//使用したメモリ分インスタンスを進める
-	mOwner->getGame()->getAssetManager()->proceedCBIndex(mCBSize);
-	mOwner->getGame()->getAssetManager()->proceedHeapIndex(mHeapSize);
 
 }
 

@@ -122,14 +122,49 @@ void AssetManager::create(ObjectName objectName)
 	mLoadData[objectName] = meshData;
 }
 
-int AssetManager::getCBEndIndex()
+int AssetManager::getCBEndIndex(int size)
 {
-	return mCBEndIndex;
+	int index = 0;
+	if (mClearedMemory.size() > 0) {
+		for (auto iter = mClearedMemory.begin(); iter != mClearedMemory.end(); iter++) {
+			if (iter->size >= size) {
+				iter->size -= size;
+				index = iter->index;
+				iter->index += size;
+				if (iter->size == 0) {
+					std::swap(*iter, mClearedMemory.back());
+					mClearedMemory.pop_back();
+				}
+				return index;
+			}
+		}
+	}
+	index = mCBEndIndex;
+	mCBEndIndex += size;
+	return index;
 }
 
-int AssetManager::getHeapEndIndex()
+int AssetManager::getHeapEndIndex(int size)
 {
-	return mHeapEndIndex;
+	int index = 0;
+	if (mClearedHeap.size() > 0) {
+		for (auto iter = mClearedHeap.begin(); iter != mClearedHeap.end(); iter++) {
+			if (iter->size >= size) {
+				iter->size -= size;
+				index = iter->index;
+				iter->index += size;
+
+				if (iter->size == 0) {
+					std::swap(*iter, mClearedHeap.back());
+					mClearedHeap.pop_back();
+				}
+				return index;
+			}
+		}
+	}
+	index = mHeapEndIndex;
+	mHeapEndIndex += size;
+	return index;
 }
 
 std::shared_ptr<MeshData> AssetManager::getMeshData(ObjectName objectName)
@@ -144,14 +179,16 @@ std::shared_ptr<MeshData> AssetManager::getMeshData(ObjectName objectName)
 	}
 }
 
-void AssetManager::proceedCBIndex(int size)
+void AssetManager::deleteMemory(int index, int size)
 {
-	mCBEndIndex += size;
+	ClearedMemory memory = { index, size };
+	mClearedMemory.push_back(memory);
 }
 
-void AssetManager::proceedHeapIndex(int size)
+void AssetManager::deleteHeap(int index, int size)
 {
-	mHeapEndIndex += size;
+	ClearedHeap heap = { index, size };
+	mClearedHeap.push_back(heap);
 }
 
 
