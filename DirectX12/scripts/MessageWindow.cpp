@@ -38,12 +38,14 @@ void MessageWindow::updateActor()
 
 	switch (mGame->getMapManager()->getTurnType()) {
 	case TurnType::PLAYER:
-		message += L"PLAYER";
+		message += L"PLAYER ";
 		break;
 	case TurnType::ENEMY:
-		message += L"ENEMY";
+		message += L"ENEMY ";
 		break;
 	}
+
+	message += L"HP: " + std::to_wstring(mPlayer->getHP()) + L" ";
 
 	mMessage = message;
 	mText->setText(mMessage);

@@ -204,6 +204,13 @@ void Game::setPlayer(const std::shared_ptr<Player>& player)
 	mPlayer = player;
 }
 
+void Game::activateEnemies()
+{
+	for (auto enemy : *mEnemies) {
+		enemy->activate();
+	}
+}
+
 std::shared_ptr<Graphic> Game::getGraphic()
 {
 	return mGraphic;
@@ -265,6 +272,11 @@ std::vector<std::shared_ptr<SpotLightComponent>> Game::getSpotLights()
 	return mSpotLights;
 }
 
+std::shared_ptr<Player> Game::getPlayer()
+{
+	return mPlayer;
+}
+
 void Game::input()
 {
 
@@ -312,7 +324,7 @@ void Game::update()
 
 	//Base3DDataの更新
 	mGraphic->updateBase3DData();
-
+	//ダメージテキストの更新
 	mDamageTextManager->update();
 
 }

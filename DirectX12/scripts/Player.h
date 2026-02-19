@@ -19,6 +19,13 @@ public:
 	void updateActor() override;
 
 	int getDirection();
+	void getIndexPos(int(&pos)[2]);
+	int getHP();
+	int getPower();
+	int getDefense();
+
+	//プレイヤーにダメージを与える
+	void giveDamage(int damage);
 
 private:
 	void attack();
@@ -37,7 +44,8 @@ private:
 	bool isRotating;
 
 	//カウンター
-	float mActionTimer = 0.0f;
+	float mAttackTimer;
+	const float mAttackWaitTime = 1.0f;
 
 	std::shared_ptr<CameraComponent> mCamera;
 	std::shared_ptr<CharacterComponent> mCharacter;

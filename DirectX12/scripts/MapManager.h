@@ -61,5 +61,8 @@ private:
 	int mMapSize;
 	Stage mStage;
 	std::shared_ptr<Game> mGame;
+
+	//–¢s“®“G”
+	int mPendingEnemyCount;
 };
 

@@ -14,6 +14,7 @@ MapManager::MapManager(const std::shared_ptr<Game>& game)
 	mGame = game;
 	mStage = Stage::MAP1;
 	mTurnType == TurnType::PLAYER;
+	mPendingEnemyCount = 0;
 }
 
 void MapManager::createMap()
@@ -114,7 +115,7 @@ int MapManager::getObjectDataAt(int index)
 		y < 0 || y > mMapSize - 1) return ObjectType::EMPTY;
 
 	return mObjectData[x][y];
-}
+} 
 
 TurnType MapManager::getTurnType()
 {
@@ -123,11 +124,15 @@ TurnType MapManager::getTurnType()
 
 void MapManager::moveToPlayerTurn()
 {
-	mTurnType = TurnType::PLAYER;
+	mPendingEnemyCount--;
+	if (mPendingEnemyCount == 0) mTurnType = TurnType::PLAYER;
 }
 
 void MapManager::moveToEnemyTurn()
 {
+	mPendingEnemyCount = mGame->getEnemies()->size(); //待機敵数をリセット
+	if (mPendingEnemyCount == 0) return;
+	mGame->activateEnemies();
 	mTurnType = TurnType::ENEMY;
 }
 

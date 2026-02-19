@@ -25,6 +25,7 @@ void Player::initActor()
 	mCamera->setActive(true);
 	isMoving = false;
 	isRotating = false;
+	mAttackTimer = 0.0f;
 
 	auto spotLight = createComponent<SpotLightComponent>(shared_from_this());
 	spotLight->setActive(true);
@@ -63,7 +64,7 @@ void Player::inputActor()
 		rotate(Direction::LEFT);
 	}
 	if (GetAsyncKeyState(VK_RETURN)) {
-		attack();
+		if(mAttackTimer <= 0) attack();
 
 	}
 	
@@ -71,6 +72,7 @@ void Player::inputActor()
 
 void Player::updateActor()
 {
+	mAttackTimer -= deltaTime;
 	//移動処理
 	if (isMoving) {
 		//移動処理
@@ -113,6 +115,33 @@ int Player::getDirection()
 	return mCharacter->getDirection();
 }
 
+void Player::getIndexPos(int(&pos)[2])
+{
+	pos[0] = mCharacter->getIndexPos()[0];
+	pos[1] = mCharacter->getIndexPos()[1];
+}
+
+int Player::getHP()
+{
+	return mCharacter->getHP();
+}
+
+int Player::getPower()
+{
+	return mCharacter->getPower();
+}
+
+int Player::getDefense()
+{
+	return mCharacter->getDefense();
+}
+
+void Player::giveDamage(int damage)
+{
+	int playerHP = mCharacter->getHP();
+	mCharacter->setHP(playerHP - damage);
+}
+
 void Player::attack()
 {
 	//敵ターン時は実行不可
@@ -151,6 +180,7 @@ void Player::attack()
 
 	//ターン経過
 	mMapManager->moveToEnemyTurn();
+	mAttackTimer = mAttackWaitTime;
 }
 
 void Player::calcDamageText(const XMFLOAT3& targetPos, int val)

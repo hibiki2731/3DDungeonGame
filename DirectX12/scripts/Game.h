@@ -65,6 +65,7 @@ public:
 	void removeEnemy(const std::shared_ptr<EnemyComponent>& enemy);
 	//プレイヤーのセット
 	void setPlayer(const std::shared_ptr<Player>& player);
+	void activateEnemies();
 
 	//ゲッター
 	std::shared_ptr<Graphic> getGraphic();
@@ -76,6 +77,7 @@ public:
 	std::shared_ptr<AssetManager> getAssetManager();
 	std::vector<std::shared_ptr<PointLightComponent>> getPointLights();
 	std::vector<std::shared_ptr<SpotLightComponent>> getSpotLights();
+	std::shared_ptr<Player> getPlayer();
 
 private:
 	//グラフィック

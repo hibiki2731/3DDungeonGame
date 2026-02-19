@@ -3,6 +3,8 @@
 #include "CharacterComponent.h"
 #include "MeshComponent.h"
 
+class Player;
+
 class EnemyComponent : public CharacterComponent
 {
 public:
@@ -13,6 +15,7 @@ public:
 
 	void setMesh(const std::shared_ptr<MeshComponent>& mesh);
 	void setEnemyTtype(int type);
+	void activate();
 
 	void startFlash();
 
@@ -22,6 +25,8 @@ public:
 private:
 	void updateFlash(); //ダメージ時の点滅を更新
 	void move();
+	void attack();
+	void finishAct();
 
 	std::shared_ptr<MeshComponent> mMesh;
 
@@ -37,5 +42,9 @@ private:
 
 	//敵タイプ
 	int mEnemyType;
+
+	//ターン制御
+	bool isActive;
+
 };
 
