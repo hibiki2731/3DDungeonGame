@@ -265,6 +265,11 @@ void Game::input()
 	for (auto& actor : mActors) {
 		actor->input();
 	}
+
+	if (GetAsyncKeyState('P')) {
+		auto slime = createActor<Slime>(shared_from_this());
+		slime->setPosition(XMFLOAT3(MAPTIPSIZE * 5.0f, 0.0f, MAPTIPSIZE * 5.0f));
+	}
 }
 
 void Game::update()

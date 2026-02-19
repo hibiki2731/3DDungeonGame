@@ -29,7 +29,7 @@ void EnemyComponent::updateComponent()
 
 	//€–S‚µ‚½‚çActor”z—ñ‚©‚çœ‹
 	if (!isAlive) {
-		mOwner->getGame()->removeActor(mOwner);
+		mOwner->setState(Actor::State::Dead);
 	}
 
 }	
@@ -38,6 +38,7 @@ void EnemyComponent::endProccess()
 {
 	CharacterComponent::endProccess();
 	mOwner->getGame()->removeEnemy(dynamic_pointer_cast<EnemyComponent>(shared_from_this()));
+	mMapManager->setMapDataAt(mIndexPos[1] * mMapManager->getMapSize() +  mIndexPos[0], ObjectType::EMPTY); //©•ª‚Ì‚¢‚éindexÀ•W‚ğ‹ó‚É
 }
 
 void EnemyComponent::setMesh(const std::shared_ptr<MeshComponent>& mesh)

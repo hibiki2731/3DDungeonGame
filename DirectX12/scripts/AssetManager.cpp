@@ -122,14 +122,56 @@ void AssetManager::create(ObjectName objectName)
 	mLoadData[objectName] = meshData;
 }
 
-int AssetManager::getCBEndIndex()
+int AssetManager::getCBEndIndex(int size)
 {
-	return mCBEndIndex;
+	int index = 0;
+	//解放されたメモリがあれば優先して使う
+	for (auto iter = mClearedMemory.begin(); iter != mClearedMemory.end(); iter++) {
+		//要求サイズより、空いているサイズが大きければ使用する
+		if (iter->size >= size) {
+			iter->size -= size;	//要求サイズ分メモリを使用
+			index = iter->index;
+			iter->index += size;//インデックスもそれに応じて移動
+
+			//空いているメモリがなくなれば、配列から除去
+			if (iter->size == 0) {
+				std::swap(*iter, mClearedMemory.back());
+				mClearedMemory.pop_back();
+			}
+			return index;
+		}
+	}
+	
+	//解放されたメモリがなければ、最後尾のインデックスを取得
+	index = mCBEndIndex;
+	mCBEndIndex += size;
+	return index;
 }
 
-int AssetManager::getHeapEndIndex()
+int AssetManager::getHeapEndIndex(int size)
 {
-	return mHeapEndIndex;
+	int index = 0;
+	//解放されたヒープがあれば優先して使う
+	for (auto iter = mClearedHeap.begin(); iter != mClearedHeap.end(); iter++) {
+		//要求サイズより、空いているサイズが大きければ使用する
+		if (iter->size >= size) {
+			iter->size -= size; //要求サイズ分ヒープを使用
+			index = iter->index;
+			iter->index += size;//インデックスもそれに応じて移動
+
+			//空いているヒープがなくなれば、配列から除去
+			if (iter->size == 0) {
+				std::swap(*iter, mClearedHeap.back());
+				mClearedHeap.pop_back();
+			}
+			return index;
+		}
+	}
+
+	//解放されたヒープがなければ、最後尾のインデックスを取得
+	index = mHeapEndIndex;
+	mHeapEndIndex += size;
+	return index;
 }
 
 std::shared_ptr<MeshData> AssetManager::getMeshData(ObjectName objectName)
@@ -144,14 +186,16 @@ std::shared_ptr<MeshData> AssetManager::getMeshData(ObjectName objectName)
 	}
 }
 
-void AssetManager::proceedCBIndex(int size)
+void AssetManager::deleteMemory(int index, int size)
 {
-	mCBEndIndex += size;
+	ClearedMemory memory = { index, size };
+	mClearedMemory.push_back(memory);
 }
 
-void AssetManager::proceedHeapIndex(int size)
+void AssetManager::deleteHeap(int index, int size)
 {
-	mHeapEndIndex += size;
+	ClearedHeap heap = { index, size };
+	mClearedHeap.push_back(heap);
 }
 
 
