@@ -125,20 +125,24 @@ void AssetManager::create(ObjectName objectName)
 int AssetManager::getCBEndIndex(int size)
 {
 	int index = 0;
-	if (mClearedMemory.size() > 0) {
-		for (auto iter = mClearedMemory.begin(); iter != mClearedMemory.end(); iter++) {
-			if (iter->size >= size) {
-				iter->size -= size;
-				index = iter->index;
-				iter->index += size;
-				if (iter->size == 0) {
-					std::swap(*iter, mClearedMemory.back());
-					mClearedMemory.pop_back();
-				}
-				return index;
+	//解放されたメモリがあれば優先して使う
+	for (auto iter = mClearedMemory.begin(); iter != mClearedMemory.end(); iter++) {
+		//要求サイズより、空いているサイズが大きければ使用する
+		if (iter->size >= size) {
+			iter->size -= size;	//要求サイズ分メモリを使用
+			index = iter->index;
+			iter->index += size;//インデックスもそれに応じて移動
+
+			//空いているメモリがなくなれば、配列から除去
+			if (iter->size == 0) {
+				std::swap(*iter, mClearedMemory.back());
+				mClearedMemory.pop_back();
 			}
+			return index;
 		}
 	}
+	
+	//解放されたメモリがなければ、最後尾のインデックスを取得
 	index = mCBEndIndex;
 	mCBEndIndex += size;
 	return index;
@@ -147,21 +151,24 @@ int AssetManager::getCBEndIndex(int size)
 int AssetManager::getHeapEndIndex(int size)
 {
 	int index = 0;
-	if (mClearedHeap.size() > 0) {
-		for (auto iter = mClearedHeap.begin(); iter != mClearedHeap.end(); iter++) {
-			if (iter->size >= size) {
-				iter->size -= size;
-				index = iter->index;
-				iter->index += size;
+	//解放されたヒープがあれば優先して使う
+	for (auto iter = mClearedHeap.begin(); iter != mClearedHeap.end(); iter++) {
+		//要求サイズより、空いているサイズが大きければ使用する
+		if (iter->size >= size) {
+			iter->size -= size; //要求サイズ分ヒープを使用
+			index = iter->index;
+			iter->index += size;//インデックスもそれに応じて移動
 
-				if (iter->size == 0) {
-					std::swap(*iter, mClearedHeap.back());
-					mClearedHeap.pop_back();
-				}
-				return index;
+			//空いているヒープがなくなれば、配列から除去
+			if (iter->size == 0) {
+				std::swap(*iter, mClearedHeap.back());
+				mClearedHeap.pop_back();
 			}
+			return index;
 		}
 	}
+
+	//解放されたヒープがなければ、最後尾のインデックスを取得
 	index = mHeapEndIndex;
 	mHeapEndIndex += size;
 	return index;
