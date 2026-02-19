@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cmath>
 #include "Game.h"
+#include "MapManager.h"
 #include "Graphic.h"
 
 void Player::initActor()
@@ -18,11 +19,12 @@ void Player::initActor()
 	mPosition = { 0, 0.5f, 0.0f };
 	mTargetPos = mPosition;
 	mTargetRot = mRotation;
-	isMoving = false;
 	mMoveSpeed = 5.0f;
 	mRotSpeed = 4.5f;
 	mCamera = createComponent<CameraComponent>(shared_from_this());
 	mCamera->setActive(true);
+	isMoving = false;
+	isRotating = false;
 
 	auto spotLight = createComponent<SpotLightComponent>(shared_from_this());
 	spotLight->setActive(true);
@@ -34,112 +36,76 @@ void Player::initActor()
 
 	mCharacter = createComponent<CharacterComponent>(shared_from_this());
 	mCharacter->setDirection(Direction::UP);
+	mMapManager = mGame->getMapManager();
+	mGame->setPlayer(dynamic_pointer_cast<Player>(shared_from_this()));
 
 }
 
 void Player::inputActor()
 {
 
-		if (GetAsyncKeyState('A')) {
-			if (isMoving) return;
-			mTargetPos = mPosition + Math::rotateY(normalZ, mRotation.y + XM_PIDIV2) * MAPTIPSIZE;
-			isMoving = true;
-		}
-		if (GetAsyncKeyState('D')) {
-			if (isMoving) return;
-			mTargetPos = mPosition + Math::rotateY(normalZ, mRotation.y - XM_PIDIV2) * MAPTIPSIZE;
-			isMoving = true;
-		}
-		if (GetAsyncKeyState('W')) {
-			if (isMoving) return;
-			mTargetPos = mPosition + Math::rotateY(normalZ, mRotation.y) * MAPTIPSIZE;
-			isMoving = true;
-		}
-		if (GetAsyncKeyState('S')) {
-			if (isMoving) return;
-			mTargetPos = mPosition - Math::rotateY(normalZ, mRotation.y) * MAPTIPSIZE;
-			isMoving = true;
-		}
-		if (GetAsyncKeyState(VK_UP)) {
-			if (isMoving) return;
-			mRotation = mRotation - XMFLOAT3(mRotSpeed * deltaTime, 0, 0);
-			isMoving = true;
-		}
-		if (GetAsyncKeyState(VK_DOWN)) {
-			if (isMoving) return;
-			mRotation = mRotation + XMFLOAT3(mRotSpeed * deltaTime, 0, 0);
-			isMoving = true;
-		}
-		if (GetAsyncKeyState(VK_RIGHT)) {
-			if (isMoving) return;
-			mTargetRot = mRotation - XMFLOAT3(0, XM_PIDIV2, 0);
-			mCharacter->turnRight();
-			isMoving = true;
-		}
-		if (GetAsyncKeyState(VK_LEFT)) {
-			if (isMoving) return;
-			mTargetRot = mRotation + XMFLOAT3(0, XM_PIDIV2, 0);
-			mCharacter->turnLeft();
-			isMoving = true;
-		}
-		if (GetAsyncKeyState(VK_RETURN)) {
-			if (isMoving) return;
-			attack();
+	if (GetAsyncKeyState('A')) {
+		move(Direction::LEFT);
+	}
+	if (GetAsyncKeyState('D')) {
+		move(Direction::RIGHT);
+	}
+	if (GetAsyncKeyState('W')) {
+		move(Direction::UP);
+	}
+	if (GetAsyncKeyState('S')) {
+		move(Direction::DOWN);
+	}
+	if (GetAsyncKeyState(VK_RIGHT)) {
+		rotate(Direction::RIGHT);
+	}
+	if (GetAsyncKeyState(VK_LEFT)) {
+		rotate(Direction::LEFT);
+	}
+	if (GetAsyncKeyState(VK_RETURN)) {
+		attack();
 
-		}
+	}
 	
 }
 
 void Player::updateActor()
 {
+	//移動処理
 	if (isMoving) {
 		//移動処理
 		XMFLOAT3 diffPos = mTargetPos - mPosition;
-		XMFLOAT3 diffRot = mTargetRot - mRotation;
 
 		float moveLength = deltaTime * mMoveSpeed;
-		float rotLength = deltaTime * mRotSpeed;
 
 		//位置の更新
-		if (fabsf(diffPos.x) > moveLength || fabsf(diffPos.y) >moveLength || fabsf(diffPos.z) >moveLength) {
+		if (fabsf(diffPos.x) > moveLength || fabsf(diffPos.y) > moveLength || fabsf(diffPos.z) > moveLength) {
 			mPosition = mPosition + Math::normalize(diffPos) * moveLength;
 		}
 		else {
 			mPosition = mTargetPos;
+
+			//ターン経過
+			mMapManager->moveToEnemyTurn();
+			isMoving = false;
 		}
+	}
+	//カメラ回転時の処理
+	if (isRotating) {
+		XMFLOAT3 diffRot = mTargetRot - mRotation;
+		float rotLength = deltaTime * mRotSpeed;
+
 		////回転の更新
 		if (fabsf(diffRot.x) > rotLength || fabsf(diffRot.y) > rotLength || fabsf(diffRot.z) > rotLength) {
 
 			mRotation = mRotation + Math::normalize(diffRot) * rotLength;
 		}
+		//終了時の処理
 		else {
 			mRotation = mTargetRot;
-		}
-
-		//移動終了判定
-		if (mPosition.x == mTargetPos.x &&
-			mPosition.y == mTargetPos.y &&
-			mPosition.z == mTargetPos.z &&
-			mRotation.x == mTargetRot.x &&
-			mRotation.y == mTargetRot.y &&
-			mRotation.z == mTargetRot.z) {
-
-			isMoving = false;
-
-			//インデックス位置の更新
-			std::vector<int> preIndexPos = mCharacter->getIndexPos();
-			//インデックス座標の更新
-			preIndexPos[0] = static_cast<int>(std::round(mPosition.x / MAPTIPSIZE));
-			preIndexPos[1] = static_cast<int>(std::round(mPosition.z / MAPTIPSIZE));
-			mCharacter->setIndexPos(preIndexPos);
-
-			//マップ上のオブジェクトデータ更新
-			mCharacter->getMapManager()->setObjectDataAt(mCharacter->getIndexPosInt(), ObjectType::EMPTY);
-			mCharacter->getMapManager()->setObjectDataAt(mCharacter->getIndexPosInt(), ObjectType::PLAYER);
+			isRotating = false;
 		}
 	}
-
-	if (mActionTimer > 0.0f) mActionTimer -= deltaTime;
 }
 
 int Player::getDirection()
@@ -149,23 +115,25 @@ int Player::getDirection()
 
 void Player::attack()
 {
-	if (mActionTimer > 0.0f) return;
-	if (isMoving) return;
+	//敵ターン時は実行不可
+	if (mMapManager->getTurnType() == TurnType::ENEMY) return;
+	//移動、回転中は実行不可
+	if (isMoving || isRotating) return;
 
 	//前方のエネミーを取得
 	std::shared_ptr<EnemyComponent> target = nullptr;
 	switch (mCharacter->getDirection()) {
 	case Direction::UP:
-		target = getGame()->getEnemyFromIndexPos(std::vector<int>{mCharacter->getIndexPos()[0], mCharacter->getIndexPos()[1] + 1});
+		target = getGame()->getEnemyFromIndexPos(mCharacter->getIndexPos()[0], mCharacter->getIndexPos()[1] + 1);
 		break;
 	case Direction::DOWN:
-		target = getGame()->getEnemyFromIndexPos(std::vector<int>{mCharacter->getIndexPos()[0], mCharacter->getIndexPos()[1] - 1});
+		target = getGame()->getEnemyFromIndexPos(mCharacter->getIndexPos()[0], mCharacter->getIndexPos()[1] - 1);
 		break;
 	case Direction::RIGHT:
-		target = getGame()->getEnemyFromIndexPos(std::vector<int>{mCharacter->getIndexPos()[0] + 1, mCharacter->getIndexPos()[1]});
+		target = getGame()->getEnemyFromIndexPos(mCharacter->getIndexPos()[0] + 1, mCharacter->getIndexPos()[1]);
 		break;
 	case Direction::LEFT:
-		target = getGame()->getEnemyFromIndexPos(std::vector<int>{mCharacter->getIndexPos()[0] - 1, mCharacter->getIndexPos()[1]});
+		target = getGame()->getEnemyFromIndexPos(mCharacter->getIndexPos()[0] - 1, mCharacter->getIndexPos()[1]);
 		break;
 	}
 
@@ -181,7 +149,8 @@ void Player::attack()
 	target->startFlash(); //敵を点滅させる
 	calcDamageText(target->getPosition(), damage);
 
-	mActionTimer = 1.0f;
+	//ターン経過
+	mMapManager->moveToEnemyTurn();
 }
 
 void Player::calcDamageText(const XMFLOAT3& targetPos, int val)
@@ -212,4 +181,95 @@ void Player::calcDamageText(const XMFLOAT3& targetPos, int val)
 		mGame->getDamageTextManager()->createDamageText(textPos, num[i]);
 		textPos = textPos - right * DTHalfSize;
 	}
+}
+
+void Player::move(Direction direction)
+{
+	//プレイヤーターン時のみ実行
+	if (mMapManager->getTurnType() == TurnType::ENEMY) return;
+	//移動、回転中は実行不可
+	if (isMoving || isRotating) return;
+
+	int targetIndexPos[2] = {mCharacter->getIndexPos()[0], mCharacter->getIndexPos()[1]};
+	//進行する差分のインデックスを取得
+	calcMoveDirectionToIndexPos(direction, targetIndexPos);
+
+	//進先に障害物がある場合移動不可
+	if (mMapManager->getMapDataAt(targetIndexPos[0], targetIndexPos[1]) == TileType::WALL ||
+		mMapManager->getObjectDataAt(targetIndexPos[0], targetIndexPos[1]) != ObjectType::EMPTY) return;
+
+	//移動前の座標を空に
+	mMapManager->setObjectDataAt(mCharacter->getIndexPosInt(), ObjectType::EMPTY);
+	//マップ上のオブジェクトデータ更新
+	mMapManager->setObjectDataAt(targetIndexPos[0], targetIndexPos[1], ObjectType::PLAYER);
+
+	mTargetPos = XMFLOAT3(static_cast<float>(targetIndexPos[0]) * MAPTIPSIZE, mPosition.y, static_cast<float>(targetIndexPos[1]) * MAPTIPSIZE);
+	//switch (direction) {
+	//case Direction::UP:
+	//	mTargetPos = mPosition + Math::rotateY(normalZ, mRotation.y) * MAPTIPSIZE;
+	//	break;
+	//case Direction::DOWN:
+	//	mTargetPos = mPosition - Math::rotateY(normalZ, mRotation.y) * MAPTIPSIZE;
+	//	break;
+	//case Direction::LEFT:
+	//	mTargetPos = mPosition + Math::rotateY(normalZ, mRotation.y + XM_PIDIV2) * MAPTIPSIZE;
+	//	break;
+	//case Direction::RIGHT:
+	//	mTargetPos = mPosition + Math::rotateY(normalZ, mRotation.y - XM_PIDIV2) * MAPTIPSIZE;
+	//	break;
+	//}
+	
+	isMoving = true;
+
+}	
+
+void Player::rotate(Direction direction)
+{
+	//プレイヤーターン時のみ実行
+	if (mMapManager->getTurnType() == TurnType::ENEMY) return;
+	//移動、回転中は実行不可
+	if (isMoving || isRotating) return;
+
+	switch (direction) {
+	case Direction::RIGHT:
+		mTargetRot = mRotation - XMFLOAT3(0, XM_PIDIV2, 0);
+		mCharacter->turnRight(); //向きの更新
+
+		break;
+	case Direction::LEFT:
+		mTargetRot = mRotation + XMFLOAT3(0, XM_PIDIV2, 0);
+		mCharacter->turnLeft(); //向きの更新
+		break;
+	}
+
+	isRotating = true;
+}
+
+void Player::calcMoveDirectionToIndexPos(Direction moveDirection, int (&indexPos)[2])
+{
+	//動く方向と向いている方向から、最終的に動く向きをもとめる
+	int index = moveDirection | mCharacter->getDirection(); 
+
+	//インデックス座標の変位をもとめる
+	switch (index) {
+	case 0b0100:
+	case 0b0001:
+	case 0b1010:
+		indexPos[1] += 1;
+		break;
+	case 0b0101:
+	case 0b0010:
+	case 0b1000:
+		indexPos[1] -= 1;
+		break;
+	case 0b0110:
+	case 0b1001:
+		indexPos[0] += 1;
+		break;
+	case 0b1100:
+	case 0b0011:
+		indexPos[0] -= 1;
+		break;
+	}
+
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include "Definition.h"
 
 class Game;
 
@@ -21,6 +22,7 @@ struct ObjectType {
 		SLIME = 2,
 	};
 };
+
 class MapManager
 {
 public:
@@ -42,14 +44,20 @@ public:
 	int getMapDataAt(int index);
 	int getObjectDataAt(int x, int y);
 	int getObjectDataAt(int index);
+	TurnType getTurnType();
+
+	//É^Å[Éìêßå‰
+	void moveToPlayerTurn();
+	void moveToEnemyTurn();
 
 private:
 	void loadMap(Stage stage);
 	void createWall();
 	void createObject();
 
-	std::vector<int> mMapData;
-	std::vector<int> mObjectData;
+	TurnType mTurnType;
+	std::vector<std::vector<int>> mMapData; //[x][y]
+	std::vector<std::vector<int>> mObjectData; //[x][y]
 	int mMapSize;
 	Stage mStage;
 	std::shared_ptr<Game> mGame;

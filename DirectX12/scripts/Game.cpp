@@ -88,9 +88,6 @@ void Game::init() {
 	mMapManager->setStage(Stage::MAP1);
 	mMapManager->createMap();
 
-	//カメラ作成
-	mPlayer = createActor<Player>(shared_from_this());
-
 	//アクター作成例
 	auto messageWindow = createActor<MessageWindow>(shared_from_this());
 	messageWindow->setPlayer(mPlayer); //デバッグ用
@@ -202,6 +199,11 @@ void Game::removeEnemy(const std::shared_ptr<EnemyComponent>& enemy)
 	}
 }
 
+void Game::setPlayer(const std::shared_ptr<Player>& player)
+{
+	mPlayer = player;
+}
+
 std::shared_ptr<Graphic> Game::getGraphic()
 {
 	return mGraphic;
@@ -222,13 +224,11 @@ std::shared_ptr<DamageTextManager> Game::getDamageTextManager()
 	return mDamageTextManager;
 }
 
-std::shared_ptr<EnemyComponent> Game::getEnemyFromIndexPos(const std::vector<int>& indexPos)
+std::shared_ptr<EnemyComponent> Game::getEnemyFromIndexPos(int x, int y)
 {
-	if (indexPos.size() != 2) assert(false);
-
 	for (auto& enemy : *mEnemies) {
 		std::vector<int> charIndexPos = enemy->getIndexPos();
-		if (charIndexPos[0] == indexPos[0] && charIndexPos[1] == indexPos[1]) {
+		if (charIndexPos[0] == x && charIndexPos[1] == y) {
 			return enemy;
 		}
 	}
@@ -238,10 +238,16 @@ std::shared_ptr<EnemyComponent> Game::getEnemyFromIndexPos(const std::vector<int
 std::shared_ptr<EnemyComponent> Game::getEnemyFromIndexPos(int index)
 {
 	int mapSize = mMapManager->getMapSize();
-	std::vector<int> indexPos(2);
-	indexPos[0] = index % mapSize;
-	indexPos[1] = index / mapSize;
-	return getEnemyFromIndexPos(indexPos);
+	int x = index % mapSize;
+	int y = index / mapSize;
+	for (auto& enemy : *mEnemies) {
+		std::vector<int> charIndexPos = enemy->getIndexPos();
+		if (charIndexPos[0] == x && charIndexPos[1] == y) {
+			return enemy;
+		}
+	}
+
+	return nullptr;
 }
 
 std::shared_ptr<AssetManager> Game::getAssetManager()
@@ -266,10 +272,15 @@ void Game::input()
 		actor->input();
 	}
 
+	//デバック用
 	if (GetAsyncKeyState('P')) {
 		auto slime = createActor<Slime>(shared_from_this());
 		slime->setPosition(XMFLOAT3(MAPTIPSIZE * 5.0f, 0.0f, MAPTIPSIZE * 5.0f));
 	}
+	if (GetAsyncKeyState('O')) {
+		mMapManager->moveToPlayerTurn();
+	}
+
 }
 
 void Game::update()

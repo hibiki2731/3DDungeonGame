@@ -12,6 +12,7 @@ void Slime::initActor()
 
 	mEnemy = createComponent<EnemyComponent>(shared_from_this());
 	mEnemy->setMesh(mesh);
+	mEnemy->setEnemyTtype(ObjectType::SLIME);
 	mEnemy->setDirection(Direction::UP); //ãŒü‚«
 
 }

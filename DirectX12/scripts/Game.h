@@ -63,13 +63,15 @@ public:
 	//エネミーの追加
 	void addEnemy(const std::shared_ptr<EnemyComponent>& enemy);
 	void removeEnemy(const std::shared_ptr<EnemyComponent>& enemy);
+	//プレイヤーのセット
+	void setPlayer(const std::shared_ptr<Player>& player);
 
 	//ゲッター
 	std::shared_ptr<Graphic> getGraphic();
 	std::shared_ptr<std::vector<std::shared_ptr<EnemyComponent>>> getEnemies();
 	std::shared_ptr<MapManager> getMapManager();
 	std::shared_ptr<DamageTextManager> getDamageTextManager();
-	std::shared_ptr<EnemyComponent> getEnemyFromIndexPos(const std::vector<int>& indexPos);
+	std::shared_ptr<EnemyComponent> getEnemyFromIndexPos(int x, int y);
 	std::shared_ptr<EnemyComponent> getEnemyFromIndexPos(int index);
 	std::shared_ptr<AssetManager> getAssetManager();
 	std::vector<std::shared_ptr<PointLightComponent>> getPointLights();
