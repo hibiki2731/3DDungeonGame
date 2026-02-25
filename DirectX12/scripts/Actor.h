@@ -32,6 +32,8 @@ public:
 	void updateComponents();
 	//アクター独自の更新処理
 	virtual void updateActor() {};
+	//アクター独自の動作
+	virtual void actionActor() {};
 
 	//コンポーネントの追加/削除
 	void addComponent(const std::shared_ptr<Component>& component);

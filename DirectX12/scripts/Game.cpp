@@ -302,6 +302,15 @@ void Game::update()
 	for (auto& actor : mActors) {
 		actor->update();
 	}
+
+	for (auto& enemy : *mEnemies) {
+		enemy->updateActiveProcess();
+	}
+	//敵配列をプレイヤーに近い順にソート
+	std::sort((*mEnemies).begin(), (*mEnemies).end(), [](auto const& lenemy, auto const& renemy){
+		return lenemy->getDist() < renemy->getDist();
+		});
+
 	mUpdatingActors = false;
 
 	for (auto pending : mPendingActors) {

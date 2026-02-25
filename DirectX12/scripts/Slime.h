@@ -12,5 +12,6 @@ public:
 
 private:
 	std::shared_ptr<class EnemyComponent> mEnemy;
+	int mPlayerIndexPos[2];
 };
 

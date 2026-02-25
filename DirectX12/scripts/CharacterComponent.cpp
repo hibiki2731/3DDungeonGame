@@ -76,6 +76,7 @@ std::shared_ptr<MapManager> CharacterComponent::getMapManager()
 void CharacterComponent::setMaxHP(int maxHP)
 {
 	mMaxHP = maxHP;
+	if (mHP > maxHP) mHP = maxHP;
 }
 
 void CharacterComponent::setHP(int hp)

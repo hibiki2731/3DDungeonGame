@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "EnemyComponent.h"
 #include "MapManager.h"
+#include "Player.h"
 
 void Slime::initActor()
 {
@@ -14,11 +15,19 @@ void Slime::initActor()
 	mEnemy->setMesh(mesh);
 	mEnemy->setEnemyTtype(ObjectType::SLIME);
 	mEnemy->setDirection(Direction::UP); //ãŒü‚«
+	mEnemy->setDefense(3);
+	mEnemy->setPower(5);
+	mEnemy->setMaxHP(10);
+	mEnemy->setEnemyState(EnemyState::RANDOM);
 
 }
 
 void Slime::updateActor()
 {
+	if (mEnemy->getDist() <= 2) {
+		mEnemy->setEnemyState(EnemyState::ASTAR);
+	}
+	else mEnemy->setEnemyState(EnemyState::RANDOM);
 }
 
 void Slime::inputActor()
