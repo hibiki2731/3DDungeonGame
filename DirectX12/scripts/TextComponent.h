@@ -27,7 +27,7 @@ public:
 
 private:
 	D2D1::ColorF mTextColor = D2D1::ColorF(0, 0, 0);
-	std::shared_ptr<Graphic> mGraphic;
+	Graphic* mGraphic;
 	ComPtr<ID2D1SolidColorBrush> mTextBrush;
 	ComPtr<IDWriteTextFormat> mTextFormat;
 

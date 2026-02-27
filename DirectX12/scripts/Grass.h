@@ -1,9 +1,7 @@
 #pragma once
 #include "Actor.h"
 
-class EnemyComponent;
-
-class Slime : public Actor
+class Grass : public Actor
 {
 public:
 	void initActor() override;
@@ -11,7 +9,5 @@ public:
 	void inputActor() override;
 
 private:
-	std::shared_ptr<class EnemyComponent> mEnemy;
-	int mPlayerIndexPos[2];
 };
 

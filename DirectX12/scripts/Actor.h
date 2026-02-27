@@ -95,3 +95,13 @@ std::shared_ptr<ActorType> createActor(const std::shared_ptr<Game>& game) {
 	actor->initActor();
 	return actor;
 };
+
+//敵アクターの場合
+template <isActor ActorType>
+std::shared_ptr<ActorType> createActor(const std::shared_ptr<Game>& game, float x, float y) {
+	std::shared_ptr<ActorType> actor = std::make_shared<ActorType>();
+	actor->init(game);
+	actor->setPosition(XMFLOAT3(x, 0.0f, y));
+	actor->initActor();
+	return actor;
+}

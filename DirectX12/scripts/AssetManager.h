@@ -20,6 +20,7 @@ enum class ObjectName {
 	ROCK_WALL_SIDE,
 	ROCK_WALL,
 	ROCK_FLOOR,
+	GRASS,
 	SLIME,
 };
 
@@ -27,7 +28,7 @@ class AssetManager
 {
 public:
 
-	AssetManager(const std::shared_ptr<Graphic>& graphic);
+	AssetManager(Graphic* graphic);
 	~AssetManager();
 
 	void create(ObjectName objectName);
@@ -55,7 +56,7 @@ private:
 	int mCBEndIndex; //コンスタントバッファの使用済みメモリの最後尾インデックス
 	int mHeapEndIndex; //ディスクリプタヒープの最後尾インデックス
 
-	std::shared_ptr<Graphic> mGraphic;
+	Graphic* mGraphic;
 	std::map<ObjectName, std::shared_ptr<MeshData>> mLoadData;
 	std::vector<ClearedMemory> mClearedMemory; //解放されたメモリ
 	std::vector<ClearedHeap> mClearedHeap; //解放されたメモリ

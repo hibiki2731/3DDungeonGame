@@ -1,0 +1,14 @@
+#include "Random.h"
+
+int Random::dist(int l, int r)
+{
+	//—”¶¬Šú‚Ì‰Šú‰»
+	static std::random_device seed_gen;
+	static unsigned seed = seed_gen();
+	static std::mt19937 mt(seed);
+
+	//—”¶¬
+	std::uniform_int_distribution<> dist(l, r);
+	return dist(mt);
+
+}

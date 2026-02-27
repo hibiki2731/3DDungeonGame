@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <DirectXMath.h>
 #include <cassert>
+#include <random>
 
 #include "input.h"
 #include "BIN_FILE12.h"
@@ -11,6 +12,7 @@
 #include "FBXConverter.h"
 #include "timer.h"
 #include <wrl/client.h>
+#include "ItemManager.h"
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
@@ -63,21 +65,26 @@ public:
 	//エネミーの追加
 	void addEnemy(const std::shared_ptr<EnemyComponent>& enemy);
 	void removeEnemy(const std::shared_ptr<EnemyComponent>& enemy);
+	//プレイヤーのセット
+	void setPlayer(const std::shared_ptr<Player>& player);
+	void activateEnemies();
 
 	//ゲッター
-	std::shared_ptr<Graphic> getGraphic();
+	Graphic* getGraphic();
 	std::shared_ptr<std::vector<std::shared_ptr<EnemyComponent>>> getEnemies();
 	std::shared_ptr<MapManager> getMapManager();
 	std::shared_ptr<DamageTextManager> getDamageTextManager();
-	std::shared_ptr<EnemyComponent> getEnemyFromIndexPos(const std::vector<int>& indexPos);
+	std::shared_ptr<EnemyComponent> getEnemyFromIndexPos(int x, int y);
 	std::shared_ptr<EnemyComponent> getEnemyFromIndexPos(int index);
 	std::shared_ptr<AssetManager> getAssetManager();
 	std::vector<std::shared_ptr<PointLightComponent>> getPointLights();
 	std::vector<std::shared_ptr<SpotLightComponent>> getSpotLights();
+	std::shared_ptr<Player> getPlayer();
+	std::shared_ptr<ItemManager> getItemManager();
 
 private:
 	//グラフィック
-	std::shared_ptr<Graphic> mGraphic;
+	std::unique_ptr<Graphic> mGraphic;
 	//メッシュ配列
 	std::vector<std::shared_ptr<MeshComponent>> mMeshes;
 	std::vector<std::shared_ptr<SpriteComponent>> mSprites;
@@ -103,6 +110,9 @@ private:
 
 	//AssetManager
 	std::shared_ptr<AssetManager> mAssetManager;
+
+	//ItemManger
+	std::shared_ptr<ItemManager> mItemManager;
 
 	//ループ内処理
 	void input();

@@ -1,6 +1,15 @@
 #pragma once
+#include <random>
+#include <queue>
 #include "CharacterComponent.h"
 #include "MeshComponent.h"
+
+class Player;
+
+enum class EnemyState{
+	RANDOM,
+	ASTAR,
+};
 
 class EnemyComponent : public CharacterComponent
 {
@@ -10,18 +19,69 @@ public:
 	void updateComponent() override;
 	void endProccess() override;
 
+	//アクティブな時のみ行う。プレイヤーに近い敵から更新される
+	void updateActiveProcess();
+
 	void setMesh(const std::shared_ptr<MeshComponent>& mesh);
+	void setEnemyTtype(int type);
+	void setEnemyState(EnemyState state);
+	void activate();
 
 	void startFlash();
 
 	//getter
 	XMFLOAT3 getPosition();
+	int getDist();
 
 private:
+	//A*アルゴリズム用構造体
+	struct Node {
+		int x, y;
+		int fCost;
+
+		bool operator>(const Node& other)const {
+			return fCost > other.fCost;
+		}
+	};
+	struct Cell {
+		int gCost = 999999; //初期値は大きな値にする
+		bool isClosed = false; //探索済みか判定
+
+		//親ノードの位置
+		int parentX = -1;
+		int parentY = -1;
+
+	};
+
+	void updateFlash(); //ダメージ時の点滅を更新
+	void move();
+	void attack();
+	void finishAct();
+	void calcTargetIndex(int(&targetIndex)[2]);
+	void Astar(int (& targetIndex)[2]);
+	void randomWalk(int(&targetIndex)[2]);
+
 	std::shared_ptr<MeshComponent> mMesh;
+
+	//ダメージ時の点滅
 	float mFlashTimer;
 	float mFlashDuration;
 
-	void updateFlash();
+	//移動用
+	XMFLOAT3 mTargetPos;
+	float mMoveSpeed;
+	bool isMoving;
+
+	//敵タイプ
+	int mEnemyType;
+
+	//enemyState
+	EnemyState mState;
+	
+	//ターン制御
+	bool isActive;
+
+	int mDistPlayer; //プレイヤーからの距離(マンハッタン距離)
+
 };
 

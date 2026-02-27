@@ -4,6 +4,7 @@
 #include "Graphic.h"
 #include "Game.h"
 #include "Player.h"
+#include "MapManager.h"
 
 void MessageWindow::initActor()
 {
@@ -33,21 +34,20 @@ void MessageWindow::updateActor()
 	std::wstring message = L"x:" + std::to_wstring(mPlayer->getPosition().x) +
 		L" y:" + std::to_wstring(mPlayer->getPosition().y) +
 		L" z:" + std::to_wstring(mPlayer->getPosition().z) + L"\n";
+	message += L"TURN: ";
 
-	switch (mPlayer->getDirection()) {
-	case Direction::UP:
-		message += L"UP";
+	switch (mGame->getMapManager()->getTurnType()) {
+	case TurnType::PLAYER:
+		message += L"PLAYER ";
 		break;
-	case Direction::DOWN:
-		message += L"DOWN";
-		break;
-	case Direction::RIGHT:
-		message += L"RIGHT";
-		break;
-	case Direction::LEFT:
-		message += L"LEFT";
+	case TurnType::ENEMY:
+		message += L"ENEMY ";
 		break;
 	}
+
+	message += L"HP: " + std::to_wstring(mPlayer->getHP()) + L" ";
+
+	message += L"G:" + std::to_wstring(mGame->getItemManager()->getItemNum(Item::GRASS)) + L".";
 
 	mMessage = message;
 	mText->setText(mMessage);

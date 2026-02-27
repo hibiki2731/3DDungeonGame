@@ -14,11 +14,11 @@ public:
     virtual void draw() {};
 
     //ÉQÉbÉ^Å[
-    std::shared_ptr<Graphic> getGraphic() { return mGraphic; };
+    Graphic* getGraphic() { return mGraphic; };
     ComPtr<ID3D12GraphicsCommandList> getCommandList() { return mCommandList; };
 
 private:
-    std::shared_ptr<Graphic> mGraphic;
+    Graphic* mGraphic;
     ComPtr<ID3D12GraphicsCommandList> mCommandList;
 };
 

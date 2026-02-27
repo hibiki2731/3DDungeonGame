@@ -6,7 +6,7 @@ const int MAX_LIGHT_NUM = 16;
 const float MAPTIPSIZE = 2;
 const float EPSILON = 0.0001f;
 
-
+//ç∂è„âEâ∫
 enum Direction {
 	DOWN = 1,
 	RIGHT = 2,
@@ -17,6 +17,11 @@ enum Direction {
 enum LightStat {
     INACTIVE = 0,
     ACTIVE = 1,
+};
+
+enum class TurnType {
+	PLAYER,
+	ENEMY,
 };
 
 struct PointLightData {

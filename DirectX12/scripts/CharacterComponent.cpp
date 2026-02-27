@@ -11,8 +11,10 @@ void CharacterComponent::initComponent()
 	isAlive = true;
 
 	mDirection = 1;
-	mIndexPos = std::vector<int>(2,0);
-
+	mIndexPos = std::vector<int>{
+		static_cast<int>(std::round(mOwner->getPosition().x / MAPTIPSIZE)),
+		static_cast<int>(std::round(mOwner->getPosition().z / MAPTIPSIZE))
+	};
 	mMapManager = mOwner->getGame()->getMapManager();
 }
 
@@ -22,6 +24,12 @@ void CharacterComponent::inputComponent()
 
 void CharacterComponent::updateComponent()
 {
+	
+	//インデックス座標の更新
+	mIndexPos[0] = static_cast<int>(std::round(mOwner->getPosition().x / MAPTIPSIZE));
+	mIndexPos[1] = static_cast<int>(std::round(mOwner->getPosition().z / MAPTIPSIZE));
+	
+
 }
 
 void CharacterComponent::endProccess()
@@ -71,6 +79,7 @@ std::shared_ptr<MapManager> CharacterComponent::getMapManager()
 void CharacterComponent::setMaxHP(int maxHP)
 {
 	mMaxHP = maxHP;
+	if (mHP > maxHP) mHP = maxHP;
 }
 
 void CharacterComponent::setHP(int hp)
