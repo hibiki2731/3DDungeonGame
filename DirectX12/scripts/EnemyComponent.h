@@ -70,7 +70,6 @@ private:
 	//移動用
 	XMFLOAT3 mTargetPos;
 	float mMoveSpeed;
-	std::mt19937 mt; //メルセンヌ・ツイスタ法の生成器
 	bool isMoving;
 
 	//敵タイプ

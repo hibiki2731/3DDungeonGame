@@ -47,7 +47,7 @@ int Game::endProcess()
 }
 
 void Game::init() {
-	mGraphic = std::make_shared<Graphic>(shared_from_this());
+	mGraphic = std::make_unique<Graphic>(shared_from_this());
 	mGraphic->init();
 	mGraphic->clearColor(0.25f, 0.5f, 0.9f);
 
@@ -55,12 +55,14 @@ void Game::init() {
 	const char* fbx[] = { 
 		"assets\\rockObj\\rockWall.fbx",
 		"assets\\rockObj\\rockFloor.fbx",
+		"assets\\Grass\\grass.fbx",
 		"assets\\slime.fbx",
 	};
 
 	const char* text[] = { 
 		"assets\\rockObj\\rockWall.txt",
 		"assets\\rockObj\\rockFloor.txt",
+		"assets\\Grass\\grass.txt",
 		"assets\\slime.txt",
 	};
 
@@ -81,7 +83,7 @@ void Game::init() {
 	initDeltaTime();
 
 	//assetManagerの初期化 meshComponentを作成する前に初期化
-	mAssetManager = std::make_shared<AssetManager>(mGraphic);
+	mAssetManager = std::make_shared<AssetManager>(mGraphic.get());
 
 	//mapの生成
 	mMapManager = std::make_shared<MapManager>(shared_from_this());
@@ -91,6 +93,9 @@ void Game::init() {
 	//アクター作成例
 	auto messageWindow = createActor<MessageWindow>(shared_from_this());
 	messageWindow->setPlayer(mPlayer); //デバッグ用
+
+	//itemManagerの初期化
+	mItemManager = std::make_shared<ItemManager>();
 
 	//damageTextの初期化
 	mDamageTextManager = std::make_shared<DamageTextManager>(shared_from_this());
@@ -211,9 +216,9 @@ void Game::activateEnemies()
 	}
 }
 
-std::shared_ptr<Graphic> Game::getGraphic()
+Graphic* Game::getGraphic()
 {
-	return mGraphic;
+	return mGraphic.get();
 }
 
 std::shared_ptr<std::vector<std::shared_ptr<EnemyComponent>>> Game::getEnemies()
@@ -277,10 +282,19 @@ std::shared_ptr<Player> Game::getPlayer()
 	return mPlayer;
 }
 
+std::shared_ptr<ItemManager> Game::getItemManager()
+{
+	return mItemManager;
+}
+
 void Game::input()
 {
 
 	for (auto& actor : mActors) {
+		if (actor == nullptr) {
+			continue;
+		}
+
 		actor->input();
 	}
 
@@ -335,6 +349,8 @@ void Game::update()
 	mGraphic->updateBase3DData();
 	//ダメージテキストの更新
 	mDamageTextManager->update();
+	//ターンの変更
+	mMapManager->update();
 
 }
 

@@ -2,6 +2,7 @@
 #include <vector>
 #include <memory>
 #include "Definition.h"
+#include "Random.h"
 
 class Game;
 
@@ -12,6 +13,7 @@ struct TileType {
 	enum Type {
 		WALL = 0,
 		FLOOR = 1,
+		GRASS = 2,
 	};
 };
 
@@ -28,6 +30,8 @@ class MapManager
 public:
 	MapManager(const std::shared_ptr<Game>& game);
 	~MapManager() {};
+
+	void update();
 
 	void createMap();
 	
@@ -54,7 +58,9 @@ private:
 	void loadMap(Stage stage);
 	void createWall();
 	void createObject();
+	void spawnEnemy();
 
+	TurnType mNextTurn;
 	TurnType mTurnType;
 	std::vector<std::vector<int>> mMapData; //[x][y]
 	std::vector<std::vector<int>> mObjectData; //[x][y]

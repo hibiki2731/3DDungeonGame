@@ -11,7 +11,10 @@ void CharacterComponent::initComponent()
 	isAlive = true;
 
 	mDirection = 1;
-	mIndexPos = std::vector<int>(2);
+	mIndexPos = std::vector<int>{
+		static_cast<int>(std::round(mOwner->getPosition().x / MAPTIPSIZE)),
+		static_cast<int>(std::round(mOwner->getPosition().z / MAPTIPSIZE))
+	};
 	mMapManager = mOwner->getGame()->getMapManager();
 }
 

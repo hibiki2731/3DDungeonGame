@@ -1,7 +1,8 @@
 #include "EnemyComponent.h"
 #include "Actor.h"
 #include "Game.h"
-#include "Player.h";
+#include "Player.h"
+#include "Random.h"
 
 void EnemyComponent::initComponent()
 {
@@ -11,12 +12,8 @@ void EnemyComponent::initComponent()
 	mFlashTimer = 0.0f;
 	mFlashDuration = 0.3f;	//ダメージを受けたときの点滅時間
 
-	//乱数生成期の初期化
-	unsigned seed = timeGetTime();
-	mt.seed(seed);
-
 	isMoving = false;
-	mMoveSpeed = 5.0f;
+	mMoveSpeed = 10.0f;
 
 	mEnemyType = ObjectType::EMPTY;
 	mState = EnemyState::RANDOM;
@@ -91,11 +88,12 @@ void EnemyComponent::updateActiveProcess()
 	{
 		attack();
 		move();
+
+		int playerIndex[2];
+		mOwner->getGame()->getPlayer()->getIndexPos(playerIndex);
+		mDistPlayer = abs(playerIndex[0] - mIndexPos[0]) + abs(playerIndex[1] - mIndexPos[1]);
 	}
 
-	int playerIndex[2];
-	mOwner->getGame()->getPlayer()->getIndexPos(playerIndex);
-	mDistPlayer = abs(playerIndex[0] - mIndexPos[0]) + abs(playerIndex[1] - mIndexPos[1]);
 }
 
 void EnemyComponent::setMesh(const std::shared_ptr<MeshComponent>& mesh)
@@ -340,9 +338,7 @@ void EnemyComponent::randomWalk(int(&targetIndex)[2])
 {
 	targetIndex[0] = mIndexPos[0]; targetIndex[1] = mIndexPos[1];
 
-	//乱数生成
-	std::uniform_int_distribution<> dist(0, 4);
-	int direction = 1 << dist(mt);
+	int direction = 1 << Random::dist(0,4);
 	switch (direction) {
 		case Direction::UP:
 			targetIndex[1] += 1;

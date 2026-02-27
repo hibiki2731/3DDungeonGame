@@ -16,7 +16,7 @@
 
 void Player::initActor()
 {
-	mPosition = { 0, 0.5f, 0.0f };
+	setYPos(0.5f);
 	mTargetPos = mPosition;
 	mTargetRot = mRotation;
 	mMoveSpeed = 5.0f;
@@ -25,7 +25,7 @@ void Player::initActor()
 	mCamera->setActive(true);
 	isMoving = false;
 	isRotating = false;
-	mAttackTimer = 0.0f;
+	mActionTimer = 0.0f;
 
 	auto spotLight = createComponent<SpotLightComponent>(shared_from_this());
 	spotLight->setActive(true);
@@ -64,15 +64,15 @@ void Player::inputActor()
 		rotate(Direction::LEFT);
 	}
 	if (GetAsyncKeyState(VK_RETURN)) {
-		if(mAttackTimer <= 0) attack();
-
+		if (mActionTimer <= 0) 	attack();
+		if (mActionTimer <= 0) 	collect();
 	}
 	
 }
 
 void Player::updateActor()
 {
-	mAttackTimer -= deltaTime;
+	mActionTimer -= deltaTime;
 	//移動処理
 	if (isMoving) {
 		//移動処理
@@ -108,6 +108,8 @@ void Player::updateActor()
 			isRotating = false;
 		}
 	}
+
+	mState = State::Active;
 }
 
 int Player::getDirection()
@@ -178,9 +180,9 @@ void Player::attack()
 	target->startFlash(); //敵を点滅させる
 	calcDamageText(target->getPosition(), damage);
 
+	mActionTimer = ACTION_WAIT_TIME;
 	//ターン経過
 	mMapManager->moveToEnemyTurn();
-	mAttackTimer = mAttackWaitTime;
 }
 
 void Player::calcDamageText(const XMFLOAT3& targetPos, int val)
@@ -234,20 +236,6 @@ void Player::move(Direction direction)
 	mMapManager->setObjectDataAt(targetIndexPos[0], targetIndexPos[1], ObjectType::PLAYER);
 
 	mTargetPos = XMFLOAT3(static_cast<float>(targetIndexPos[0]) * MAPTIPSIZE, mPosition.y, static_cast<float>(targetIndexPos[1]) * MAPTIPSIZE);
-	//switch (direction) {
-	//case Direction::UP:
-	//	mTargetPos = mPosition + Math::rotateY(normalZ, mRotation.y) * MAPTIPSIZE;
-	//	break;
-	//case Direction::DOWN:
-	//	mTargetPos = mPosition - Math::rotateY(normalZ, mRotation.y) * MAPTIPSIZE;
-	//	break;
-	//case Direction::LEFT:
-	//	mTargetPos = mPosition + Math::rotateY(normalZ, mRotation.y + XM_PIDIV2) * MAPTIPSIZE;
-	//	break;
-	//case Direction::RIGHT:
-	//	mTargetPos = mPosition + Math::rotateY(normalZ, mRotation.y - XM_PIDIV2) * MAPTIPSIZE;
-	//	break;
-	//}
 	
 	isMoving = true;
 
@@ -302,4 +290,27 @@ void Player::calcMoveDirectionToIndexPos(Direction moveDirection, int (&indexPos
 		break;
 	}
 
+}
+
+void Player::collect()
+{
+	//プレイヤーターン時のみ実行
+	if (mMapManager->getTurnType() == TurnType::ENEMY) return;
+	//移動、回転中は実行不可
+	if (isMoving || isRotating) return;
+
+	int tileData = mMapManager->getMapDataAt(mCharacter->getIndexPosInt());
+
+	//今いるマスが通常の床ならば何も行わない
+	if (tileData <= 1) return;
+
+	switch (tileData) {
+	case TileType::GRASS:
+		mGame->getItemManager()->addItem(Item::GRASS, 1);
+	}
+
+	//ターン経過
+	mMapManager->moveToEnemyTurn();
+
+	mActionTimer = ACTION_WAIT_TIME;
 }

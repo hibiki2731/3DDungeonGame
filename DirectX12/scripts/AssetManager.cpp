@@ -2,7 +2,7 @@
 #include <string>
 #include <fstream>
 
-AssetManager::AssetManager(const std::shared_ptr<Graphic>& graphic)
+AssetManager::AssetManager(Graphic* graphic)
 {
 	mGraphic = graphic;
 	mCBEndIndex = mGraphic->alignedSize(sizeof(Base3DData));
@@ -28,6 +28,9 @@ void AssetManager::create(ObjectName objectName)
 		break;
 	case ObjectName::ROCK_FLOOR:
 		fileName = "assets\\rockObj\\rockFloor.txt";
+		break;
+	case ObjectName::GRASS:
+		fileName = "assets\\Grass\\grass.txt";
 		break;
 	case ObjectName::SLIME:
 		fileName = "assets\\slime.txt";

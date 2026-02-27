@@ -34,6 +34,8 @@ private:
 	void rotate(Direction direction);
 	void calcMoveDirectionToIndexPos(Direction moveDirection, int (& indexPos)[2]);
 
+	void collect();
+
 	float mMoveSpeed;
 	float mRotSpeed;
 
@@ -44,8 +46,8 @@ private:
 	bool isRotating;
 
 	//カウンター
-	float mAttackTimer;
-	const float mAttackWaitTime = 1.0f;
+	float mActionTimer;
+	const float ACTION_WAIT_TIME = 0.5f;
 
 	std::shared_ptr<CameraComponent> mCamera;
 	std::shared_ptr<CharacterComponent> mCharacter;

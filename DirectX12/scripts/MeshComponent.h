@@ -27,8 +27,8 @@ private:
 
     HRESULT Hr;
 
-    //コマンドリスト graphic.cppから引っ張ってきます
-    std::shared_ptr<Graphic> mGraphic;
+    //コマンドリスト
+    Graphic* mGraphic;
     ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
     //コンスタントバッファ1(World Matrix)

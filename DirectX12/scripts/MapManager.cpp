@@ -4,6 +4,7 @@
 #include "Definition.h"
 #include "Slime.h"
 #include "Player.h"
+#include "Grass.h"
 #include <fstream>
 #include <cassert>
 
@@ -13,8 +14,22 @@ MapManager::MapManager(const std::shared_ptr<Game>& game)
 	mMapSize = 1;
 	mGame = game;
 	mStage = Stage::MAP1;
-	mTurnType == TurnType::PLAYER;
+	mNextTurn = TurnType::PLAYER;
+	mTurnType = TurnType::PLAYER;
 	mPendingEnemyCount = 0;
+
+
+}
+
+void MapManager::update()
+{
+	//エネミーターン→プレイヤーターンへの移行時
+	if (mNextTurn == TurnType::PLAYER && mTurnType == TurnType::ENEMY) {
+		//敵のランダム湧き
+		int random = Random::dist(1, 100);
+		if (random <= 10) spawnEnemy();
+	}
+	mTurnType = mNextTurn;
 }
 
 void MapManager::createMap()
@@ -125,7 +140,8 @@ TurnType MapManager::getTurnType()
 void MapManager::moveToPlayerTurn()
 {
 	mPendingEnemyCount--;
-	if (mPendingEnemyCount == 0) mTurnType = TurnType::PLAYER;
+	if (mPendingEnemyCount == 0) mNextTurn = TurnType::PLAYER;
+
 }
 
 void MapManager::moveToEnemyTurn()
@@ -133,7 +149,7 @@ void MapManager::moveToEnemyTurn()
 	mPendingEnemyCount = mGame->getEnemies()->size(); //待機敵数をリセット
 	if (mPendingEnemyCount == 0) return;
 	mGame->activateEnemies();
-	mTurnType = TurnType::ENEMY;
+	mNextTurn = TurnType::ENEMY;
 }
 
 void MapManager::loadMap(Stage stage)
@@ -189,9 +205,20 @@ void MapManager::createWall()
 		{
 			int tileNum = mMapData[x][y];
 			if (tileNum == TileType::WALL) continue; //壁の中
-			//床の生成
-			std::shared_ptr<RockFloor> rockFloor = createActor<RockFloor>(mGame);
-			rockFloor->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y))); //z軸は奥から手前に配置
+
+			switch (tileNum) {
+			case TileType::FLOOR: {
+				//床の生成
+				std::shared_ptr<RockFloor> rockFloor = createActor<RockFloor>(mGame);
+				rockFloor->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y))); //z軸は奥から手前に配置
+				break;
+				}
+			case TileType::GRASS: {
+				//草の生成
+				std::shared_ptr<Grass> grass = createActor<Grass>(mGame);
+				grass->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y))); //z軸は奥から手前に配置
+				}
+			}
 
 			//壁の生成
 			//西壁
@@ -199,7 +226,7 @@ void MapManager::createWall()
 				auto wall = createActor<RockWall>(mGame);
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
 				wall->setYRot(XM_PIDIV2); 
-			} else if(mMapData[x - 1][y] == 0) {
+			} else if(mMapData[x - 1][y] == TileType::WALL) {
 				auto wall = createActor<RockWall>(mGame);
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
 				wall->setYRot(XM_PIDIV2); 
@@ -210,7 +237,7 @@ void MapManager::createWall()
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
 				wall->setYRot(-XM_PIDIV2);
 			}
-			else if (mMapData[x + 1][y] == 0) {
+			else if (mMapData[x + 1][y] == TileType::WALL) {
 				auto wall = createActor<RockWall>(mGame);
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
 				wall->setYRot(-XM_PIDIV2);
@@ -221,7 +248,7 @@ void MapManager::createWall()
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
 				wall->setYRot(XM_PI);
 			}
-			else if (mMapData[x][y + 1] == 0) {
+			else if (mMapData[x][y + 1] == TileType::WALL) {
 				auto wall = createActor<RockWall>(mGame);
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
 				wall->setYRot(XM_PI);
@@ -231,7 +258,7 @@ void MapManager::createWall()
 				auto wall = createActor<RockWall>(mGame);
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
 			}
-			else if (mMapData[x][y - 1] == 0) {
+			else if (mMapData[x][y - 1] == TileType::WALL) {
 				auto wall = createActor<RockWall>(mGame);
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
 			}
@@ -253,18 +280,45 @@ void MapManager::createObject()
 					break;
 				case ObjectType::PLAYER: {
 					//プレイヤー生成
-					std::shared_ptr player = createActor<Player>(mGame);
-					player->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.5f, (float)(MAPTIPSIZE * y)));
+					std::shared_ptr player = createActor<Player>(mGame, static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
 					break;
 				}
 				case ObjectType::SLIME: {
 					//スライムの生成
-					std::shared_ptr<Slime> slime = createActor<Slime>(mGame);
-					slime->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
+					std::shared_ptr<Slime> slime = createActor<Slime>(mGame, static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
 					break;
 				}
 			}
 
 		}
+	}
+}
+
+void MapManager::spawnEnemy()
+{
+	int playerIndex[2];
+	mGame->getPlayer()->getIndexPos(playerIndex);
+
+	int i = 0; //湧き場がない場合、一定回数のループ後にループを抜ける
+
+	//障害物がない　かつ　プレイヤーから3マス離れているところにスポーン
+	while (i < 10) {
+		//スポーンするマスを乱数で決定
+		int x = Random::dist(0, mMapSize - 1);
+		int y = Random::dist(0, mMapSize - 1);
+
+		//障害物がある場合、もう一度乱数を振りなおす
+		if (mMapData[x][y] == TileType::WALL) continue;
+		if (mObjectData[x][y] != ObjectType::EMPTY) continue;
+		
+		//プレイヤーから3マスいないならば、もう一度乱数を振りなおす
+		int distance = abs(playerIndex[0] - x) + abs(playerIndex[1] - y);
+		if (distance <= 3) continue;
+
+		//敵の生成
+		std::shared_ptr<Slime> slime = createActor<Slime>(mGame, static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
+		break;
+
+		i++;
 	}
 }

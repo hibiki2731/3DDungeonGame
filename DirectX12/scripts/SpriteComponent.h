@@ -36,7 +36,7 @@ protected:
     HRESULT Hr;
 
     //グラフィック
-    std::shared_ptr<Graphic> mGraphic;
+    Graphic* mGraphic;
     //コマンドリスト
     ComPtr<ID3D12GraphicsCommandList> mCommandList;
 

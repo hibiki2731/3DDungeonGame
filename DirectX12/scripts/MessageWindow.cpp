@@ -47,6 +47,8 @@ void MessageWindow::updateActor()
 
 	message += L"HP: " + std::to_wstring(mPlayer->getHP()) + L" ";
 
+	message += L"G:" + std::to_wstring(mGame->getItemManager()->getItemNum(Item::GRASS)) + L".";
+
 	mMessage = message;
 	mText->setText(mMessage);
 }
