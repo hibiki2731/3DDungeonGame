@@ -23,7 +23,6 @@
 
 Game::Game(){
 	mUpdatingActors = false;
-	mEnemies = std::make_shared<std::vector<std::shared_ptr<EnemyComponent>>>();
 }
 
 Game::~Game() {}
@@ -83,22 +82,23 @@ void Game::init() {
 	initDeltaTime();
 
 	//assetManagerの初期化 meshComponentを作成する前に初期化
-	mAssetManager = std::make_shared<AssetManager>(mGraphic.get());
+	mAssetManager = std::make_unique<AssetManager>(mGraphic.get());
 
 	//mapの生成
-	mMapManager = std::make_shared<MapManager>(shared_from_this());
+	mMapManager = std::make_unique<MapManager>(this);
 	mMapManager->setStage(Stage::MAP1);
 	mMapManager->createMap();
 
 	//アクター作成例
-	auto messageWindow = createActor<MessageWindow>(shared_from_this());
-	messageWindow->setPlayer(mPlayer); //デバッグ用
+	auto messageWindow = createActor<MessageWindow>(this);
+	messageWindow->setPlayer(mPlayer.get()); //デバッグ用
+	addActor(std::move(messageWindow));
 
 	//itemManagerの初期化
-	mItemManager = std::make_shared<ItemManager>();
+	mItemManager = std::make_unique<ItemManager>();
 
 	//damageTextの初期化
-	mDamageTextManager = std::make_shared<DamageTextManager>(shared_from_this());
+	mDamageTextManager = std::make_unique<DamageTextManager>(this);
 
 }
 

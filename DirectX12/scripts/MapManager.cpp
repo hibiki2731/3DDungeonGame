@@ -8,7 +8,7 @@
 #include <fstream>
 #include <cassert>
 
-MapManager::MapManager(const std::shared_ptr<Game>& game)
+MapManager::MapManager(Game* game)
 {
 	mMapData.clear();
 	mMapSize = 1;
@@ -146,7 +146,7 @@ void MapManager::moveToPlayerTurn()
 
 void MapManager::moveToEnemyTurn()
 {
-	mPendingEnemyCount = mGame->getEnemies()->size(); //待機敵数をリセット
+	mPendingEnemyCount = mGame->getEnemies().size(); //待機敵数をリセット
 	if (mPendingEnemyCount == 0) return;
 	mGame->activateEnemies();
 	mNextTurn = TurnType::ENEMY;
@@ -209,14 +209,16 @@ void MapManager::createWall()
 			switch (tileNum) {
 			case TileType::FLOOR: {
 				//床の生成
-				std::shared_ptr<RockFloor> rockFloor = createActor<RockFloor>(mGame);
+				std::unique_ptr<RockFloor> rockFloor = createActor<RockFloor>(mGame);
 				rockFloor->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y))); //z軸は奥から手前に配置
+				mGame->addActor(std::move(rockFloor)); //所有権をGameへ渡す
 				break;
 				}
 			case TileType::GRASS: {
 				//草の生成
-				std::shared_ptr<Grass> grass = createActor<Grass>(mGame);
+				std::unique_ptr<Grass> grass = createActor<Grass>(mGame);
 				grass->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y))); //z軸は奥から手前に配置
+				mGame->addActor(std::move(grass)); //所有権をGameへ渡す
 				}
 			}
 
@@ -226,41 +228,49 @@ void MapManager::createWall()
 				auto wall = createActor<RockWall>(mGame);
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
 				wall->setYRot(XM_PIDIV2); 
+				mGame->addActor(std::move(wall));
 			} else if(mMapData[x - 1][y] == TileType::WALL) {
 				auto wall = createActor<RockWall>(mGame);
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
-				wall->setYRot(XM_PIDIV2); 
+				wall->setYRot(XM_PIDIV2);
+				mGame->addActor(std::move(wall));
 			}
 			//東壁
 			if (x == mMapSize - 1) {
 				auto wall = createActor<RockWall>(mGame);
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
 				wall->setYRot(-XM_PIDIV2);
+				mGame->addActor(std::move(wall));
 			}
 			else if (mMapData[x + 1][y] == TileType::WALL) {
 				auto wall = createActor<RockWall>(mGame);
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
 				wall->setYRot(-XM_PIDIV2);
+				mGame->addActor(std::move(wall));
 			}
 			//北壁
 			if (y == mMapSize - 1) {
 				auto wall = createActor<RockWall>(mGame);
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
 				wall->setYRot(XM_PI);
+				mGame->addActor(std::move(wall));
 			}
 			else if (mMapData[x][y + 1] == TileType::WALL) {
 				auto wall = createActor<RockWall>(mGame);
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
 				wall->setYRot(XM_PI);
+				mGame->addActor(std::move(wall));
 			}
 			//南壁
 			if (y == 0) {
 				auto wall = createActor<RockWall>(mGame);
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
+				mGame->addActor(std::move(wall));
 			}
 			else if (mMapData[x][y - 1] == TileType::WALL) {
 				auto wall = createActor<RockWall>(mGame);
 				wall->setPosition(XMFLOAT3((float)(MAPTIPSIZE * x), 0.0f, (float)(MAPTIPSIZE * y)));
+				mGame->addActor(std::move(wall));
 			}
 
 
@@ -280,12 +290,14 @@ void MapManager::createObject()
 					break;
 				case ObjectType::PLAYER: {
 					//プレイヤー生成
-					std::shared_ptr player = createActor<Player>(mGame, static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
+					std::unique_ptr player = createActor<Player>(mGame, static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
+					mGame->addActor(std::move(player)); //所有権をGameへ渡す
 					break;
 				}
 				case ObjectType::SLIME: {
 					//スライムの生成
-					std::shared_ptr<Slime> slime = createActor<Slime>(mGame, static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
+					std::unique_ptr<Slime> slime = createActor<Slime>(mGame, static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
+					mGame->addActor(std::move(slime)); //所有権をGameへ渡す
 					break;
 				}
 			}
@@ -316,7 +328,8 @@ void MapManager::spawnEnemy()
 		if (distance <= 3) continue;
 
 		//敵の生成
-		std::shared_ptr<Slime> slime = createActor<Slime>(mGame, static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
+		std::unique_ptr<Slime> slime = createActor<Slime>(mGame, static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
+		mGame->addActor(std::move(slime)); //所有権をGameへ渡す
 		break;
 
 		i++;

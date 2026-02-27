@@ -53,12 +53,12 @@ void MessageWindow::updateActor()
 	mText->setText(mMessage);
 }
 
-void MessageWindow::setTarget(const std::shared_ptr<Actor>& actor)
+void MessageWindow::setTarget(Actor* actor)
 {
 	mTarget = actor;
 }
 
-void MessageWindow::setPlayer(const std::shared_ptr<Player>& player)
+void MessageWindow::setPlayer(Player* player)
 {
 	mPlayer = player;
 }

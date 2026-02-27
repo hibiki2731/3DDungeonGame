@@ -40,7 +40,7 @@ float DamageText::getLifeTime()
 	return mLifeTime;
 }
 
-DamageTextManager::DamageTextManager(const std::shared_ptr<Game>& game)
+DamageTextManager::DamageTextManager(Game* game)
 {
 	mGame = game;
 

@@ -28,7 +28,7 @@ struct ObjectType {
 class MapManager
 {
 public:
-	MapManager(const std::shared_ptr<Game>& game);
+	MapManager(Game* game);
 	~MapManager() {};
 
 	void update();
@@ -66,7 +66,7 @@ private:
 	std::vector<std::vector<int>> mObjectData; //[x][y]
 	int mMapSize;
 	Stage mStage;
-	std::shared_ptr<Game> mGame;
+	Game* mGame;
 
 	//–¢s“®“G”
 	int mPendingEnemyCount;

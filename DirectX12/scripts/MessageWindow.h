@@ -16,14 +16,14 @@ public:
 	void inputActor() override;
 	void updateActor() override;
 
-	void setTarget(const std::shared_ptr<Actor>& actor);
-	void setPlayer(const std::shared_ptr<Player>& player);
+	void setTarget(Actor* actor);
+	void setPlayer(Player* player);
 
 private:
 
 	std::wstring mMessage;
-	std::shared_ptr<Actor> mTarget;
-	std::shared_ptr<Player> mPlayer;
+	Actor* mTarget;
+	Player* mPlayer;
 	std::shared_ptr<TextComponent> mText;
 };
 

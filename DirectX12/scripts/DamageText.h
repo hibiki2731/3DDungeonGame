@@ -29,7 +29,7 @@ private:
 
 class DamageTextManager {
 public:
-	DamageTextManager(const std::shared_ptr<Game>& game);
+	DamageTextManager(Game* game);
 	~DamageTextManager();
 
 	void update();
@@ -58,7 +58,7 @@ private:
 	ComPtr<ID3D12Resource> mTextureBuf;
 	ComPtr<ID3D12DescriptorHeap> mDescHeap;
 
-	std::shared_ptr<Game> mGame;
+	Game* mGame;
 
 	//各ダメージテキストの設定値
 	const float DTSize = 0.1f;

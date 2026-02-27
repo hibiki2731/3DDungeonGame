@@ -89,8 +89,8 @@ protected:
 template <typename ActorType> concept isActor =	std::is_base_of<Actor, ActorType>::value == true;
 //initを持つクラスの生成関数
 template <isActor ActorType>
-std::shared_ptr<ActorType> createActor(const std::shared_ptr<Game>& game) {
-	std::shared_ptr<ActorType> actor = std::make_shared<ActorType>();
+std::unique_ptr<ActorType> createActor(Game* game) {
+	std::unique_ptr<ActorType> actor = std::make_unique<ActorType>();
 	actor->init(game);
 	actor->initActor();
 	return actor;
@@ -98,8 +98,8 @@ std::shared_ptr<ActorType> createActor(const std::shared_ptr<Game>& game) {
 
 //敵アクターの場合
 template <isActor ActorType>
-std::shared_ptr<ActorType> createActor(const std::shared_ptr<Game>& game, float x, float y) {
-	std::shared_ptr<ActorType> actor = std::make_shared<ActorType>();
+std::unique_ptr<ActorType> createActor(Game* game, float x, float y) {
+	std::unique_ptr<ActorType> actor = std::unique_shared<ActorType>();
 	actor->init(game);
 	actor->setPosition(XMFLOAT3(x, 0.0f, y));
 	actor->initActor();

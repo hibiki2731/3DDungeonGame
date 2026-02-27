@@ -45,78 +45,81 @@ public:
 	void init();
 
 	//アクターの追加
-	void addActor(const std::shared_ptr<Actor>& actor);
-	void removeActor(const std::shared_ptr<Actor>& actor);
+	void addActor(std::unique_ptr<Actor> actor);
+	//コンポーネント配列への追加、除去
 	//メッシュの追加
-	void addMesh(const std::shared_ptr<MeshComponent>& mesh);
-	void removeMesh(const std::shared_ptr<MeshComponent>& mesh);
+	void addMesh(MeshComponent* mesh);
+	void removeMesh(MeshComponent* mesh);
 	//スプライトの追加
-	void addSprite(const std::shared_ptr<SpriteComponent>& mesh);
-	void removeSprite(const std::shared_ptr<SpriteComponent>& mesh);
+	void addSprite(SpriteComponent* mesh);
+	void removeSprite(SpriteComponent* mesh);
 	//点光源の追加
-	void addPointLight(const std::shared_ptr<PointLightComponent>& light);
-	void removePointLight(const std::shared_ptr<PointLightComponent>& light);
+	void addPointLight(PointLightComponent* light);
+	void removePointLight(PointLightComponent* light);
 	//スポットライトの追加
-	void addSpotLight(const std::shared_ptr<SpotLightComponent>& light);
-	void removeSpotLight(const std::shared_ptr<SpotLightComponent>& light);
+	void addSpotLight(SpotLightComponent* light);
+	void removeSpotLight(SpotLightComponent* light);
 	//テキストの追加
-	void addText(const std::shared_ptr<TextComponent>& text);
-	void removeText(const std::shared_ptr<TextComponent>& text);
+	void addText(TextComponent* text);
+	void removeText(TextComponent* text);
 	//エネミーの追加
-	void addEnemy(const std::shared_ptr<EnemyComponent>& enemy);
-	void removeEnemy(const std::shared_ptr<EnemyComponent>& enemy);
+	void addEnemy(EnemyComponent* enemy);
+	void removeEnemy(EnemyComponent* enemy);
 	//プレイヤーのセット
-	void setPlayer(const std::shared_ptr<Player>& player);
+	void setPlayer(Player* player);
 	void activateEnemies();
 
 	//ゲッター
 	Graphic* getGraphic();
-	std::shared_ptr<std::vector<std::shared_ptr<EnemyComponent>>> getEnemies();
-	std::shared_ptr<MapManager> getMapManager();
-	std::shared_ptr<DamageTextManager> getDamageTextManager();
-	std::shared_ptr<EnemyComponent> getEnemyFromIndexPos(int x, int y);
-	std::shared_ptr<EnemyComponent> getEnemyFromIndexPos(int index);
-	std::shared_ptr<AssetManager> getAssetManager();
-	std::vector<std::shared_ptr<PointLightComponent>> getPointLights();
-	std::vector<std::shared_ptr<SpotLightComponent>> getSpotLights();
-	std::shared_ptr<Player> getPlayer();
-	std::shared_ptr<ItemManager> getItemManager();
+	std::vector<std::unique_ptr<EnemyComponent>>& getEnemies();
+	MapManager* getMapManager();
+	DamageTextManager* getDamageTextManager();
+	EnemyComponent* getEnemyFromIndexPos(int x, int y);
+	EnemyComponent* getEnemyFromIndexPos(int index);
+	AssetManager* getAssetManager();
+	std::vector<std::unique_ptr<PointLightComponent>>& getPointLights();
+	std::vector<std::unique_ptr<SpotLightComponent>>& getSpotLights();
+	Player* getPlayer();
+	ItemManager* getItemManager();
 
 private:
 	//グラフィック
 	std::unique_ptr<Graphic> mGraphic;
+	//アクター配列（所有権を持つ）
+	std::vector<std::unique_ptr<Actor>> mActors;
+	std::vector<std::unique_ptr<Actor>> mPendingActors;
+	//コンポーネント配列（所有権は持たない）
 	//メッシュ配列
-	std::vector<std::shared_ptr<MeshComponent>> mMeshes;
-	std::vector<std::shared_ptr<SpriteComponent>> mSprites;
+	std::vector<std::unique_ptr<MeshComponent>> mMeshes;
+	std::vector<std::unique_ptr<SpriteComponent>> mSprites;
 	//テキスト配列
-	std::vector<std::shared_ptr<TextComponent>> mTexts;
+	std::vector<std::unique_ptr<TextComponent>> mTexts;
 	//ライト配列
-	std::vector<std::shared_ptr<PointLightComponent>> mPointLights;
-	std::vector<std::shared_ptr<SpotLightComponent>> mSpotLights;
-	//アクター配列
-	std::vector<std::shared_ptr<Actor>> mActors;
-	std::vector<std::shared_ptr<Actor>> mPendingActors;
+	std::vector<std::unique_ptr<PointLightComponent>> mPointLights;
+	std::vector<std::unique_ptr<SpotLightComponent>> mSpotLights;
 	//キャラクター配列
-	std::shared_ptr<std::vector<std::shared_ptr<EnemyComponent>>> mEnemies = nullptr; 
+	std::vector<std::shared_ptr<EnemyComponent>> mEnemies; 
 	//ダメージエフェクト用
-	std::shared_ptr<DamageTextManager> mDamageTextManager;
+	std::unique_ptr<DamageTextManager> mDamageTextManager;
 
 	//マップ関連
-	std::shared_ptr<MapManager> mMapManager;
+	std::unique_ptr<MapManager> mMapManager;
 	bool mUpdatingActors;
 
 	//プレイヤー
-	std::shared_ptr<Player> mPlayer;
+	std::unique_ptr<Player> mPlayer;
 
 	//AssetManager
-	std::shared_ptr<AssetManager> mAssetManager;
+	std::unique_ptr<AssetManager> mAssetManager;
 
 	//ItemManger
-	std::shared_ptr<ItemManager> mItemManager;
+	std::unique_ptr<ItemManager> mItemManager;
 
 	//ループ内処理
 	void input();
 	void update();
 	void draw();
 
+	//アクターの削除
+	void removeActor(std::unique_ptr<Actor> actor);
 };

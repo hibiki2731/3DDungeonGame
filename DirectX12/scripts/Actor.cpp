@@ -34,7 +34,6 @@ void Actor::init(const std::shared_ptr<Game>& game)
 	mRotation = { 0.0f, 0.0f, 0.0f };
 	mState = Active;
 	mGame = game;
-	mGame->addActor(shared_from_this());
 }
 
 void Actor::endProccess()
