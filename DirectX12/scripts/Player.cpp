@@ -44,6 +44,7 @@ Player::Player(Game* game, float x, float y) : Actor(game)
 	//キャラクターコンポーネントの生成
 	auto character = std::make_unique<CharacterComponent>(this);
 	character->setDirection(Direction::UP);
+	character->setIndexPos(static_cast<int>(std::round(x / MAPTIPSIZE)), static_cast<int>(std::round(y / MAPTIPSIZE)));
 	mCharacter = character.get();
 	addComponent(std::move(character));
 
@@ -100,7 +101,7 @@ void Player::updateActor()
 			mPosition = mTargetPos;
 
 			//ターン経過
-			mMapManager->moveToEnemyTurn();
+			//mMapManager->moveToEnemyTurn();
 			isMoving = false;
 		}
 	}
@@ -121,7 +122,6 @@ void Player::updateActor()
 		}
 	}
 
-	mState = State::Active;
 }
 
 int Player::getDirection()
@@ -246,10 +246,13 @@ void Player::move(Direction direction)
 	mMapManager->setObjectDataAt(mCharacter->getIndexPosInt(), ObjectType::EMPTY);
 	//マップ上のオブジェクトデータ更新
 	mMapManager->setObjectDataAt(targetIndexPos[0], targetIndexPos[1], ObjectType::PLAYER);
+	//プレイヤーのインデックス座標の更新
+	mCharacter->setIndexPos(targetIndexPos[0], targetIndexPos[1]);
 
 	mTargetPos = XMFLOAT3(static_cast<float>(targetIndexPos[0]) * MAPTIPSIZE, mPosition.y, static_cast<float>(targetIndexPos[1]) * MAPTIPSIZE);
 	
 	isMoving = true;
+	mMapManager->moveToEnemyTurn(); //ターン経過
 
 }	
 

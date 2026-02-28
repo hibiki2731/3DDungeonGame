@@ -10,7 +10,7 @@
 #include "PointLight.h"
 #include "RockObject.h"
 #include "TextComponent.h"
-#include "Slime.h"
+#include "Enemy.h"
 #include "MapManager.h"
 #include "EnemyComponent.h"
 #include "DamageText.h"
@@ -297,7 +297,7 @@ void Game::input()
 
 	//デバック用
 	if (GetAsyncKeyState('P')) {
-		auto slime = std::make_unique<Slime>(this, static_cast<float>(MAPTIPSIZE * 5.0f), static_cast<float>(MAPTIPSIZE * 5.0f));
+		auto slime = std::make_unique<Enemy>(this, static_cast<float>(MAPTIPSIZE * 5.0f), static_cast<float>(MAPTIPSIZE * 5.0f));
 		addActor(std::move(slime));
 	}
 	if (GetAsyncKeyState('O')) {

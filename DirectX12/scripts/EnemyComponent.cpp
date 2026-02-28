@@ -7,18 +7,22 @@
 EnemyComponent::EnemyComponent(Actor* owner, int updateOrder) : CharacterComponent(owner, updateOrder)
 {
 	mOwner->getGame()->addEnemy(this);
+	mMesh = nullptr;
 
 	mFlashTimer = 0.0f;
 	mFlashDuration = 0.3f;	//ダメージを受けたときの点滅時間
 
 	isMoving = false;
-	mMoveSpeed = 10.0f;
+	mMoveSpeed = 5.0f;
 
 	mEnemyType = ObjectType::EMPTY;
 	mState = EnemyState::RANDOM;
 	isActive = false;
 	mTargetPos = mOwner->getPosition();
 	mDistPlayer = 10000000;
+
+	mIndexPos[0] = static_cast<int>(std::round(mOwner->getPosition().x / MAPTIPSIZE));
+	mIndexPos[1] = static_cast<int>(std::round(mOwner->getPosition().z / MAPTIPSIZE));
 }
 
 void EnemyComponent::inputComponent()
@@ -177,6 +181,7 @@ void EnemyComponent::move()
 	mTargetPos = XMFLOAT3(targetIndexPos[0] * MAPTIPSIZE, 0.0f, targetIndexPos[1] * MAPTIPSIZE);
 	mMapManager->setObjectDataAt(mIndexPos[0], mIndexPos[1], ObjectType::EMPTY); //元居た場所を空に
 	mMapManager->setObjectDataAt(targetIndexPos[0], targetIndexPos[1], mEnemyType); //移動先のデータを先に更新する
+	mIndexPos[0] = targetIndexPos[0]; mIndexPos[1] = targetIndexPos[1]; //インデックス座標の更新
 }
 
 void EnemyComponent::attack()

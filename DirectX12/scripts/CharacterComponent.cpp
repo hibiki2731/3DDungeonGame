@@ -29,9 +29,9 @@ void CharacterComponent::inputComponent()
 void CharacterComponent::updateComponent()
 {
 	
-	//インデックス座標の更新
-	mIndexPos[0] = static_cast<int>(std::round(mOwner->getPosition().x / MAPTIPSIZE));
-	mIndexPos[1] = static_cast<int>(std::round(mOwner->getPosition().z / MAPTIPSIZE));
+	////インデックス座標の更新
+	//mIndexPos[0] = static_cast<int>(std::round(mOwner->getPosition().x / MAPTIPSIZE));
+	//mIndexPos[1] = static_cast<int>(std::round(mOwner->getPosition().z / MAPTIPSIZE));
 	
 
 }
@@ -106,10 +106,10 @@ void CharacterComponent::setDirection(int direction)
 	mDirection = direction;
 }
 
-void CharacterComponent::setIndexPos(const std::vector<int>& indexPos)
+void CharacterComponent::setIndexPos(int x, int y)
 {
-	if (indexPos.size() != 2) assert(false);
-	mIndexPos = indexPos;
+	mIndexPos[0] = x;
+	mIndexPos[1] = y;
 }
 
 void CharacterComponent::setIndexPosInt(int indexPos)

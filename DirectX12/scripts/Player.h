@@ -31,7 +31,6 @@ private:
 	void move(Direction direction);
 	void rotate(Direction direction);
 	void calcMoveDirectionToIndexPos(Direction moveDirection, int (& indexPos)[2]);
-
 	void collect();
 
 	float mMoveSpeed;

@@ -1,11 +1,11 @@
-#include "Slime.h"
+#include "Enemy.h"
 #include "MeshComponent.h"
 #include "Game.h"
 #include "EnemyComponent.h"
 #include "MapManager.h"
 #include "Player.h"
 
-Slime::Slime(Game* game, float x, float y) : Actor(game)
+Enemy::Enemy(Game* game, float x, float y) : Actor(game)
 {
 	mPosition = XMFLOAT3(x, 0, y);
 	auto mesh = std::make_unique<MeshComponent>(this);
@@ -26,7 +26,7 @@ Slime::Slime(Game* game, float x, float y) : Actor(game)
 	addComponent(std::move(enemy));
 }
 
-void Slime::updateActor()
+void Enemy::updateActor()
 {
 	if (mEnemy->getDist() <= 2) {
 		mEnemy->setEnemyState(EnemyState::ASTAR);
@@ -34,6 +34,6 @@ void Slime::updateActor()
 	else mEnemy->setEnemyState(EnemyState::RANDOM);
 }
 
-void Slime::inputActor()
+void Enemy::inputActor()
 {
 }

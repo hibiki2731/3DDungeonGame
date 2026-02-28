@@ -3,16 +3,15 @@
 
 class EnemyComponent;
 
-class Slime : public Actor
+class Enemy : public Actor
 {
 public:
-	Slime(Game* game, float x, float y);
+	Enemy(Game* game, float x, float y);
 
 	void updateActor() override;
 	void inputActor() override;
 
 private:
 	class EnemyComponent* mEnemy;
-	int mPlayerIndexPos[2];
 };
 

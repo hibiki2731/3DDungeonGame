@@ -2,7 +2,7 @@
 #include "RockObject.h"
 #include "Game.h"
 #include "Definition.h"
-#include "Slime.h"
+#include "Enemy.h"
 #include "Player.h"
 #include "Grass.h"
 #include <fstream>
@@ -23,12 +23,26 @@ MapManager::MapManager(Game* game)
 
 void MapManager::update()
 {
+	//エネミーターン時に敵が全滅していたらプレイヤーターンへ
+	if (mTurnType == TurnType::ENEMY && mGame->getEnemies().size() == 0) {
+		mNextTurn = TurnType::PLAYER;
+	}
+
+	//プレイヤーターン→エネミーターンへの移行時
+	if (mNextTurn == TurnType::ENEMY && mTurnType == TurnType::PLAYER) {
+		//初期化
+		mPendingEnemyCount = static_cast<int>(mGame->getEnemies().size()); //待機敵数をリセット
+		mGame->activateEnemies();
+	}
+
 	//エネミーターン→プレイヤーターンへの移行時
 	if (mNextTurn == TurnType::PLAYER && mTurnType == TurnType::ENEMY) {
 		//敵のランダム湧き
 		int random = Random::dist(1, 100);
 		if (random <= 10) spawnEnemy();
 	}
+
+
 	mTurnType = mNextTurn;
 }
 
@@ -146,9 +160,6 @@ void MapManager::moveToPlayerTurn()
 
 void MapManager::moveToEnemyTurn()
 {
-	mPendingEnemyCount = static_cast<int>(mGame->getEnemies().size()); //待機敵数をリセット
-	if (mPendingEnemyCount == 0) return;
-	mGame->activateEnemies();
 	mNextTurn = TurnType::ENEMY;
 }
 
@@ -286,7 +297,7 @@ void MapManager::createObject()
 				}
 				case ObjectType::SLIME: {
 					//スライムの生成
-					std::unique_ptr<Slime> slime = std::make_unique<Slime>(mGame, static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
+					std::unique_ptr<Enemy> slime = std::make_unique<Enemy>(mGame, static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
 					mGame->addActor(std::move(slime)); //所有権をGameへ渡す
 					break;
 				}
@@ -318,7 +329,7 @@ void MapManager::spawnEnemy()
 		if (distance <= 3) continue;
 
 		//敵の生成
-		std::unique_ptr<Slime> slime = std::make_unique<Slime>(mGame, static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
+		std::unique_ptr<Enemy> slime = std::make_unique<Enemy>(mGame, static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
 		mGame->addActor(std::move(slime)); //所有権をGameへ渡す
 		break;
 
