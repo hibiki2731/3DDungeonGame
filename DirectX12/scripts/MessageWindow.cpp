@@ -6,22 +6,25 @@
 #include "Player.h"
 #include "MapManager.h"
 
-void MessageWindow::initActor()
+MessageWindow::MessageWindow(Game* game) : Actor(game)
 {
+
 	std::wstring message = L"èâä˙âª";
 	mMessage = message;
-	mText = createComponent<TextComponent>(shared_from_this());
-	mText->setText(mMessage);
-	mText->setBaseLine(100.0f, 10.0f);
-	mText->setFontSize(24.0f);
-	mText->setTextColor(D2D1::ColorF(D2D1::ColorF::Black));
-	mText->showText();
+	auto text = std::make_unique<TextComponent>(this);
+	text->setText(mMessage);
+	text->setBaseLine(100.0f, 10.0f);
+	text->setFontSize(24.0f);
+	text->setTextColor(D2D1::ColorF(D2D1::ColorF::Black));
+	text->showText();
+	mText = text.get();
+	addComponent(std::move(text));
 
-	auto window = createComponent<SpriteComponent>(shared_from_this());
+	auto window = std::make_unique<SpriteComponent>(this);
 	window->create("assets\\Default\\Panel\\panel-001.png");
 	window->setBordarSize(12.0f);
 	window->setSpriteSize(XMFLOAT2(600.0f, 100.0f));
-
+	addComponent(std::move(window));
 }
 
 void MessageWindow::inputActor()

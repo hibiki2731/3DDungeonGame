@@ -9,7 +9,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ PWSTR, _In_ INT) {
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-	auto game = std::make_shared<Game>();
+	auto game = std::make_unique<Game>();
 	game->init();
 	game->runLoop();
 

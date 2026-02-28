@@ -5,7 +5,7 @@
 #include "SpotLightComponent.h"
 #include "Game.h"
 
-Graphic::Graphic(const std::shared_ptr<Game>& game)
+Graphic::Graphic(Game* game)
 {
 	ClearColor[0] = 1.0f;
 	ClearColor[1] = 0.4f;
@@ -1129,28 +1129,7 @@ HRESULT Graphic::createCbvTbvHeap(ComPtr<ID3D12DescriptorHeap>& cbvTbvHeap, UINT
 	
 }
 
-HRESULT Graphic::createSharedCbvTbvHeap(ComPtr<ID3D12DescriptorHeap>& cbvTbvHeap, UINT numDescriptors)
-{
-	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	desc.NumDescriptors = numDescriptors;
-	desc.NodeMask = 0;
-	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	return Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(cbvTbvHeap.ReleaseAndGetAddressOf()));
-
-}
-
-void Graphic::copySharedCbvTbvHeap(ComPtr<ID3D12DescriptorHeap> const& cbvTbvHeap, D3D12_CPU_DESCRIPTOR_HANDLE hDestHeap)
-{
-	Device->CopyDescriptorsSimple(
-		1,
-		hDestHeap,
-		cbvTbvHeap->GetCPUDescriptorHandleForHeapStart(),
-		D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV
-	);
-}
-
-void Graphic::createVertexBufferView(ComPtr<ID3D12Resource> const& vertexBuf, UINT sizeInBytes, UINT strideInBytes, D3D12_VERTEX_BUFFER_VIEW& vertexBufferView)
+void Graphic::createVertexBufferView(ComPtr<ID3D12Resource>& vertexBuf, UINT sizeInBytes, UINT strideInBytes, D3D12_VERTEX_BUFFER_VIEW& vertexBufferView)
 {
 	vertexBufferView.BufferLocation = vertexBuf->GetGPUVirtualAddress();
 	vertexBufferView.SizeInBytes = sizeInBytes; //全バイト数
@@ -1158,14 +1137,14 @@ void Graphic::createVertexBufferView(ComPtr<ID3D12Resource> const& vertexBuf, UI
 
 }
 
-void Graphic::createIndexBufferView(ComPtr<ID3D12Resource> const& indexBuf, UINT sizeInBytes, D3D12_INDEX_BUFFER_VIEW& indexBufferView)
+void Graphic::createIndexBufferView(ComPtr<ID3D12Resource>& indexBuf, UINT sizeInBytes, D3D12_INDEX_BUFFER_VIEW& indexBufferView)
 {
 	indexBufferView.BufferLocation = indexBuf->GetGPUVirtualAddress();
 	indexBufferView.SizeInBytes = sizeInBytes; //全バイト数
 	indexBufferView.Format = DXGI_FORMAT_R16_UINT; //1頂点のバイト数
 }
 
-void Graphic::createConstantBufferView(ComPtr<ID3D12Resource> const& constantBuf, D3D12_CPU_DESCRIPTOR_HANDLE handle)
+void Graphic::createConstantBufferView(ComPtr<ID3D12Resource>& constantBuf, D3D12_CPU_DESCRIPTOR_HANDLE handle)
 {
 	D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
 	desc.BufferLocation = constantBuf->GetGPUVirtualAddress();
@@ -1190,7 +1169,7 @@ void Graphic::createBase3DBufferView(int heapIndex)
 	createConstantBufferView(0, alignedSize(sizeof(Base3DData)), heapIndex);
 }
 
-void Graphic::createShaderResourceView(ComPtr<ID3D12Resource> const& shaderResource, D3D12_CPU_DESCRIPTOR_HANDLE handle)
+void Graphic::createShaderResourceView(ComPtr<ID3D12Resource>& shaderResource, D3D12_CPU_DESCRIPTOR_HANDLE handle)
 {
 	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
 	desc.Format = shaderResource->GetDesc().Format;
@@ -1201,7 +1180,7 @@ void Graphic::createShaderResourceView(ComPtr<ID3D12Resource> const& shaderResou
 	Device->CreateShaderResourceView(shaderResource.Get(), &desc, handle);
 }
 
-void Graphic::createShaderResourceView(ComPtr<ID3D12Resource> const& shaderResource, int heapIndex)
+void Graphic::createShaderResourceView(ComPtr<ID3D12Resource>& shaderResource, int heapIndex)
 {
 	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
 	desc.Format = shaderResource->GetDesc().Format;
@@ -1220,7 +1199,7 @@ void Graphic::updateViewProj(XMMATRIX& viewProj)
 	Base3DData.viewProj = viewProj;
 }
 
-void Graphic::updatePointLight(const std::vector<std::shared_ptr<PointLightComponent>>& lights)
+void Graphic::updatePointLight(const std::vector<PointLightComponent*>& lights)
 {
 	for (int i = 0; i < lights.size(); i++) {
 		Base3DData.pointLights[i].position = lights[i]->getPosition();
@@ -1231,7 +1210,7 @@ void Graphic::updatePointLight(const std::vector<std::shared_ptr<PointLightCompo
 	}
 }
 
-void Graphic::updateSpotLight(const std::vector<std::shared_ptr<SpotLightComponent>>& lights)
+void Graphic::updateSpotLight(const std::vector<SpotLightComponent*>& lights)
 {
 	for (int i = 0; i < lights.size(); i++) {
 		Base3DData.spotLights[i].position = lights[i]->getPosition();
@@ -1394,24 +1373,24 @@ UINT Graphic::getCbvTbvIncSize()
 	return Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
-ComPtr<ID3D12GraphicsCommandList>& Graphic::getCommandList()
+ID3D12GraphicsCommandList* Graphic::getCommandList()
 {
-	return CommandList;
+	return CommandList.Get();
 }
 
-ComPtr<ID3D12CommandQueue>& Graphic::getCommandQueue()
+ID3D12CommandQueue* Graphic::getCommandQueue()
 {
-	return CommandQueue;
+	return CommandQueue.Get();
 }
 
-ComPtr<ID3D12CommandAllocator>& Graphic::getCommandAllocator()
+ID3D12CommandAllocator* Graphic::getCommandAllocator()
 {
-	return CommandAllocator;
+	return CommandAllocator.Get();
 }
 
-ComPtr<ID3D12Device>& Graphic::getDevice()
+ID3D12Device* Graphic::getDevice()
 {
-	return Device;
+	return Device.Get();
 }
 
 float Graphic::getClientWidth()
@@ -1424,19 +1403,19 @@ float Graphic::getClientHeight()
 	return ClientHeight;
 }
 
-ComPtr<ID2D1DeviceContext>& Graphic::getD2DDeviceContext()
+ID2D1DeviceContext* Graphic::getD2DDeviceContext()
 {
-	return mD2DDeviceContext;
+	return mD2DDeviceContext.Get();
 }
 
-ComPtr<IDWriteFactory>& Graphic::getDWriteFactory()
+IDWriteFactory* Graphic::getDWriteFactory()
 {
-	return mDWriteFactory;
+	return mDWriteFactory.Get();
 }
 
-ComPtr<ID2D1Bitmap1>& Graphic::getD2DRenderTarget()
+ID2D1Bitmap1* Graphic::getD2DRenderTarget()
 {
-	return mD2DRenderTargets[BackBufIdx];
+	return mD2DRenderTargets[BackBufIdx].Get();
 }
 
 UINT8* Graphic::getConstantData()

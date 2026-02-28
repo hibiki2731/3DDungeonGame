@@ -14,32 +14,44 @@
 #include "MapManager.h"
 #include "Graphic.h"
 
-void Player::initActor()
+Player::Player(Game* game, float x, float y) : Actor(game)
 {
-	setYPos(0.5f);
+	mPosition = { x, 0.5f, y };
 	mTargetPos = mPosition;
 	mTargetRot = mRotation;
 	mMoveSpeed = 5.0f;
 	mRotSpeed = 4.5f;
-	mCamera = createComponent<CameraComponent>(shared_from_this());
-	mCamera->setActive(true);
 	isMoving = false;
 	isRotating = false;
 	mActionTimer = 0.0f;
 
-	auto spotLight = createComponent<SpotLightComponent>(shared_from_this());
+	//カメラの生成
+	std::unique_ptr camera = std::make_unique<CameraComponent>(this);
+	camera->setActive(true);
+	mCamera = camera.get();
+	addComponent(std::move(camera));
+
+	//スポットライトの生成
+	std::unique_ptr<SpotLightComponent> spotLight = std::make_unique<SpotLightComponent>(this);
 	spotLight->setActive(true);
 	spotLight->setColor(XMFLOAT4(1.0f, 0.9f, 0.8f, 1.0f));
 	spotLight->setIntensity(30.0f);
 	spotLight->setRange(50.0f);
 	spotLight->setUAngle(XMConvertToRadians(10.0f));
 	spotLight->setPAngle(XMConvertToRadians(40.0f));
+	addComponent(std::move(spotLight));
 
-	mCharacter = createComponent<CharacterComponent>(shared_from_this());
-	mCharacter->setDirection(Direction::UP);
+	//キャラクターコンポーネントの生成
+	auto character = std::make_unique<CharacterComponent>(this);
+	character->setDirection(Direction::UP);
+	mCharacter = character.get();
+	addComponent(std::move(character));
+
+	//マップマネージャーの取得
 	mMapManager = mGame->getMapManager();
-	mGame->setPlayer(dynamic_pointer_cast<Player>(shared_from_this()));
 
+	//Gameにプレイヤーをセット
+	mGame->setPlayer(this);
 }
 
 void Player::inputActor()
@@ -152,7 +164,7 @@ void Player::attack()
 	if (isMoving || isRotating) return;
 
 	//前方のエネミーを取得
-	std::shared_ptr<EnemyComponent> target = nullptr;
+	EnemyComponent* target = nullptr;
 	switch (mCharacter->getDirection()) {
 	case Direction::UP:
 		target = getGame()->getEnemyFromIndexPos(mCharacter->getIndexPos()[0], mCharacter->getIndexPos()[1] + 1);

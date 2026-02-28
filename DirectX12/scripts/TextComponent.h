@@ -6,9 +6,9 @@
 class TextComponent : public Component
 {
 public:
-	TextComponent() {};
+	TextComponent(Actor* owner, int updateOrder = 100);
 	~TextComponent();
-	void initComponent() override;
+
 	void draw();
 
 	void endProccess() override;

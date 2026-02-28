@@ -1,11 +1,11 @@
 #include "Grass.h"
 #include "MeshComponent.h"
 
-void Grass::initActor()
+Grass::Grass(Game* game, float x, float y) : Actor(game, x, y)
 {
-	auto mesh = createComponent<MeshComponent>(shared_from_this());
+	auto mesh = std::make_unique<MeshComponent>(this);
 	mesh->create(ObjectName::GRASS);
-
+	addComponent(std::move(mesh));
 }
 
 void Grass::updateActor() {

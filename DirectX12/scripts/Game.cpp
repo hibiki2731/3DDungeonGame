@@ -6,7 +6,6 @@
 #include "MessageWindow.h"
 #include "MeshComponent.h"
 #include "SpriteComponent.h"
-#include "RenderComponent.h"
 #include "PointLightComponent.h"
 #include "PointLight.h"
 #include "RockObject.h"
@@ -46,11 +45,11 @@ int Game::endProcess()
 }
 
 void Game::init() {
-	mGraphic = std::make_unique<Graphic>(shared_from_this());
+	mGraphic = std::make_unique<Graphic>(this);
 	mGraphic->init();
 	mGraphic->clearColor(0.25f, 0.5f, 0.9f);
 
-	//FBXƒtƒ@ƒCƒ‹‚ÆƒeƒLƒXƒgƒtƒ@ƒCƒ‹‚ÌƒpƒX
+	//FBXãƒ•ã‚¡ã‚¤ãƒ«ã¨ãƒ†ã‚­ã‚¹ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹
 	const char* fbx[] = { 
 		"assets\\rockObj\\rockWall.fbx",
 		"assets\\rockObj\\rockFloor.fbx",
@@ -66,54 +65,54 @@ void Game::init() {
 	};
 
 #ifdef DEBUG
-	//FBX¨ƒeƒLƒXƒg•ÏŠ·
+	//FBXâ†’ãƒ†ã‚­ã‚¹ãƒˆå¤‰æ›
 	FBXConverter fbxConverter;
 	const int fbxNum = _countof(fbx);
 	int i;
-	//ƒtƒŠ[‘fŞ
+	//ãƒ•ãƒªãƒ¼ç´ æ
 	for (i = 0; i < fbxNum; i++) {
-		fbxConverter.fbxToTxt(fbx[i], text[i], 1.0f, 1.0f, 1.0f, 0, 1, 2); //‰¡AcA‰œs
+		fbxConverter.fbxToTxt(fbx[i], text[i], 1.0f, 1.0f, 1.0f, 0, 1, 2); //æ¨ªã€ç¸¦ã€å¥¥è¡Œ
 		
 	}
 #endif
 
 
-	//ƒ^ƒCƒ}[‰Šú‰»
+	//ã‚¿ã‚¤ãƒãƒ¼åˆæœŸåŒ–
 	initDeltaTime();
 
-	//assetManager‚Ì‰Šú‰» meshComponent‚ğì¬‚·‚é‘O‚É‰Šú‰»
+	//assetManagerã®åˆæœŸåŒ– meshComponentã‚’ä½œæˆã™ã‚‹å‰ã«åˆæœŸåŒ–
 	mAssetManager = std::make_unique<AssetManager>(mGraphic.get());
 
-	//map‚Ì¶¬
+	//mapã®ç”Ÿæˆ
 	mMapManager = std::make_unique<MapManager>(this);
 	mMapManager->setStage(Stage::MAP1);
 	mMapManager->createMap();
 
-	//ƒAƒNƒ^[ì¬—á
-	auto messageWindow = createActor<MessageWindow>(this);
-	messageWindow->setPlayer(mPlayer.get()); //ƒfƒoƒbƒO—p
+	//ã‚¢ã‚¯ã‚¿ãƒ¼ä½œæˆä¾‹
+	auto messageWindow = std::make_unique<MessageWindow>(this);
+	messageWindow->setPlayer(mPlayer); //ãƒ‡ãƒãƒƒã‚°ç”¨
 	addActor(std::move(messageWindow));
 
-	//itemManager‚Ì‰Šú‰»
+	//itemManagerã®åˆæœŸåŒ–
 	mItemManager = std::make_unique<ItemManager>();
 
-	//damageText‚Ì‰Šú‰»
+	//damageTextã®åˆæœŸåŒ–
 	mDamageTextManager = std::make_unique<DamageTextManager>(this);
 
 }
 
-void Game::addActor(const std::shared_ptr<Actor>& actor)
+void Game::addActor(std::unique_ptr<Actor> actor)
 {
-	//ƒAƒNƒ^[‚ÌXV’†‚È‚ç‘Ò‚¿‚É’Ç‰Á
+	//ã‚¢ã‚¯ã‚¿ãƒ¼ã®æ›´æ–°ä¸­ãªã‚‰å¾…ã¡ã«è¿½åŠ 
 	if (mUpdatingActors) {
-		mPendingActors.emplace_back(actor);
+		mPendingActors.emplace_back(std::move(actor));
 	}
 	else {
-		mActors.emplace_back(actor);
+		mActors.emplace_back(std::move(actor));
 	}
 }
 
-void Game::removeActor(const std::shared_ptr<Actor>& actor)
+void Game::removeActor(std::unique_ptr<Actor>& actor)
 {
 	auto iter = std::find(mPendingActors.begin(), mPendingActors.end(), actor);
 	if (iter != mPendingActors.end()) {
@@ -121,7 +120,7 @@ void Game::removeActor(const std::shared_ptr<Actor>& actor)
 		mPendingActors.pop_back();
 	}
 
-	//œ‹‚Ìˆ—
+	//é™¤å»æ™‚ã®å‡¦ç†
 	actor->endProccess();
 
 	iter = std::find(mActors.begin(), mActors.end(), actor);
@@ -131,12 +130,12 @@ void Game::removeActor(const std::shared_ptr<Actor>& actor)
 	}
 }
 
-void Game::addMesh(const std::shared_ptr<MeshComponent>& mesh)
+void Game::addMesh(MeshComponent* mesh)
 {
 	mMeshes.emplace_back(mesh);
 }
 
-void Game::removeMesh(const std::shared_ptr<MeshComponent>& mesh)
+void Game::removeMesh(MeshComponent* mesh)
 {
 	auto iter = std::find(mMeshes.begin(), mMeshes.end(), mesh);
 	if (iter != mMeshes.end()) {
@@ -144,12 +143,12 @@ void Game::removeMesh(const std::shared_ptr<MeshComponent>& mesh)
 		mMeshes.pop_back();
 	}
 }
-void Game::addSprite(const std::shared_ptr<SpriteComponent>& sprite)
+void Game::addSprite(SpriteComponent* sprite)
 {
 	mSprites.emplace_back(sprite);
 }
 
-void Game::removeSprite(const std::shared_ptr<SpriteComponent>& sprite)
+void Game::removeSprite(SpriteComponent* sprite)
 {
 	auto iter = std::find(mSprites.begin(), mSprites.end(), sprite);
 	if (iter != mSprites.end()) {
@@ -158,60 +157,60 @@ void Game::removeSprite(const std::shared_ptr<SpriteComponent>& sprite)
 	}
 }
 
-void Game::addPointLight(const std::shared_ptr<PointLightComponent>& light)
+void Game::addPointLight(PointLightComponent* light)
 {
 	if (mPointLights.size() > MAX_LIGHT_NUM) return;
-	mPointLights.push_back(light);
+	mPointLights.emplace_back(light);
 }
 
-void Game::removePointLight(const std::shared_ptr<PointLightComponent>& light)
+void Game::removePointLight(PointLightComponent* light)
 {
 	mPointLights.erase(std::remove(mPointLights.begin(), mPointLights.end(), light), mPointLights.end());
 }
 
-void Game::addSpotLight(const std::shared_ptr<SpotLightComponent>& light)
+void Game::addSpotLight(SpotLightComponent* light)
 {
 	if (mSpotLights.size() > MAX_LIGHT_NUM) return;
-	mSpotLights.push_back(light);
+	mSpotLights.emplace_back(light);
 }
 
-void Game::removeSpotLight(const std::shared_ptr<SpotLightComponent>& light)
+void Game::removeSpotLight(SpotLightComponent* light)
 {
 	mSpotLights.erase(std::remove(mSpotLights.begin(), mSpotLights.end(), light), mSpotLights.end());
 }
 
-void Game::addText(const std::shared_ptr<TextComponent>& text)
+void Game::addText(TextComponent* text)
 {
-	mTexts.push_back(text);
+	mTexts.emplace_back(text);
 }
 
-void Game::removeText(const std::shared_ptr<TextComponent>& fontText)
+void Game::removeText(TextComponent* fontText)
 {
 	mTexts.erase(std::remove(mTexts.begin(), mTexts.end(), fontText), mTexts.end());
 }
 
-void Game::addEnemy(const std::shared_ptr<EnemyComponent>& enemy)
+void Game::addEnemy(EnemyComponent* enemy)
 {
-	mEnemies->push_back(enemy);
+	mEnemies.emplace_back(enemy);
 }
 
-void Game::removeEnemy(const std::shared_ptr<EnemyComponent>& enemy)
+void Game::removeEnemy(EnemyComponent* enemy)
 {
-	auto iter = std::find(mEnemies->begin(), mEnemies->end(), enemy);
-	if (iter != mEnemies->end()) {
-		std::iter_swap(iter, mEnemies->end() - 1);
-		mEnemies->pop_back();
+	auto iter = std::find(mEnemies.begin(), mEnemies.end(), enemy);
+	if (iter != mEnemies.end()) {
+		std::iter_swap(iter, mEnemies.end() - 1);
+		mEnemies.pop_back();
 	}
 }
 
-void Game::setPlayer(const std::shared_ptr<Player>& player)
+void Game::setPlayer(Player* player)
 {
 	mPlayer = player;
 }
 
 void Game::activateEnemies()
 {
-	for (auto enemy : *mEnemies) {
+	for (auto enemy : mEnemies) {
 		enemy->activate();
 	}
 }
@@ -221,24 +220,24 @@ Graphic* Game::getGraphic()
 	return mGraphic.get();
 }
 
-std::shared_ptr<std::vector<std::shared_ptr<EnemyComponent>>> Game::getEnemies()
+std::vector<EnemyComponent*>& Game::getEnemies()
 {
 	return mEnemies;
 }
 
-std::shared_ptr<MapManager> Game::getMapManager()
+MapManager* Game::getMapManager()
 {
-	return mMapManager;
+	return mMapManager.get();
 }
 
-std::shared_ptr<DamageTextManager> Game::getDamageTextManager()
+DamageTextManager* Game::getDamageTextManager()
 {
-	return mDamageTextManager;
+	return mDamageTextManager.get();
 }
 
-std::shared_ptr<EnemyComponent> Game::getEnemyFromIndexPos(int x, int y)
+EnemyComponent* Game::getEnemyFromIndexPos(int x, int y)
 {
-	for (auto& enemy : *mEnemies) {
+	for (auto enemy : mEnemies) {
 		std::vector<int> charIndexPos = enemy->getIndexPos();
 		if (charIndexPos[0] == x && charIndexPos[1] == y) {
 			return enemy;
@@ -247,12 +246,12 @@ std::shared_ptr<EnemyComponent> Game::getEnemyFromIndexPos(int x, int y)
 	return nullptr;
 }
 
-std::shared_ptr<EnemyComponent> Game::getEnemyFromIndexPos(int index)
+EnemyComponent* Game::getEnemyFromIndexPos(int index)
 {
 	int mapSize = mMapManager->getMapSize();
 	int x = index % mapSize;
 	int y = index / mapSize;
-	for (auto& enemy : *mEnemies) {
+	for (auto enemy : mEnemies) {
 		std::vector<int> charIndexPos = enemy->getIndexPos();
 		if (charIndexPos[0] == x && charIndexPos[1] == y) {
 			return enemy;
@@ -262,46 +261,43 @@ std::shared_ptr<EnemyComponent> Game::getEnemyFromIndexPos(int index)
 	return nullptr;
 }
 
-std::shared_ptr<AssetManager> Game::getAssetManager()
+AssetManager* Game::getAssetManager()
 {
-	return mAssetManager;
+	return mAssetManager.get();
 }
 
-std::vector<std::shared_ptr<PointLightComponent>> Game::getPointLights()
+std::vector<PointLightComponent*>& Game::getPointLights()
 {
 	return mPointLights;
 }
 
-std::vector<std::shared_ptr<SpotLightComponent>> Game::getSpotLights()
+std::vector<SpotLightComponent*>& Game::getSpotLights()
 {
 	return mSpotLights;
 }
 
-std::shared_ptr<Player> Game::getPlayer()
+Player* Game::getPlayer()
 {
 	return mPlayer;
 }
 
-std::shared_ptr<ItemManager> Game::getItemManager()
+ItemManager* Game::getItemManager()
 {
-	return mItemManager;
+	return mItemManager.get();
 }
 
 void Game::input()
 {
 
 	for (auto& actor : mActors) {
-		if (actor == nullptr) {
-			continue;
-		}
 
 		actor->input();
 	}
 
-	//ƒfƒoƒbƒN—p
+	//ãƒ‡ãƒãƒƒã‚¯ç”¨
 	if (GetAsyncKeyState('P')) {
-		auto slime = createActor<Slime>(shared_from_this());
-		slime->setPosition(XMFLOAT3(MAPTIPSIZE * 5.0f, 0.0f, MAPTIPSIZE * 5.0f));
+		auto slime = std::make_unique<Slime>(this, static_cast<float>(MAPTIPSIZE * 5.0f), static_cast<float>(MAPTIPSIZE * 5.0f));
+		addActor(std::move(slime));
 	}
 	if (GetAsyncKeyState('O')) {
 		mMapManager->moveToPlayerTurn();
@@ -312,71 +308,71 @@ void Game::input()
 void Game::update()
 {
 	mUpdatingActors = true;
-	//ƒAƒNƒ^[‚ÌXVˆ—
+	//ã‚¢ã‚¯ã‚¿ãƒ¼ã®æ›´æ–°å‡¦ç†
 	for (auto& actor : mActors) {
 		actor->update();
 	}
 
-	for (auto& enemy : *mEnemies) {
+	for (auto enemy : mEnemies) {
 		enemy->updateActiveProcess();
 	}
-	//“G”z—ñ‚ğƒvƒŒƒCƒ„[‚É‹ß‚¢‡‚Éƒ\[ƒg
-	std::sort((*mEnemies).begin(), (*mEnemies).end(), [](auto const& lenemy, auto const& renemy){
+	//æ•µé…åˆ—ã‚’ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«è¿‘ã„é †ã«ã‚½ãƒ¼ãƒˆ
+	std::sort(mEnemies.begin(), mEnemies.end(), [](auto const lenemy, auto const renemy){
 		return lenemy->getDist() < renemy->getDist();
 		});
 
 	mUpdatingActors = false;
 
-	for (auto pending : mPendingActors) {
-		mActors.emplace_back(pending);
+	for (auto& pending : mPendingActors) {
+		mActors.emplace_back(std::move(pending));
 	}
 	mPendingActors.clear();
 
-	//€‚ñ‚¾ƒAƒNƒ^[‚ğˆêŸ”z—ñ‚É’Ç‰Á
-	std::vector<std::shared_ptr<Actor>> deadActors;
-	for (auto actor : mActors) {
+	//æ­»ã‚“ã ã‚¢ã‚¯ã‚¿ãƒ¼ã‚’ä¸€æ¬¡é…åˆ—ã«è¿½åŠ 
+	std::vector<std::unique_ptr<Actor>> deadActors;
+	for (auto& actor : mActors) {
 		if (actor->getState() == Actor::Dead) {
-			deadActors.emplace_back(actor);
+			actor->endProccess();
+			deadActors.emplace_back(std::move(actor));
 		}
 	}
+	//å…ƒé…åˆ—ã«æ®‹ã£ãŸnullptrã‚’å‰Šé™¤
+	std::erase_if(mActors, [](const std::unique_ptr<Actor>& actor) {
+		return actor == nullptr;
+		});
 
-	//€‚ñ‚¾ƒAƒNƒ^[‚ğíœ
-	for (auto actor : deadActors) {
-		removeActor(actor);
-	}
-
-	//Base3DData‚ÌXV
+	//Base3DDataã®æ›´æ–°
 	mGraphic->updateBase3DData();
-	//ƒ_ƒ[ƒWƒeƒLƒXƒg‚ÌXV
+	//ãƒ€ãƒ¡ãƒ¼ã‚¸ãƒ†ã‚­ã‚¹ãƒˆã®æ›´æ–°
 	mDamageTextManager->update();
-	//ƒ^[ƒ“‚Ì•ÏX
+	//ã‚¿ãƒ¼ãƒ³ã®å¤‰æ›´
 	mMapManager->update();
 
 }
 
 void Game::draw()
 {
-	//•`‰æ
-	//3D•`‰æ
+	//æç”»
+	//3Dæç”»
 	mGraphic->begin3DRender();
 	mGraphic->setRenderType(Graphic::RENDER_3D);
 	for (auto& mesh : mMeshes) {
 		mesh->draw();
 	}
 
-	//2D•`‰æ
+	//2Dæç”»
 	mGraphic->setRenderType(Graphic::RENDER_2D);
 	for (auto& sprite : mSprites) {
 		sprite->draw();
 	}
 
-	//ƒ_ƒ[ƒWƒGƒtƒFƒNƒg
+	//ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
 	mGraphic->setRenderType(Graphic::RENDER_DT);
 	mDamageTextManager->draw();
 
 	mGraphic->end3DRender();
 
-	////ƒeƒLƒXƒg•`‰æ
+	////ãƒ†ã‚­ã‚¹ãƒˆæç”»
 	mGraphic->begin2DRender();
 	for (auto& text : mTexts) {
 		text->draw();

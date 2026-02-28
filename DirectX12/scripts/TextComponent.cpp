@@ -2,12 +2,7 @@
 #include "Actor.h"
 #include "Game.h"
 
-TextComponent::~TextComponent()
-{
-    delete mFontName;
-}
-
-void TextComponent::initComponent()
+TextComponent::TextComponent(Actor* owner, int updateOrder) : Component(owner, updateOrder)
 {
 	mGraphic = mOwner->getGame()->getGraphic();
 	isActive = false;
@@ -25,7 +20,11 @@ void TextComponent::initComponent()
 	mTextColor = D2D1::ColorF(D2D1::ColorF::White);
 	mText = L"";
 
-	mOwner->getGame()->addText(std::dynamic_pointer_cast<TextComponent>(shared_from_this()));
+	mOwner->getGame()->addText(this);
+}
+
+TextComponent::~TextComponent()
+{
 }
 
 void TextComponent::draw()  
@@ -42,7 +41,7 @@ void TextComponent::draw()
 
 void TextComponent::endProccess()
 {
-	mOwner->getGame()->removeText(std::dynamic_pointer_cast<TextComponent>(shared_from_this()));
+	mOwner->getGame()->removeText(this);
 }
 
 void TextComponent::showText()

@@ -36,7 +36,7 @@ public:
 	//getter
 	int getCBEndIndex(int size);//必要なサイズを引数に取る
 	int getHeapEndIndex(int size); //必要なサイズを引数に取る
-	std::shared_ptr<MeshData> getMeshData(ObjectName objectName); 
+	MeshData* getMeshData(ObjectName objectName); 
 
 	void deleteMemory(int index, int size);
 	void deleteHeap(int index, int size);
@@ -57,7 +57,7 @@ private:
 	int mHeapEndIndex; //ディスクリプタヒープの最後尾インデックス
 
 	Graphic* mGraphic;
-	std::map<ObjectName, std::shared_ptr<MeshData>> mLoadData;
+	std::map<ObjectName, std::unique_ptr<MeshData>> mLoadData;
 	std::vector<ClearedMemory> mClearedMemory; //解放されたメモリ
 	std::vector<ClearedHeap> mClearedHeap; //解放されたメモリ
 };

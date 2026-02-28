@@ -5,9 +5,9 @@ class Anime2DComponent :
     public SpriteComponent
 {
 public:
-	Anime2DComponent() {};
+	Anime2DComponent(Actor* owner, int updateOrder = 100);
 	~Anime2DComponent() {};
-	void initComponent() override;
+
 	virtual void create(const std::string filename, int textureNum);
 	virtual void draw() override;
 

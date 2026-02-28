@@ -8,10 +8,8 @@ class Player;
 class MessageWindow : public Actor
 {
 public:
-	MessageWindow() {};
+	MessageWindow(Game* game);
 	~MessageWindow() {};
-
-	void initActor() override;
 
 	void inputActor() override;
 	void updateActor() override;
@@ -24,6 +22,6 @@ private:
 	std::wstring mMessage;
 	Actor* mTarget;
 	Player* mPlayer;
-	std::shared_ptr<TextComponent> mText;
+	TextComponent* mText;
 };
 

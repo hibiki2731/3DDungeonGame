@@ -9,10 +9,9 @@ using namespace DirectX;
 class CharacterComponent : public Component
 {
 public:
-	CharacterComponent() {};
-	~CharacterComponent() {};
+	CharacterComponent(Actor* owner, int updateOrder = 100);
+	~CharacterComponent();
 
-	void initComponent() override;
 	void inputComponent() override;
 	void updateComponent() override;
 	void endProccess() override;
@@ -25,7 +24,7 @@ public:
 	bool getAlive();
 	std::vector<int>& getIndexPos();
 	int getIndexPosInt();
-	std::shared_ptr<MapManager> getMapManager();
+	MapManager* getMapManager();
 
 	//setter
 	void setMaxHP(int maxHP);
@@ -55,6 +54,6 @@ protected:
 	//ˆÊ’u
 	std::vector<int> mIndexPos; //{x, y}
 
-	std::shared_ptr<MapManager> mMapManager;
+	MapManager* mMapManager;
 };
 

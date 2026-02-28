@@ -4,17 +4,20 @@
 #include "Anime2DComponent.h"
 #include "SpriteComponent.h"
 
-void UI::initActor()
+UI::UI(Game* game) : Actor(game)
 {
 	mTextureIndex = 0;
 	counter = 0;
-	mAnime = createComponent<Anime2DComponent>(shared_from_this());
-	mAnime->create("assets\\josei_04_akamafu\\josei_04_akamafu\\PNG\\josei_04_.png", 4);
-	setScale({1.0f / getGame()->getGraphic()->getAspect() * 0.5f, 1.0f * 1.1f, 1.0f});
+	auto anime = std::make_unique<Anime2DComponent>(this);
+	anime->create("assets\\josei_04_akamafu\\josei_04_akamafu\\PNG\\josei_04_.png", 4);
+	setScale({ 1.0f / getGame()->getGraphic()->getAspect() * 0.5f, 1.0f * 1.1f, 1.0f });
+	mAnime = anime.get();
+	addComponent(std::move(anime));
 
-	auto mSprite = createComponent<SpriteComponent>(shared_from_this());
-	mSprite->create("assets\\white.png");
-}	
+	auto sprite = std::make_unique<SpriteComponent>(this);
+	sprite->create("assets\\white.png");
+	addComponent(std::move(sprite));
+}
 
 void UI::updateActor()
 {

@@ -6,14 +6,13 @@ class Anime2DComponent;
 class UI : public Actor
 {
 public:
-	UI() {};
+	UI(Game* game);
 	~UI() {};
 
-	void initActor() override;
 	void updateActor() override;
 
 private:
-	std::shared_ptr<Anime2DComponent> mAnime;
+	Anime2DComponent* mAnime;
 	int mTextureIndex;
 	int counter;
 };

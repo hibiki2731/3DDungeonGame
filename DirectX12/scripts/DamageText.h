@@ -43,7 +43,7 @@ public:
 	float getSize();
 
 private:
-	std::vector<std::shared_ptr<DamageText>> mDamageTexts;
+	std::vector<std::unique_ptr<DamageText>> mDamageTexts;
 
 	const UINT NumElementsPerVertex = 6; //’¸“_‚²‚Æ‚Ì—v‘f”
 	const int MaxNum = 16;

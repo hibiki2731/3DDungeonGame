@@ -4,7 +4,8 @@
 class Grass : public Actor
 {
 public:
-	void initActor() override;
+	Grass(Game* game, float x, float y);
+
 	void updateActor() override;
 	void inputActor() override;
 

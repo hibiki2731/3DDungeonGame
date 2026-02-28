@@ -12,10 +12,9 @@
 class MeshComponent : public Component
 {
 public:
-    MeshComponent() {};
+	MeshComponent(Actor* owner, int updateOrder = 100);
     ~MeshComponent();
 
-    void initComponent() override;
 	void endProccess() override;
 
     void create(ObjectName objectName);
@@ -29,7 +28,7 @@ private:
 
     //コマンドリスト
     Graphic* mGraphic;
-    ComPtr<ID3D12GraphicsCommandList> mCommandList;
+    ID3D12GraphicsCommandList* mCommandList;
 
     //コンスタントバッファ1(World Matrix)
     World3DConstBuf Cb1;
@@ -44,11 +43,13 @@ private:
         MaterialConstBuf Cb2;//マップしたアドレスを入れる
         //テクスチャバッファ
         ComPtr<ID3D12Resource> TextureBuf;
-    }*Parts;
+    };
+
+	std::vector<PARTS> Parts;
 
     //ディスクリプタヒープ
     UINT CbvTbvSize;//ビューのサイズ
-    UINT NumDescriptors;//ひとつのパーツで使用するディスクリプタの数
+    const UINT NumDescriptors = 4;//ひとつのパーツで使用するディスクリプタの数
 
     //使用するディスクリプタヒープおよびコンスタントバッファのインデックス
     int mHeapIndex;
