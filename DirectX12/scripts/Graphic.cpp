@@ -16,6 +16,12 @@ Graphic::Graphic(Game* game)
 	mGame = game;
 }
 
+Graphic::~Graphic()
+{
+	waitGPU();
+}
+
+
 void Graphic::init() {
 	HRESULT hr;
 	//ウィンドウの作成
@@ -1278,17 +1284,6 @@ void Graphic::begin3DRender()
 
 void Graphic::end3DRender()
 {
-
-	//バリアでバックバッファを表示用に切り替える
-	D3D12_RESOURCE_BARRIER barrier;
-	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;//このバリアは状態遷移タイプ
-	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	barrier.Transition.pResource = BackBuffers[BackBufIdx].Get();//リソースはバックバッファ
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;//遷移前は描画ターゲット
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;//遷移後はPresent
-	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-	CommandList->ResourceBarrier(1, &barrier);
-
 	//コマンドリストをクローズする
 	CommandList->Close();
 	//コマンドリストを実行する
@@ -1301,6 +1296,7 @@ void Graphic::end3DRender()
 
 void Graphic::begin2DRender()
 {
+
 	mD3D11On12Device->AcquireWrappedResources(mWrappedBackBuffers[BackBufIdx].GetAddressOf(), 1);
 	mD2DDeviceContext->SetTarget(mD2DRenderTargets[BackBufIdx].Get());
 	mD2DDeviceContext->BeginDraw();
@@ -1309,6 +1305,7 @@ void Graphic::begin2DRender()
 void Graphic::end2DRender()
 {
 	mD2DDeviceContext->EndDraw();
+	//バックバッファを表示用に切り替えてくれる
 	mD3D11On12Device->ReleaseWrappedResources(mWrappedBackBuffers[BackBufIdx].GetAddressOf(), 1);
 
 	mD3D11DeviceContext->Flush();

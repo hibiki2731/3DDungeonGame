@@ -39,6 +39,7 @@ public:
 	};
 
 	Graphic(Game* game);
+	~Graphic();
 
 	void init();	
 	HRESULT createBuf(UINT sizeInBytes, ComPtr<ID3D12Resource>& buffer);

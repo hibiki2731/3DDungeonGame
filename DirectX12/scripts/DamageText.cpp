@@ -136,6 +136,9 @@ void DamageTextManager::update()
 
 void DamageTextManager::draw()
 {
+	//描画するダメージテキストがなければ、描画処理を抜ける
+	if (mDamageTexts.size() == 0)  return; 
+
 	mGame->getGraphic()->getCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 	//ディスクリプタヒープをGPUにセット
