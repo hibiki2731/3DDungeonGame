@@ -5,7 +5,8 @@
 #include "DamageText.h"
 #include <windows.h>
 
-void CameraComponent::initComponent()
+
+CameraComponent::CameraComponent(Actor* owner, int updateOrder) : Component(owner, updateOrder)
 {
 	mFront = { 0, 0, 1.0f };  mUp = { 0, 1, 0 };
 	mFocus = mOwner->getPosition() + mFront;

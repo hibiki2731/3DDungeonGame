@@ -40,7 +40,7 @@ float DamageText::getLifeTime()
 	return mLifeTime;
 }
 
-DamageTextManager::DamageTextManager(const std::shared_ptr<Game>& game)
+DamageTextManager::DamageTextManager(Game* game)
 {
 	mGame = game;
 
@@ -73,9 +73,9 @@ DamageTextManager::DamageTextManager(const std::shared_ptr<Game>& game)
 	////ディスクリプタヒープにビューを作成
 	auto hDescHeap = mDescHeap->GetCPUDescriptorHandleForHeapStart();
 	UINT cbvTbvSize = mGame->getGraphic()->getCbvTbvIncSize();
-	mGame->getGraphic()->createConstantBufferView(mBillboardConstBuf, hDescHeap); 
+	mGame->getGraphic()->createConstantBufferView(mBillboardConstBuf, hDescHeap);
 	hDescHeap.ptr += cbvTbvSize;
-	mGame->getGraphic()->createShaderResourceView(mTextureBuf, hDescHeap);		
+	mGame->getGraphic()->createShaderResourceView(mTextureBuf, hDescHeap);
 
 }
 
@@ -86,7 +86,7 @@ DamageTextManager::~DamageTextManager()
 
 void DamageTextManager::update()
 {
-	std::vector<std::shared_ptr<DamageText>> deadTexts;
+	std::vector<DamageText*> deadTexts;
 
 	int t = 0;
 	for (auto& damageText : mDamageTexts) {
@@ -98,7 +98,9 @@ void DamageTextManager::update()
 		mVertexRawData[t * 6  + 5] = damageText->getLifeTime() / MaxLifeTime;
 
 		//寿命が切れたら削除待ち配列に追加
-		if (damageText->getLifeTime() <= 0.0f) deadTexts.push_back(damageText);
+		if (damageText->getLifeTime() <= 0.0f) { 
+			deadTexts.emplace_back(damageText.get()); 
+		}
 
 		t++;
 	}
@@ -107,10 +109,13 @@ void DamageTextManager::update()
 	mGame->getGraphic()->updateBuf(mVertexRawData.data(), SizeInByte, mVertexBuf);
 
 	//削除待ち配列中の要素を削除
-	for (auto damageText : deadTexts) {
+	for (auto text : deadTexts) {
 
 		//mDamageTextsから削除
-		auto iter = std::find(mDamageTexts.begin(), mDamageTexts.end(), damageText);
+		auto iter = std::find_if(mDamageTexts.begin(), mDamageTexts.end(), [text](const std::unique_ptr<DamageText>& damageText) {
+			return text == damageText.get();
+			});
+
 		if (iter != mDamageTexts.end()) {
 
 			//生データから削除
@@ -131,6 +136,9 @@ void DamageTextManager::update()
 
 void DamageTextManager::draw()
 {
+	//描画するダメージテキストがなければ、描画処理を抜ける
+	if (mDamageTexts.size() == 0)  return; 
+
 	mGame->getGraphic()->getCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 
 	//ディスクリプタヒープをGPUにセット
@@ -150,11 +158,9 @@ void DamageTextManager::draw()
 
 void DamageTextManager::createDamageText(XMFLOAT3& position, int digit)
 {
-	std::shared_ptr<DamageText> damageText = std::make_shared<DamageText>(position, digit, MaxLifeTime, Velocity);
+	auto damageText = std::make_unique<DamageText>(position, digit, MaxLifeTime, Velocity);
 	if(mDamageTexts.size() == MaxNum){
 		//mDamageTexts配列が埋まっている場合、先頭に要素を追加
-		//damageTextを配列に追加
-		mDamageTexts[0] = damageText;
 		//生データを配列に追加
 		mVertexRawData[0] = position.x;
 		mVertexRawData[1] = position.y;
@@ -162,17 +168,19 @@ void DamageTextManager::createDamageText(XMFLOAT3& position, int digit)
 		mVertexRawData[3] = DTSize;
 		mVertexRawData[4] = (float)digit;
 		mVertexRawData[5] = 1.0f; //初期値は1
+		//damageTextを配列に追加
+		mDamageTexts[0] = std::move(damageText);
 	}
 	else {
-		//damageTextを配列に追加
-		mDamageTexts.push_back(damageText);
 		//生データを配列に追加
-		mVertexRawData.push_back(position.x);
-		mVertexRawData.push_back(position.y);
-		mVertexRawData.push_back(position.z);
-		mVertexRawData.push_back(DTSize);
-		mVertexRawData.push_back((float)digit);
-		mVertexRawData.push_back(1.0f); //初期値は1
+		mVertexRawData.emplace_back(position.x);
+		mVertexRawData.emplace_back(position.y);
+		mVertexRawData.emplace_back(position.z);
+		mVertexRawData.emplace_back(DTSize);
+		mVertexRawData.emplace_back((float)digit);
+		mVertexRawData.emplace_back(1.0f); //初期値は1
+		//damageTextを配列に追加
+		mDamageTexts.emplace_back(std::move(damageText));
 	}
 }
 

@@ -2,9 +2,9 @@
 #include <DirectXMath.h>
 using namespace DirectX;
 
-const int MAX_LIGHT_NUM = 16;
-const float MAPTIPSIZE = 2;
-const float EPSILON = 0.0001f;
+constexpr int MAX_LIGHT_NUM = 16;
+constexpr float MAPTIPSIZE = 2;
+constexpr float EPSILON = 0.0001f;
 
 //ç∂è„âEâ∫
 enum Direction {

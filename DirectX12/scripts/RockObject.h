@@ -2,19 +2,18 @@
 #include "Actor.h"
 
 
-class RockWall_side :
-    public Actor
+class RockWall_side : public Actor
 {
 public:
-    void initActor() override;
+	RockWall_side(Game* game, float x, float y);
 };
 
 class RockWall : public Actor {
 public:
-    void initActor() override;
+	RockWall(Game* game, float x, float y);
 };
 
 class RockFloor : public Actor {
 public:
-    void initActor() override;
+	RockFloor(Game* game, float x, float y);
 };

@@ -3,14 +3,11 @@
 #include "Component.h"
 using namespace DirectX;
 
-class CameraComponent :
-    public Component
+class CameraComponent :  public Component
 {
 public:
-    CameraComponent() {};
-    ~CameraComponent() {};
+	CameraComponent(Actor* owner, int updateOrder = 100);
 
-    void initComponent() override;
     void inputComponent() override;
     void updateComponent() override;
 

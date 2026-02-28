@@ -7,23 +7,22 @@
 
 
 
-MeshComponent::~MeshComponent()
+MeshComponent::MeshComponent(Actor* owner, int updateOrder) : Component(owner, updateOrder)
 {
-}
-
-void MeshComponent::initComponent() {
 	mGraphic = mOwner->getGame()->getGraphic();
 	mCommandList = mGraphic->getCommandList();
-	mOwner->getGame()->addMesh(dynamic_pointer_cast<MeshComponent>(shared_from_this()));
+	mOwner->getGame()->addMesh(this);
 	CbvTbvSize = mGraphic->getCbvTbvIncSize();
-	NumDescriptors = 4; 
+}
+
+MeshComponent::~MeshComponent()
+{
 }
 
 void MeshComponent::endProccess()
 {
 	//Gameからメッシュを削除
-	mOwner->getGame()->removeMesh(dynamic_pointer_cast<MeshComponent>(shared_from_this()));
-	delete[] Parts;
+	mOwner->getGame()->removeMesh(this);
 	mOwner->getGame()->getAssetManager()->deleteMemory(mCBIndex, mCBSize);
 	mOwner->getGame()->getAssetManager()->deleteHeap(mHeapIndex, mHeapSize);
 }
@@ -32,7 +31,7 @@ void MeshComponent::create(ObjectName objectName)
 {	
 
 	//メッシュデータの取得
-	std::shared_ptr<MeshData> meshData = mOwner->getGame()->getAssetManager()->getMeshData(objectName);
+	MeshData* meshData = mOwner->getGame()->getAssetManager()->getMeshData(objectName);
 	
 	//コンスタントバッファのインデックスを取得
 	mCBSize = (meshData->NumParts + 1) * 256;
@@ -42,7 +41,7 @@ void MeshComponent::create(ObjectName objectName)
 
 	//メッシュパーツ数を読み込み、メモリを確保
 	NumParts = meshData->NumParts;
-	Parts = new PARTS[NumParts];
+	Parts.resize(NumParts);
 
 	//フラッシュ用バッファの初期化
 	Cb1.flashColor = XMFLOAT3(1.0f, 1.0f, 1.0f);	//白く光る

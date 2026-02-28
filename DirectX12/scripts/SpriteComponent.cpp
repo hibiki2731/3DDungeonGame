@@ -47,13 +47,7 @@ UINT16 spriteIndices[] = {
 	12, 13, 14,
 	14, 13, 15,
 };
-
-SpriteComponent::~SpriteComponent()
-{
-	ConstBuf3->Unmap(0, nullptr);
-}
-
-void SpriteComponent::initComponent()
+SpriteComponent::SpriteComponent(Actor* owner, int updateOrder) : Component(owner, updateOrder)
 {
 	mPosition = { 0.0f, 0.0f };
 	mScale = { 1.0f, 1.0f };
@@ -62,13 +56,18 @@ void SpriteComponent::initComponent()
 
 	mGraphic = mOwner->getGame()->getGraphic();
 	mCommandList = mGraphic->getCommandList();
-	mOwner->getGame()->addSprite(std::dynamic_pointer_cast<SpriteComponent>(shared_from_this()));
+	mOwner->getGame()->addSprite(this);
+}
+
+SpriteComponent::~SpriteComponent()
+{
+	ConstBuf3->Unmap(0, nullptr);
 }
 
 void SpriteComponent::endProccess()
 {
 	//Gameからスプライトを削除
-	mOwner->getGame()->removeSprite(std::dynamic_pointer_cast<SpriteComponent>(shared_from_this()));
+	mOwner->getGame()->removeSprite(this);
 }
 
 void SpriteComponent::create(const std::string filename)

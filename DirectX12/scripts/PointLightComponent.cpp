@@ -5,14 +5,14 @@
 #include "Actor.h"
 #include "Game.h"
 
-void PointLightComponent::initComponent()
+PointLightComponent::PointLightComponent(Actor* owner, int updateOrder) : Component(owner, updateOrder)
 {
 	isActive = false;
 	mPosition.w = 1.0f;
 	mIntensity = 1.0f;
 	mRange = 1.0f;
 	mColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	mOwner->getGame()->addPointLight(std::dynamic_pointer_cast<PointLightComponent>(shared_from_this()));
+	mOwner->getGame()->addPointLight(this);
 }
 
 void PointLightComponent::inputComponent()
@@ -31,7 +31,7 @@ void PointLightComponent::updateComponent()
 void PointLightComponent::endProccess()
 {
 	//Game‚©‚çƒ‰ƒCƒg‚ðíœ
-	mOwner->getGame()->removePointLight(std::dynamic_pointer_cast<PointLightComponent>(shared_from_this()));
+	mOwner->getGame()->removePointLight(this);
 }
 
 XMFLOAT4 PointLightComponent::getPosition()

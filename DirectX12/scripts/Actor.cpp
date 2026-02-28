@@ -2,6 +2,30 @@
 #include "Component.h"
 #include "Game.h"
 
+Actor::Actor(Game* game)
+{
+	mPosition = { 0.0f, 0.0f, 0.0f };
+	mScale = { 1.0f, 1.0f, 1.0f };
+	mRotation = { 0.0f, 0.0f, 0.0f };
+	mState = Active;
+	mGame = game;
+
+}
+
+Actor::Actor(Game* game, float x, float y)
+{
+	mPosition = { x, 0.0f, y };
+	mScale = { 1.0f, 1.0f, 1.0f };
+	mRotation = { 0.0f, 0.0f, 0.0f };
+	mState = Active;
+	mGame = game;
+
+}
+
+Actor::~Actor()
+{
+}
+
 void Actor::input()
 {
 	if (mState == Active) {
@@ -25,16 +49,6 @@ void Actor::updateComponents()
 	for (auto& component : mComponents) {
 		component->updateComponent();
 	}
-}
-
-void Actor::init(const std::shared_ptr<Game>& game)
-{
-	mPosition = { 0.0f, 0.0f, 0.0f };
-	mScale = { 1.0f, 1.0f, 1.0f };
-	mRotation = { 0.0f, 0.0f, 0.0f };
-	mState = Active;
-	mGame = game;
-	mGame->addActor(shared_from_this());
 }
 
 void Actor::endProccess()
@@ -114,21 +128,21 @@ XMFLOAT3 Actor::getRotation() const
 	return mRotation;
 }
 
-std::shared_ptr<Game> Actor::getGame()
+Game* Actor::getGame()
 {
 	return mGame;
 }
 
-void Actor::addComponent(const std::shared_ptr<Component>& component)
+void Actor::addComponent(std::unique_ptr<Component> component)
 {
-	mComponents.emplace_back(component);
+	mComponents.emplace_back(std::move(component));
 	std::sort(mComponents.begin(), mComponents.end(),
-		[](const std::shared_ptr<Component>& a, const std::shared_ptr<Component>& b) {
+		[](const std::unique_ptr<Component>& a, const std::unique_ptr<Component>& b) {
 			return a->getUpdateOrder() < b->getUpdateOrder();
 		});
 }
 
-void Actor::removeComponent(const std::shared_ptr<Component>& component)
+void Actor::removeComponent(std::unique_ptr<Component>& component)
 {
 	auto iter = std::find(mComponents.begin(), mComponents.end(), component);
 	if (iter != mComponents.end()) {

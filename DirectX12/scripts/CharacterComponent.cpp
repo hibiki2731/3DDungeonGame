@@ -2,7 +2,7 @@
 #include "Actor.h"
 #include "Game.h"
 
-void CharacterComponent::initComponent()
+CharacterComponent::CharacterComponent(Actor* owner, int updateOrder) : Component(owner, updateOrder)
 {
 	mMaxHP = 100;
 	mHP = mMaxHP;
@@ -16,6 +16,10 @@ void CharacterComponent::initComponent()
 		static_cast<int>(std::round(mOwner->getPosition().z / MAPTIPSIZE))
 	};
 	mMapManager = mOwner->getGame()->getMapManager();
+}
+
+CharacterComponent::~CharacterComponent()
+{
 }
 
 void CharacterComponent::inputComponent()
@@ -71,7 +75,7 @@ int CharacterComponent::getIndexPosInt()
 	return mIndexPos[1] * mMapManager->getMapSize() + mIndexPos[0];
 }
 
-std::shared_ptr<MapManager> CharacterComponent::getMapManager()
+MapManager* CharacterComponent::getMapManager()
 {
 	return mMapManager;
 }

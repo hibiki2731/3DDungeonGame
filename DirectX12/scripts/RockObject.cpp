@@ -1,20 +1,26 @@
 #include "RockObject.h"
 #include "MeshComponent.h"
 
-void RockWall_side::initActor()
+RockWall_side::RockWall_side(Game* game, float x, float y) : Actor(game)
 {
-	auto mesh = createComponent<MeshComponent>(shared_from_this());
+	mPosition = XMFLOAT3(x, 0, y);
+	auto mesh = std::make_unique<MeshComponent>(this);
 	mesh->create(ObjectName::ROCK_WALL_SIDE);
+	addComponent(std::move(mesh));
 }
 
-void RockWall::initActor()
+RockWall::RockWall(Game* game, float x, float y) : Actor(game)
 {
-	auto mesh = createComponent<MeshComponent>(shared_from_this());
+	mPosition = XMFLOAT3(x, 0, y);
+	auto mesh = std::make_unique<MeshComponent>(this);
 	mesh->create(ObjectName::ROCK_WALL);
+	addComponent(std::move(mesh));
 }
 
-void RockFloor::initActor()
+RockFloor::RockFloor(Game* game, float x, float y) : Actor(game)
 {
-	auto mesh = createComponent<MeshComponent>(shared_from_this());
+	mPosition = XMFLOAT3(x, 0, y);
+	auto mesh = std::make_unique<MeshComponent>(this);
 	mesh->create(ObjectName::ROCK_FLOOR);
+	addComponent(std::move(mesh));
 }

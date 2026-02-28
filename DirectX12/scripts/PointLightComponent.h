@@ -7,10 +7,8 @@ using namespace DirectX;
 class PointLightComponent : public Component
 {
 public:
-	PointLightComponent() {};
-	~PointLightComponent() {};
+	PointLightComponent(Actor* owner, int updateOrder = 100);
 
-	void initComponent() override;
 	void inputComponent() override;
 	void updateComponent() override;
 	void endProccess() override;

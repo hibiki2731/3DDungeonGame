@@ -10,10 +10,8 @@ class MapManager;
 class Player : public Actor
 {
 public:
-	Player() {};
+	Player(Game* game, float x, float y);
 	~Player() {};
-
-	void initActor() override;
 
 	void inputActor() override;
 	void updateActor() override;
@@ -49,8 +47,8 @@ private:
 	float mActionTimer;
 	const float ACTION_WAIT_TIME = 0.5f;
 
-	std::shared_ptr<CameraComponent> mCamera;
-	std::shared_ptr<CharacterComponent> mCharacter;
-	std::shared_ptr<MapManager> mMapManager;
+	CameraComponent* mCamera;
+	CharacterComponent* mCharacter;
+	MapManager* mMapManager;
 };
 

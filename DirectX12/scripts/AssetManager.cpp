@@ -35,15 +35,13 @@ void AssetManager::create(ObjectName objectName)
 	case ObjectName::SLIME:
 		fileName = "assets\\slime.txt";
 		break;
-	default:
-		assert();
 	}
 
 	//ファイルを読み込む
 	std::ifstream file(fileName);
 	assert(!file.fail());
 
-	std::shared_ptr<MeshData> meshData = std::make_shared<MeshData>();
+	auto meshData = std::make_unique<MeshData>();
 
 	//メッシュパーツ数を読み込み、メモリを確保
 	int numParts = 0;
@@ -85,7 +83,7 @@ void AssetManager::create(ObjectName objectName)
 
 			//頂点バッファに生データをコピー
 			hr = mGraphic->updateBuf(vertices.data(), sizeInByte, meshData->VertexBuf[k]);
-			assert(SUCCEEDED(Hr));
+			assert(SUCCEEDED(hr));
 
 			//位置バッファのビューを初期化しておく。（ディスクリプタヒープに作らなくてよい）
 			meshData->VertexBufView[k].BufferLocation = meshData->VertexBuf[k]->GetGPUVirtualAddress();
@@ -122,7 +120,7 @@ void AssetManager::create(ObjectName objectName)
 		}
 	}
 
-	mLoadData[objectName] = meshData;
+	mLoadData[objectName] = std::move(meshData);
 }
 
 int AssetManager::getCBEndIndex(int size)
@@ -177,28 +175,28 @@ int AssetManager::getHeapEndIndex(int size)
 	return index;
 }
 
-std::shared_ptr<MeshData> AssetManager::getMeshData(ObjectName objectName)
+MeshData* AssetManager::getMeshData(ObjectName objectName)
 {
 	auto iter = mLoadData.find(objectName);
 	if (iter != mLoadData.end()) {
-		return iter->second;
+		return iter->second.get();
 	}
 	else {
 		create(objectName);
-		return mLoadData[objectName];
+		return mLoadData[objectName].get();
 	}
 }
 
 void AssetManager::deleteMemory(int index, int size)
 {
 	ClearedMemory memory = { index, size };
-	mClearedMemory.push_back(memory);
+	mClearedMemory.emplace_back(memory);
 }
 
 void AssetManager::deleteHeap(int index, int size)
 {
 	ClearedHeap heap = { index, size };
-	mClearedHeap.push_back(heap);
+	mClearedHeap.emplace_back(heap);
 }
 
 

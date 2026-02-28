@@ -4,10 +4,9 @@
 #include "Player.h"
 #include "Random.h"
 
-void EnemyComponent::initComponent()
+EnemyComponent::EnemyComponent(Actor* owner, int updateOrder) : CharacterComponent(owner, updateOrder)
 {
-	CharacterComponent::initComponent();
-	mOwner->getGame()->addEnemy(dynamic_pointer_cast<EnemyComponent>(shared_from_this()));
+	mOwner->getGame()->addEnemy(this);
 
 	mFlashTimer = 0.0f;
 	mFlashDuration = 0.3f;	//ダメージを受けたときの点滅時間
@@ -78,7 +77,7 @@ void EnemyComponent::endProccess()
 {
 	CharacterComponent::endProccess();
 	mMapManager->setObjectDataAt(mIndexPos[0], mIndexPos[1], ObjectType::EMPTY); //自分のいるindex座標を空に
-	mOwner->getGame()->removeEnemy(dynamic_pointer_cast<EnemyComponent>(shared_from_this()));
+	mOwner->getGame()->removeEnemy(this);
 }
 
 void EnemyComponent::updateActiveProcess()
@@ -96,7 +95,7 @@ void EnemyComponent::updateActiveProcess()
 
 }
 
-void EnemyComponent::setMesh(const std::shared_ptr<MeshComponent>& mesh)
+void EnemyComponent::setMesh(MeshComponent* mesh)
 {
 	mMesh = mesh;
 }
@@ -190,7 +189,7 @@ void EnemyComponent::attack()
 	if (!isActive) return;
 
 	//プレイヤーのインデックス座標を取得
-	std::shared_ptr<Player> player = mOwner->getGame()->getPlayer();
+	Player* player = mOwner->getGame()->getPlayer();
 	int playerIndexPos[2];
 	player->getIndexPos(playerIndexPos);
 

@@ -14,7 +14,8 @@ enum class EnemyState{
 class EnemyComponent : public CharacterComponent
 {
 public:
-	void initComponent() override;
+	EnemyComponent(Actor* owner, int updateOrder = 100);
+
 	void inputComponent() override;
 	void updateComponent() override;
 	void endProccess() override;
@@ -22,7 +23,7 @@ public:
 	//アクティブな時のみ行う。プレイヤーに近い敵から更新される
 	void updateActiveProcess();
 
-	void setMesh(const std::shared_ptr<MeshComponent>& mesh);
+	void setMesh(MeshComponent* mesh);
 	void setEnemyTtype(int type);
 	void setEnemyState(EnemyState state);
 	void activate();
@@ -61,7 +62,8 @@ private:
 	void Astar(int (& targetIndex)[2]);
 	void randomWalk(int(&targetIndex)[2]);
 
-	std::shared_ptr<MeshComponent> mMesh;
+	//アクターに設定されているメッシュ
+	MeshComponent* mMesh;
 
 	//ダメージ時の点滅
 	float mFlashTimer;

@@ -9,10 +9,9 @@ class SpriteComponent :
     public Component
 {
 public:
-    SpriteComponent() {};
+	SpriteComponent(Actor* owner, int updateOrder = 100);
     ~SpriteComponent();
 
-    void initComponent() override;
 	void endProccess() override;
 
     void create(const std::string filename);
@@ -38,7 +37,7 @@ protected:
     //グラフィック
     Graphic* mGraphic;
     //コマンドリスト
-    ComPtr<ID3D12GraphicsCommandList> mCommandList;
+    ID3D12GraphicsCommandList* mCommandList;
 
     //コンスタントバッファ1(World Matrix)
     SpriteConstBuf* Cb3;

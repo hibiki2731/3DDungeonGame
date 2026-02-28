@@ -3,7 +3,7 @@
 #include "Math.h"
 #include "Game.h"
 
-void SpotLightComponent::initComponent()
+SpotLightComponent::SpotLightComponent(Actor* owner, int updateOrder) : Component(owner, updateOrder)
 {
 	isActive = false;
 	mPosition.w = 1.0f;
@@ -12,8 +12,8 @@ void SpotLightComponent::initComponent()
 	mColor = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 	mUAngle = 0.0f;
 	mPAngle = 0.0f;
-	mOwner->getGame()->addSpotLight(std::dynamic_pointer_cast<SpotLightComponent>(shared_from_this()));
-
+	mDirection = XMFLOAT4(0.0f, 0.0f, 1.0f, 0.0f);
+	mOwner->getGame()->addSpotLight(this);
 }
 
 void SpotLightComponent::inputComponent()
@@ -40,7 +40,7 @@ void SpotLightComponent::updateComponent()
 void SpotLightComponent::endProccess()
 {
 	//Game‚©‚çƒ‰ƒCƒg‚ðíœ
-	mOwner->getGame()->removeSpotLight(std::dynamic_pointer_cast<SpotLightComponent>(shared_from_this()));
+	mOwner->getGame()->removeSpotLight(this);
 }
 
 XMFLOAT4 SpotLightComponent::getPosition()

@@ -6,12 +6,13 @@ class EnemyComponent;
 class Slime : public Actor
 {
 public:
-	void initActor() override;
+	Slime(Game* game, float x, float y);
+
 	void updateActor() override;
 	void inputActor() override;
 
 private:
-	std::shared_ptr<class EnemyComponent> mEnemy;
+	class EnemyComponent* mEnemy;
 	int mPlayerIndexPos[2];
 };
 

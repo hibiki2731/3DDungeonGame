@@ -9,7 +9,7 @@ using namespace DirectX;
 class Game;
 class Component;
 
-class Actor : public std::enable_shared_from_this<Actor>
+class Actor
 {
 public:
 
@@ -19,8 +19,10 @@ public:
 		Dead
 	};
 
-	Actor() {};
-	virtual ~Actor() {};
+	Actor(Game* game);
+	Actor(Game* game, float x, float y);
+
+	virtual ~Actor();
 
 	//入力処理
 	void input();
@@ -34,13 +36,9 @@ public:
 	virtual void updateActor() {};
 
 	//コンポーネントの追加/削除
-	void addComponent(const std::shared_ptr<Component>& component);
-	void removeComponent(const std::shared_ptr<Component>& component);
-	//初期化
-	void init(const std::shared_ptr<Game>& game);
-	//アクター独自の初期化
-	virtual void initActor() {};
-	
+	void addComponent(std::unique_ptr<Component> component);
+	void removeComponent(std::unique_ptr<Component>& component);
+
 	//終了処理
 	void endProccess();
 
@@ -63,45 +61,18 @@ public:
 	XMFLOAT3 getPosition() const;
 	XMFLOAT3 getScale() const;
 	XMFLOAT3 getRotation() const;
-	std::shared_ptr<Game> getGame();
-
-private:
-	//newを禁止にする
-	static void* operator new(size_t size);
+	Game* getGame();
 
 protected:
 	//アクターの状態
 	State mState;
 
 	//コンポーネント
-	std::vector<std::shared_ptr<Component>> mComponents;
-	std::shared_ptr<Game> mGame;
+	std::vector<std::unique_ptr<Component>> mComponents;
+	Game* mGame;
 
 	//ベクトル
 	XMFLOAT3 mPosition;
 	XMFLOAT3 mScale;
 	XMFLOAT3 mRotation;
 };
-
-
-//Actorの作成
-//テンプレートの制約
-template <typename ActorType> concept isActor =	std::is_base_of<Actor, ActorType>::value == true;
-//initを持つクラスの生成関数
-template <isActor ActorType>
-std::shared_ptr<ActorType> createActor(const std::shared_ptr<Game>& game) {
-	std::shared_ptr<ActorType> actor = std::make_shared<ActorType>();
-	actor->init(game);
-	actor->initActor();
-	return actor;
-};
-
-//敵アクターの場合
-template <isActor ActorType>
-std::shared_ptr<ActorType> createActor(const std::shared_ptr<Game>& game, float x, float y) {
-	std::shared_ptr<ActorType> actor = std::make_shared<ActorType>();
-	actor->init(game);
-	actor->setPosition(XMFLOAT3(x, 0.0f, y));
-	actor->initActor();
-	return actor;
-}

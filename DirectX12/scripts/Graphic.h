@@ -38,7 +38,8 @@ public:
 		RENDER_DT,
 	};
 
-	Graphic(const std::shared_ptr<Game>& game);
+	Graphic(Game* game);
+	~Graphic();
 
 	void init();	
 	HRESULT createBuf(UINT sizeInBytes, ComPtr<ID3D12Resource>& buffer);
@@ -49,15 +50,13 @@ public:
 	HRESULT createShaderResource(const std::string& filename, ComPtr<ID3D12Resource>& shaderResource);
 	XMFLOAT2 createShaderResourceGetSize(const std::string& filename, ComPtr<ID3D12Resource>& shaderResource);
 	HRESULT createCbvTbvHeap(ComPtr<ID3D12DescriptorHeap>& cbvTbvHeap, UINT numDescriptors);
-	HRESULT createSharedCbvTbvHeap(ComPtr<ID3D12DescriptorHeap>& cbvTbvHeap, UINT numDescriptors);
-	void copySharedCbvTbvHeap(ComPtr<ID3D12DescriptorHeap> const& cbvTbvHeap, D3D12_CPU_DESCRIPTOR_HANDLE hDestHeap);
-	void createVertexBufferView(ComPtr<ID3D12Resource> const& vertexBuf, UINT sizeInBytes, UINT strideInBytes, D3D12_VERTEX_BUFFER_VIEW& vertexBufferView);
-	void createIndexBufferView(ComPtr<ID3D12Resource> const& indexBuf, UINT sizeInBytes, D3D12_INDEX_BUFFER_VIEW& indexBufferView);
-	void createConstantBufferView(ComPtr<ID3D12Resource> const& constantBuf, D3D12_CPU_DESCRIPTOR_HANDLE handle);
+	void createVertexBufferView(ComPtr<ID3D12Resource>& vertexBuf, UINT sizeInBytes, UINT strideInBytes, D3D12_VERTEX_BUFFER_VIEW& vertexBufferView);
+	void createIndexBufferView(ComPtr<ID3D12Resource>& indexBuf, UINT sizeInBytes, D3D12_INDEX_BUFFER_VIEW& indexBufferView);
+	void createConstantBufferView(ComPtr<ID3D12Resource>& constantBuf, D3D12_CPU_DESCRIPTOR_HANDLE handle);
 	void createConstantBufferView(int cbIndex, int cbSize, int heapIndex);
 	void createBase3DBufferView(int heapIndex);
-	void createShaderResourceView(ComPtr<ID3D12Resource> const& shaderResource, D3D12_CPU_DESCRIPTOR_HANDLE handle);
-	void createShaderResourceView(ComPtr<ID3D12Resource> const& shaderResource, int heapIndex);
+	void createShaderResourceView(ComPtr<ID3D12Resource>& shaderResource, D3D12_CPU_DESCRIPTOR_HANDLE handle);
+	void createShaderResourceView(ComPtr<ID3D12Resource>& shaderResource, int heapIndex);
 	
 	void clearColor(float r, float g, float b);
 	void begin3DRender();
@@ -74,15 +73,15 @@ public:
 	//Getter
 	float getAspect();
 	UINT getCbvTbvIncSize();
-	ComPtr<ID3D12GraphicsCommandList>& getCommandList();
-	ComPtr<ID3D12CommandQueue>& getCommandQueue();
-	ComPtr<ID3D12CommandAllocator>& getCommandAllocator();
-	ComPtr<ID3D12Device>& getDevice();
+	ID3D12GraphicsCommandList* getCommandList();
+	ID3D12CommandQueue* getCommandQueue();
+	ID3D12CommandAllocator* getCommandAllocator();
+	ID3D12Device* getDevice();
 	float getClientWidth();
 	float getClientHeight();
-	ComPtr<ID2D1DeviceContext>& getD2DDeviceContext();
-	ComPtr<IDWriteFactory>& getDWriteFactory();
-	ComPtr<ID2D1Bitmap1>& getD2DRenderTarget();
+	ID2D1DeviceContext* getD2DDeviceContext();
+	IDWriteFactory* getDWriteFactory();
+	ID2D1Bitmap1* getD2DRenderTarget();
 	UINT8* getConstantData();
 	D3D12_GPU_DESCRIPTOR_HANDLE getHeapHandle();
 
@@ -92,8 +91,8 @@ public:
 	//update
 	void updateBase3DData(); //cameraの更新後に実行しなければいけない
 	void updateViewProj(XMMATRIX& viewProj);
-	void updatePointLight(const std::vector<std::shared_ptr<PointLightComponent>>& lights);
-	void updateSpotLight(const std::vector<std::shared_ptr<SpotLightComponent>>& lights);
+	void updatePointLight(const std::vector<PointLightComponent*>& lights);
+	void updateSpotLight(const std::vector<SpotLightComponent*>& lights);
 	void updateCameraPos(XMFLOAT4& cameraPos);
 
 private:
@@ -182,7 +181,7 @@ private:
 	ComPtr<ID3D12Resource> mConstantBuf;
 	UINT8* mConstantData;	//生データ
 
-	std::shared_ptr<Game> mGame;
+	Game* mGame;
 
 };
 

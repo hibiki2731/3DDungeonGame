@@ -16,9 +16,9 @@ UINT16 anime2DIndices[] = {
 	2, 1, 3
 };
 
-void Anime2DComponent::initComponent()
+Anime2DComponent::Anime2DComponent(Actor* owner, int updateOrder)
+	: SpriteComponent(owner, updateOrder)
 {
-	SpriteComponent::initComponent();
 	mTextureIndex = 0;
 }
 
@@ -121,7 +121,7 @@ void Anime2DComponent::draw()
 
 void Anime2DComponent::endProccess()
 {
-	mOwner->getGame()->removeSprite(std::dynamic_pointer_cast<SpriteComponent>(shared_from_this()));
+	mOwner->getGame()->removeSprite(this);
 }
 
 void Anime2DComponent::setTextureIndex(int index)
