@@ -13,45 +13,43 @@ AssetManager::~AssetManager()
 {
 }
 
-void AssetManager::create(ObjectName objectName)
+void AssetManager::create(MeshName objectName)
 {
 	if (mLoadData.contains(objectName)) return; //すでに読み込まれたオブジェクトはスルー
 
-	std::string fileName;
-	
-	switch (objectName) {
-	case ObjectName::ROCK_WALL_SIDE:
-		fileName = "assets\\rock_side\\wall_side.txt";
-		break;
-	case ObjectName::ROCK_WALL:
-		fileName = "assets\\rockObj\\rockWall.txt";
-		break;
-	case ObjectName::ROCK_FLOOR:
-		fileName = "assets\\rockObj\\rockFloor.txt";
-		break;
-	case ObjectName::GRASS:
-		fileName = "assets\\Grass\\grass.txt";
-		break;
-	case ObjectName::SLIME:
-		fileName = "assets\\slime.txt";
-		break;
-	}
+	//jsonファイルを読み込む
+	std::ifstream jsonFile("assets\\data\\meshData.json");
+	assert(!jsonFile.fail());
 
+	nlohmann::json meshJson;
+	jsonFile >> meshJson;
+
+	MeshFileData meshFileData;
+	auto meshName = magic_enum::enum_name(objectName); //MeshNameを文字列に変換
+	if (meshJson.contains(meshName)) {
+		meshFileData.filePath = meshJson[meshName]["filePath"].get<std::string>();
+		meshFileData.scale = meshJson[meshName].value("scale", std::vector<float>{1.0f, 1.0f, 1.0f});
+	}
+	else {
+		assert(0 && "MeshNameがjsonファイルに存在しません");
+	}
+	
 	//ファイルを読み込む
-	std::ifstream file(fileName);
-	assert(!file.fail());
+	std::ifstream meshFile(meshFileData.filePath);
+	assert(!meshFile.fail());
 
 	auto meshData = std::make_unique<MeshData>();
 
 	//メッシュパーツ数を読み込み、メモリを確保
 	int numParts = 0;
-	file >> numParts;
+	meshFile >> numParts;
 	meshData->NumParts = numParts;
 	meshData->NumVertices.resize(numParts);
 	meshData->VertexBuf.resize(numParts);
 	meshData->VertexBufView.resize(numParts);
 	meshData->Material.resize(3 * numParts); 
-	meshData->TextureName.resize(numParts);
+	meshData->TextureBuf.resize(numParts);
+	meshData->Scale = XMFLOAT3(meshFileData.scale[0], meshFileData.scale[1], meshFileData.scale[2]);
 
 	//パーツごとのデータを読み込む
 	for (int k = 0; k < numParts; k++) {
@@ -60,17 +58,17 @@ void AssetManager::create(ObjectName objectName)
 			//生データをファイルからvector配列に読み込む
 			//　データチェック
 			std::string dataType;
-			file >> dataType;
+			meshFile >> dataType;
 			assert(dataType == "vertices");
 			//　頂点数
 			int numVertices = 0;
-			file >> numVertices;//頂点数
+			meshFile >> numVertices;//頂点数
 			//　vector配列に読み込む
 			UINT NumElementsPerVertex = 8;
 			int NumElements = numVertices * NumElementsPerVertex;
 			std::vector<float>vertices(NumElements);
 			for (int i = 0; i < NumElements; i++) {
-				file >> vertices[i];
+				meshFile >> vertices[i];
 			}
 
 			//インデックスを使用しない描画の時に、これを使用するので取っておく
@@ -94,12 +92,12 @@ void AssetManager::create(ObjectName objectName)
 		{
 			//生データをファイルからvector配列に読み込む
 			std::string dataType;
-			file >> dataType;
+			meshFile >> dataType;
 			assert(dataType == "material");
 			XMFLOAT4 ambient, diffuse, specular;
-			file >> ambient.x >> ambient.y >> ambient.z >> ambient.w;
-			file >> diffuse.x >> diffuse.y >> diffuse.z >> diffuse.w;
-			file >> specular.x >> specular.y >> specular.z >> specular.w;
+			meshFile >> ambient.x >> ambient.y >> ambient.z >> ambient.w;
+			meshFile >> diffuse.x >> diffuse.y >> diffuse.z >> diffuse.w;
+			meshFile >> specular.x >> specular.y >> specular.z >> specular.w;
 
 			meshData->Material[k * 3] = ambient;
 			meshData->Material[k * 3 + 1] = diffuse;
@@ -109,13 +107,22 @@ void AssetManager::create(ObjectName objectName)
 		{
 			//ファイル名を読み込む
 			std::string dataType;
-			file >> dataType;
+			meshFile >> dataType;
 			assert(dataType == "texture");
 			std::string textureFileName;
-			std::getline(file, textureFileName);
+			std::getline(meshFile, textureFileName);
 			textureFileName.erase(0, 1); //先頭の" "を削除
 
-			meshData->TextureName[k] = textureFileName;
+			auto iter = mTextureData.find(textureFileName);
+			if (iter != mTextureData.end()) {
+				//すでに読み込まれたテクスチャはスルー
+				meshData->TextureBuf[k] = iter->second;
+				continue;
+			}
+
+			HRESULT hr = mGraphic->createShaderResource(textureFileName, meshData->TextureBuf[k]);
+			assert(SUCCEEDED(hr));
+			mTextureData[textureFileName] = meshData->TextureBuf[k];
 
 		}
 	}
@@ -175,7 +182,7 @@ int AssetManager::getHeapEndIndex(int size)
 	return index;
 }
 
-MeshData* AssetManager::getMeshData(ObjectName objectName)
+MeshData* AssetManager::getMeshData(MeshName objectName)
 {
 	auto iter = mLoadData.find(objectName);
 	if (iter != mLoadData.end()) {

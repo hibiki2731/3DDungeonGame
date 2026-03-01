@@ -14,6 +14,9 @@ Graphic::Graphic(Game* game)
 
 	BackBufIdx = 0;
 	mGame = game;
+
+	Base3DData.playerFlashColor = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	Base3DData.playerFlashIntensity = 0.0f;
 }
 
 Graphic::~Graphic()
@@ -1233,6 +1236,11 @@ void Graphic::updateSpotLight(const std::vector<SpotLightComponent*>& lights)
 void Graphic::updateCameraPos(XMFLOAT4& cameraPos)
 {
 	Base3DData.cameraPos = cameraPos;
+}
+
+void Graphic::updateDamageFlashIntensity(float intensity)
+{
+	Base3DData.playerFlashIntensity = intensity;
 }
 
 void Graphic::clearColor(float r, float g, float b)

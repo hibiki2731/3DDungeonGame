@@ -13,7 +13,7 @@
 #include "timer.h"
 #include <wrl/client.h>
 #include "ItemManager.h"
-
+#include "SceneManager.h"
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
@@ -69,6 +69,7 @@ public:
 	void setPlayer(Player* player);
 	void activateEnemies();
 
+	void clearActors();
 	//ゲッター
 	Graphic* getGraphic();
 	std::vector<EnemyComponent*>& getEnemies();
@@ -81,7 +82,11 @@ public:
 	std::vector<SpotLightComponent*>& getSpotLights();
 	Player* getPlayer();
 	ItemManager* getItemManager();
+	SceneManager* getSceneManager();
 
+	void moveToTitle();
+	void moveToMap();
+	void updateScene();
 private:
 	//グラフィック
 	std::unique_ptr<Graphic> mGraphic;
@@ -114,6 +119,10 @@ private:
 
 	//ItemManger
 	std::unique_ptr<ItemManager> mItemManager;
+
+	//シーンマネージャー
+	std::unique_ptr<SceneManager> mSceneManager;
+	SceneType mNextScene;
 
 	//ループ内処理
 	void input();

@@ -16,14 +16,24 @@
 
 Player::Player(Game* game, float x, float y) : Actor(game)
 {
-	mPosition = { x, 0.5f, y };
+	mPosition = { x, 0.8f, y };
 	mTargetPos = mPosition;
 	mTargetRot = mRotation;
-	mMoveSpeed = 5.0f;
-	mRotSpeed = 4.5f;
 	isMoving = false;
 	isRotating = false;
 	mActionTimer = 0.0f;
+	mFlashTimer = 0.0f;
+
+	//jsonファイルからパラメータを読み込む
+	std::ifstream file("assets\\data\\playerData.json");
+	assert(!file.fail());
+	nlohmann::json playerData;
+	file >> playerData;
+
+	//移動速度、回転速度、点滅時間の設定
+	mMoveSpeed = playerData["moveSpeed"].get<float>();
+	mRotSpeed = playerData["rotSpeed"].get<float>();
+	mFlashDuration = playerData["flashDuration"].get<float>();
 
 	//カメラの生成
 	std::unique_ptr camera = std::make_unique<CameraComponent>(this);
@@ -45,6 +55,9 @@ Player::Player(Game* game, float x, float y) : Actor(game)
 	auto character = std::make_unique<CharacterComponent>(this);
 	character->setDirection(Direction::UP);
 	character->setIndexPos(static_cast<int>(std::round(x / MAPTIPSIZE)), static_cast<int>(std::round(y / MAPTIPSIZE)));
+	character->setMaxHP(playerData["hp"].get<int>());
+	character->setPower(playerData["power"].get<int>());
+	character->setDefense(playerData["defense"].get<int>());
 	mCharacter = character.get();
 	addComponent(std::move(character));
 
@@ -98,10 +111,9 @@ void Player::updateActor()
 			mPosition = mPosition + Math::normalize(diffPos) * moveLength;
 		}
 		else {
+			//移動終了時の処理
 			mPosition = mTargetPos;
 
-			//ターン経過
-			//mMapManager->moveToEnemyTurn();
 			isMoving = false;
 		}
 	}
@@ -122,6 +134,8 @@ void Player::updateActor()
 		}
 	}
 
+	if (!isMoving) damageEffect();
+	updateFlash();
 }
 
 int Player::getDirection()
@@ -152,8 +166,7 @@ int Player::getDefense()
 
 void Player::giveDamage(int damage)
 {
-	int playerHP = mCharacter->getHP();
-	mCharacter->setHP(playerHP - damage);
+	mPendingDamage += damage;
 }
 
 void Player::attack()
@@ -200,7 +213,7 @@ void Player::attack()
 void Player::calcDamageText(const XMFLOAT3& targetPos, int val)
 {
 	XMFLOAT3 textPos = targetPos;
-	textPos.y += 0.5f; //少しだけ上に
+	textPos.y += 0.8f; //少しだけ上に
 
 	XMFLOAT3 front = Math::rotateY(XMFLOAT3(0.0f, 0.0f, 1.0f), mRotation.y);//前方ベクトル
 	XMFLOAT3 right = Math::rotateY(front, -XM_PIDIV2);//右ベクトル
@@ -240,12 +253,12 @@ void Player::move(Direction direction)
 
 	//進先に障害物がある場合移動不可
 	if (mMapManager->getMapDataAt(targetIndexPos[0], targetIndexPos[1]) == TileType::WALL ||
-		mMapManager->getObjectDataAt(targetIndexPos[0], targetIndexPos[1]) != ObjectType::EMPTY) return;
+		mMapManager->getObjectDataAt(targetIndexPos[0], targetIndexPos[1]) != CharacterType::EMPTY) return;
 
 	//移動前の座標を空に
-	mMapManager->setObjectDataAt(mCharacter->getIndexPosInt(), ObjectType::EMPTY);
+	mMapManager->setObjectDataAt(mCharacter->getIndexPosInt(), CharacterType::EMPTY);
 	//マップ上のオブジェクトデータ更新
-	mMapManager->setObjectDataAt(targetIndexPos[0], targetIndexPos[1], ObjectType::PLAYER);
+	mMapManager->setObjectDataAt(targetIndexPos[0], targetIndexPos[1], CharacterType::PLAYER);
 	//プレイヤーのインデックス座標の更新
 	mCharacter->setIndexPos(targetIndexPos[0], targetIndexPos[1]);
 
@@ -328,4 +341,22 @@ void Player::collect()
 	mMapManager->moveToEnemyTurn();
 
 	mActionTimer = ACTION_WAIT_TIME;
+}
+
+void Player::damageEffect()
+{
+	if (mPendingDamage <= 0) return;
+	mCharacter->setHP(mCharacter->getHP() - mPendingDamage); //ダメージの反映
+	mPendingDamage = 0;
+	mFlashTimer = mFlashDuration; //点滅の開始
+}
+
+void Player::updateFlash()
+{
+	//ダメージの点滅処理
+	if (mFlashTimer > 0.0f) {
+		mFlashTimer -= deltaTime;
+		float intensity = max(0.0f, mFlashTimer / mFlashDuration);
+		mGame->getGraphic()->updateDamageFlashIntensity(intensity);
+	}
 }

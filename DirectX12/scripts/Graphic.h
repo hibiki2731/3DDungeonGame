@@ -94,6 +94,7 @@ public:
 	void updatePointLight(const std::vector<PointLightComponent*>& lights);
 	void updateSpotLight(const std::vector<SpotLightComponent*>& lights);
 	void updateCameraPos(XMFLOAT4& cameraPos);
+	void updateDamageFlashIntensity(float intensity);
 
 private:
 	HRESULT createDevice();

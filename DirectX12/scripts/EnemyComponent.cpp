@@ -15,8 +15,8 @@ EnemyComponent::EnemyComponent(Actor* owner, int updateOrder) : CharacterCompone
 	isMoving = false;
 	mMoveSpeed = 5.0f;
 
-	mEnemyType = ObjectType::EMPTY;
-	mState = EnemyState::RANDOM;
+	mEnemyType = CharacterType::EMPTY;
+	mState = MovePattern::RANDOM;
 	isActive = false;
 	mTargetPos = mOwner->getPosition();
 	mDistPlayer = 10000000;
@@ -80,7 +80,7 @@ void EnemyComponent::updateComponent()
 void EnemyComponent::endProccess()
 {
 	CharacterComponent::endProccess();
-	mMapManager->setObjectDataAt(mIndexPos[0], mIndexPos[1], ObjectType::EMPTY); //自分のいるindex座標を空に
+	mMapManager->setObjectDataAt(mIndexPos[0], mIndexPos[1], CharacterType::EMPTY); //自分のいるindex座標を空に
 	mOwner->getGame()->removeEnemy(this);
 }
 
@@ -89,11 +89,15 @@ void EnemyComponent::updateActiveProcess()
 	//activeな時にのみ行う
 	if (isActive)
 	{
+		//プレイヤーとの距離を計算
+		int playerIndex[2];
+		mOwner->getGame()->getPlayer()->getIndexPos(playerIndex);
+		mDistPlayer = abs(playerIndex[0] - mIndexPos[0]) + abs(playerIndex[1] - mIndexPos[1]);
+
 		attack();
 		move();
 
-		int playerIndex[2];
-		mOwner->getGame()->getPlayer()->getIndexPos(playerIndex);
+		//プレイヤーとの距離を計算
 		mDistPlayer = abs(playerIndex[0] - mIndexPos[0]) + abs(playerIndex[1] - mIndexPos[1]);
 	}
 
@@ -109,9 +113,14 @@ void EnemyComponent::setEnemyTtype(int type)
 	mEnemyType = type;
 }
 
-void EnemyComponent::setEnemyState(EnemyState state)
+void EnemyComponent::setMovePattern(MovePattern state)
 {
 	mState = state;
+}
+
+void EnemyComponent::setSenseRange(int range)
+{
+	mSenseRange = range;
 }
 
 void EnemyComponent::activate()
@@ -163,7 +172,7 @@ void EnemyComponent::move()
 
 	//進先に障害物がある場合移動不可
 	if (mMapManager->getMapDataAt(targetIndexPos[0], targetIndexPos[1]) == TileType::WALL ||
-		mMapManager->getObjectDataAt(targetIndexPos[0], targetIndexPos[1]) != ObjectType::EMPTY) {
+		mMapManager->getObjectDataAt(targetIndexPos[0], targetIndexPos[1]) != CharacterType::EMPTY) {
 		mTargetPos = mOwner->getPosition();
 		return;
 	}
@@ -178,8 +187,10 @@ void EnemyComponent::move()
 	//下向き
 	else if (targetIndexPos[1] - mIndexPos[1] == -1) mOwner->setYRot(XM_PI);
 
-	mTargetPos = XMFLOAT3(targetIndexPos[0] * MAPTIPSIZE, 0.0f, targetIndexPos[1] * MAPTIPSIZE);
-	mMapManager->setObjectDataAt(mIndexPos[0], mIndexPos[1], ObjectType::EMPTY); //元居た場所を空に
+	mTargetPos = XMFLOAT3(targetIndexPos[0] * MAPTIPSIZE, 0.0f, targetIndexPos[1] * MAPTIPSIZE); //移動先のワールド座標を計算
+
+	//マップデータや自身のインデックス座標を更新
+	mMapManager->setObjectDataAt(mIndexPos[0], mIndexPos[1], CharacterType::EMPTY); //元居た場所を空に
 	mMapManager->setObjectDataAt(targetIndexPos[0], targetIndexPos[1], mEnemyType); //移動先のデータを先に更新する
 	mIndexPos[0] = targetIndexPos[0]; mIndexPos[1] = targetIndexPos[1]; //インデックス座標の更新
 }
@@ -235,12 +246,21 @@ void EnemyComponent::finishAct()
 void EnemyComponent::calcTargetIndex(int(&targetIndex)[2])
 {
 	switch (mState) {
-	case EnemyState::RANDOM:
+	case MovePattern::RANDOM:
 		randomWalk(targetIndex);
 		break;
-	case EnemyState::ASTAR:
+	case MovePattern::ASTAR:
 		Astar(targetIndex);
 		break;
+	case MovePattern::SENSE: 
+		//索敵範囲内プレイヤーがいた場合
+		if (mDistPlayer <= mSenseRange) {
+			Astar(targetIndex);
+		}
+		//索敵範囲内プレイヤーがいない場合
+		else {
+			randomWalk(targetIndex);
+		}
 	}
 
 }

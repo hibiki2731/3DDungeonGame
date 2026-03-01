@@ -1,0 +1,8 @@
+{
+    "hp" : 100,
+    "power" : 10,
+    "defense" : 3,
+    "moveSpeed" : 5.0,
+    "rotSpeed" : 4.5,
+    "flashDuration" : 0.5
+}

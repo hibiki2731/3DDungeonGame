@@ -216,6 +216,7 @@
     <ClCompile Include="scripts\EnemyComponent.cpp" />
     <ClCompile Include="scripts\Grass.cpp" />
     <ClCompile Include="scripts\ItemManager.cpp" />
+    <ClCompile Include="scripts\Object.cpp" />
     <ClCompile Include="scripts\Player.cpp" />
     <ClCompile Include="scripts\CameraComponent.cpp" />
     <ClCompile Include="scripts\Component.cpp" />
@@ -233,6 +234,7 @@
     <ClCompile Include="scripts\Random.cpp" />
     <ClCompile Include="scripts\RockObject.cpp" />
     <ClCompile Include="scripts\Enemy.cpp" />
+    <ClCompile Include="scripts\SceneManager.cpp" />
     <ClCompile Include="scripts\SpotLightComponent.cpp" />
     <ClCompile Include="scripts\SpriteComponent.cpp" />
     <ClCompile Include="scripts\TextComponent.cpp" />
@@ -250,6 +252,9 @@
     <ClInclude Include="scripts\EnemyComponent.h" />
     <ClInclude Include="scripts\Grass.h" />
     <ClInclude Include="scripts\ItemManager.h" />
+    <ClInclude Include="scripts\json.hpp" />
+    <ClInclude Include="scripts\magic_enum.hpp" />
+    <ClInclude Include="scripts\Object.h" />
     <ClInclude Include="scripts\Player.h" />
     <ClInclude Include="scripts\CameraComponent.h" />
     <ClInclude Include="scripts\Component.h" />
@@ -267,6 +272,7 @@
     <ClInclude Include="scripts\Random.h" />
     <ClInclude Include="scripts\RockObject.h" />
     <ClInclude Include="scripts\Enemy.h" />
+    <ClInclude Include="scripts\SceneManager.h" />
     <ClInclude Include="scripts\SpotLightComponent.h" />
     <ClInclude Include="scripts\SpriteComponent.h" />
     <ClInclude Include="scripts\stb_image.h" />

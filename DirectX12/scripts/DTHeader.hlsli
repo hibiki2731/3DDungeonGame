@@ -26,3 +26,5 @@ cbuffer b0 : register(b0)
     row_major matrix View; //s—Dæ‚Éİ’è‚·‚é
     row_major matrix Proj;
 };
+
+

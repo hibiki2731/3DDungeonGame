@@ -1,0 +1,26 @@
+{
+    "ROCK_WALL_SIDE" : {
+        "filePath" : "assets\\rock_side\\wall_side.txt"
+    },
+
+    "ROCK_WALL" : {
+        "filePath" : "assets\\rockObj\\rockWall.txt"
+    },
+
+    "ROCK_FLOOR" : {
+        "filePath" : "assets\\rockObj\\rockFloor.txt"
+    },
+
+    "GRASS" : {
+        "filePath" : "assets\\Grass\\grass.txt"
+    },
+
+    "SLIME" : {
+        "filePath" : "assets\\slime.txt",
+        "scale" : [0.3, 0.3, 0.3]
+    },
+
+    "NURIKABE" : {
+        "filePath" : "assets\\nurikabe.txt"
+    }
+}

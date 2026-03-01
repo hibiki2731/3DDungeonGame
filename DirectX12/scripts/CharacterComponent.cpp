@@ -28,11 +28,6 @@ void CharacterComponent::inputComponent()
 
 void CharacterComponent::updateComponent()
 {
-	
-	////インデックス座標の更新
-	//mIndexPos[0] = static_cast<int>(std::round(mOwner->getPosition().x / MAPTIPSIZE));
-	//mIndexPos[1] = static_cast<int>(std::round(mOwner->getPosition().z / MAPTIPSIZE));
-	
 
 }
 

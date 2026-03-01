@@ -4,7 +4,7 @@
 Grass::Grass(Game* game, float x, float y) : Actor(game, x, y)
 {
 	auto mesh = std::make_unique<MeshComponent>(this);
-	mesh->create(ObjectName::GRASS);
+	mesh->create(MeshName::GRASS);
 	addComponent(std::move(mesh));
 }
 

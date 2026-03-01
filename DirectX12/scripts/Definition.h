@@ -46,6 +46,8 @@ struct Base3DData {
 	XMFLOAT4 cameraPos; //xyz:カメラ位置、w:未使用
 	PointLightData pointLights[MAX_LIGHT_NUM];  //ポイントライト配列
 	SpotLightData spotLights[MAX_LIGHT_NUM];  //スポットライト配列
+	float playerFlashIntensity; //ダメージを受けたときの点滅フラグ
+	XMFLOAT3 playerFlashColor;
 };
 
 //3Dオブジェクトのワールド行列

@@ -1,6 +1,7 @@
 #pragma once
 #include "Actor.h"
 #include "Definition.h"
+#include "json.hpp"
 #include <vector>
 
 class CameraComponent;
@@ -32,6 +33,8 @@ private:
 	void rotate(Direction direction);
 	void calcMoveDirectionToIndexPos(Direction moveDirection, int (& indexPos)[2]);
 	void collect();
+	void damageEffect();
+	void updateFlash();
 
 	float mMoveSpeed;
 	float mRotSpeed;
@@ -45,6 +48,12 @@ private:
 	//カウンター
 	float mActionTimer;
 	const float ACTION_WAIT_TIME = 0.5f;
+
+	//ダメージ処理
+	int mPendingDamage;
+	float mFlashTimer;
+	float mFlashDuration;
+
 
 	CameraComponent* mCamera;
 	CharacterComponent* mCharacter;

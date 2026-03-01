@@ -56,6 +56,7 @@ void Game::init() {
 		"assets\\rockObj\\rockFloor.fbx",
 		"assets\\Grass\\grass.fbx",
 		"assets\\slime.fbx",
+		"assets\\nurikabe.fbx"
 	};
 
 	const char* text[] = { 
@@ -63,6 +64,7 @@ void Game::init() {
 		"assets\\rockObj\\rockFloor.txt",
 		"assets\\Grass\\grass.txt",
 		"assets\\slime.txt",
+		"assets\\nurikabe.txt"
 	};
 
 #ifdef DEBUG
@@ -81,13 +83,16 @@ void Game::init() {
 	//タイマー初期化
 	initDeltaTime();
 
+	//シーンマネージャーの初期化	
+	mSceneManager = std::make_unique<SceneManager>();
+	mNextScene = mSceneManager->getCurrentScene();
+
 	//assetManagerの初期化 meshComponentを作成する前に初期化
 	mAssetManager = std::make_unique<AssetManager>(mGraphic.get());
 
 	//mapの生成
 	mMapManager = std::make_unique<MapManager>(this);
 	mMapManager->setStage(Stage::MAP1);
-	mMapManager->createMap();
 
 	//アクター作成例
 	auto messageWindow = std::make_unique<MessageWindow>(this);
@@ -216,6 +221,13 @@ void Game::activateEnemies()
 	}
 }
 
+void Game::clearActors()
+{
+	for (auto& actor : mActors) {
+		actor->setState(Actor::State::Dead);
+	}
+}
+
 Graphic* Game::getGraphic()
 {
 	return mGraphic.get();
@@ -287,6 +299,38 @@ ItemManager* Game::getItemManager()
 	return mItemManager.get();
 }
 
+SceneManager* Game::getSceneManager()
+{
+	return mSceneManager.get();
+}
+
+void Game::moveToTitle()
+{
+	mNextScene = SceneType::TITLE;
+}
+
+void Game::moveToMap()
+{
+	mNextScene = SceneType::MAP;
+}
+
+void Game::updateScene() {
+	//シーンの遷移
+	if (mNextScene != mSceneManager->getCurrentScene()) {
+		switch (mNextScene) {
+		case SceneType::TITLE:
+			mSceneManager->setScene(SceneType::TITLE);
+			clearActors();
+			break;
+		case SceneType::MAP:
+			mSceneManager->setScene(SceneType::MAP);
+			mMapManager->createMap();
+			break;
+		}
+		mNextScene = mSceneManager->getCurrentScene();
+	}
+}
+
 void Game::input()
 {
 
@@ -297,11 +341,17 @@ void Game::input()
 
 	//デバック用
 	if (GetAsyncKeyState('P')) {
-		auto slime = std::make_unique<Enemy>(this, static_cast<float>(MAPTIPSIZE * 5.0f), static_cast<float>(MAPTIPSIZE * 5.0f));
+		auto slime = std::make_unique<Enemy>(this, CharacterType::SLIME, static_cast<float>(MAPTIPSIZE * 5.0f), static_cast<float>(MAPTIPSIZE * 5.0f));
 		addActor(std::move(slime));
 	}
 	if (GetAsyncKeyState('O')) {
 		mMapManager->moveToPlayerTurn();
+	}
+	if (GetAsyncKeyState('T')) {
+		moveToTitle();
+	}
+	if (GetAsyncKeyState('M')) {
+		moveToMap();
 	}
 
 }
@@ -329,6 +379,9 @@ void Game::update()
 	}
 	mPendingActors.clear();
 
+	//シーンの遷移
+	updateScene();
+
 	//死んだアクターを一次配列に追加
 	std::vector<std::unique_ptr<Actor>> deadActors;
 	for (auto& actor : mActors) {
@@ -341,6 +394,7 @@ void Game::update()
 	std::erase_if(mActors, [](const std::unique_ptr<Actor>& actor) {
 		return actor == nullptr;
 		});
+
 
 	//Base3DDataの更新
 	mGraphic->updateBase3DData();

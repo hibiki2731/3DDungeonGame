@@ -33,6 +33,7 @@ void MessageWindow::inputActor()
 
 void MessageWindow::updateActor()
 {
+	if (mPlayer == nullptr) return;
 	//デバッグ用
 	std::wstring message = L"x:" + std::to_wstring(mPlayer->getPosition().x) +
 		L" y:" + std::to_wstring(mPlayer->getPosition().y) +
