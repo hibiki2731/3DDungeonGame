@@ -13,7 +13,7 @@ EnemyComponent::EnemyComponent(Actor* owner, int updateOrder) : CharacterCompone
 	mFlashDuration = 0.3f;	//ダメージを受けたときの点滅時間
 
 	isMoving = false;
-	mMoveSpeed = 5.0f;
+	mMoveSpeed =5.0f;
 
 	mEnemyType = CharacterType::EMPTY;
 	mState = MovePattern::RANDOM;
@@ -32,7 +32,6 @@ void EnemyComponent::inputComponent()
 
 void EnemyComponent::updateComponent()
 {
-	CharacterComponent::updateComponent();
 
 	//点滅処理の更新
 	updateFlash();
