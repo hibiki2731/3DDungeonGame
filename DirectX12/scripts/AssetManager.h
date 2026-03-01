@@ -15,7 +15,7 @@ struct MeshData {
 	std::vector<D3D12_VERTEX_BUFFER_VIEW> VertexBufView;
 	//マテリアルデータ
 	std::vector<XMFLOAT4> Material;
-	std::vector<ComPtr<ID3D12Resource>> TextureBuf;
+    std::vector<ComPtr<ID3D12Resource>> TextureBuf;
 	//スケール
 	XMFLOAT3 Scale;
 };
