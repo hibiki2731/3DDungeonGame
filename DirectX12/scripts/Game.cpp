@@ -313,6 +313,9 @@ void Game::input()
 		actor->input();
 	}
 
+	//各種マネージャーの入力
+	mTownManager->input();
+
 	//デバック用
 	if (GetAsyncKeyState('P')) {
 		auto slime = std::make_unique<Enemy>(this, CharacterType::SLIME, static_cast<float>(MAPTIPSIZE * 5.0f), static_cast<float>(MAPTIPSIZE * 5.0f));
