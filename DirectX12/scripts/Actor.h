@@ -55,6 +55,7 @@ public:
 	void setYRot(float y);
 	void setZRot(float z);
 
+	void movePositon(const XMFLOAT3& diff);
 
 	//ÉQÉbÉ^Å[
 	State getState();

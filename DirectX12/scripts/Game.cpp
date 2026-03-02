@@ -1,4 +1,6 @@
 #include "Game.h"
+#include "TownManager.h"
+#include "SceneManager.h"
 #include "Actor.h"
 #include "Player.h"
 #include "UI.h"
@@ -15,6 +17,7 @@
 #include "EnemyComponent.h"
 #include "DamageText.h"
 #include "Graphic.h"
+#include "input.h"
 
 #define DEBUG
 
@@ -52,19 +55,19 @@ void Game::init() {
 
 	//FBXファイルとテキストファイルのパス
 	const char* fbx[] = { 
-		"assets\\rockObj\\rockWall.fbx",
-		"assets\\rockObj\\rockFloor.fbx",
-		"assets\\Grass\\grass.fbx",
-		"assets\\slime.fbx",
-		"assets\\nurikabe.fbx"
+		"assets/3DModels/rockObj/rockWall.fbx",
+		"assets/3DModels/rockObj/rockFloor.fbx",
+		"assets/3DModels/Grass/grass.fbx",
+		"assets/3DModels/Slime/slime.fbx",
+		"assets/3DModels/Nurikabe/nurikabe.fbx"
 	};
 
 	const char* text[] = { 
-		"assets\\rockObj\\rockWall.txt",
-		"assets\\rockObj\\rockFloor.txt",
-		"assets\\Grass\\grass.txt",
-		"assets\\slime.txt",
-		"assets\\nurikabe.txt"
+		"assets/3DModels/rockObj/rockWall.txt",
+		"assets/3DModels/rockObj/rockFloor.txt",
+		"assets/3DModels/Grass/grass.txt",
+		"assets/3DModels/Slime/slime.txt",
+		"assets/3DModels/Nurikabe/nurikabe.txt"
 	};
 
 #ifdef DEBUG
@@ -84,8 +87,7 @@ void Game::init() {
 	initDeltaTime();
 
 	//シーンマネージャーの初期化	
-	mSceneManager = std::make_unique<SceneManager>();
-	mNextScene = mSceneManager->getCurrentScene();
+	mSceneManager = std::make_unique<SceneManager>(this);
 
 	//assetManagerの初期化 meshComponentを作成する前に初期化
 	mAssetManager = std::make_unique<AssetManager>(mGraphic.get());
@@ -93,11 +95,9 @@ void Game::init() {
 	//mapの生成
 	mMapManager = std::make_unique<MapManager>(this);
 	mMapManager->setStage(Stage::MAP1);
-
-	//アクター作成例
-	auto messageWindow = std::make_unique<MessageWindow>(this);
-	messageWindow->setPlayer(mPlayer); //デバッグ用
-	addActor(std::move(messageWindow));
+	
+	//TownManagerの初期化
+	mTownManager = std::make_unique<TownManager>(this);
 
 	//itemManagerの初期化
 	mItemManager = std::make_unique<ItemManager>();
@@ -304,35 +304,9 @@ SceneManager* Game::getSceneManager()
 	return mSceneManager.get();
 }
 
-void Game::moveToTitle()
-{
-	mNextScene = SceneType::TITLE;
-}
-
-void Game::moveToMap()
-{
-	mNextScene = SceneType::MAP;
-}
-
-void Game::updateScene() {
-	//シーンの遷移
-	if (mNextScene != mSceneManager->getCurrentScene()) {
-		switch (mNextScene) {
-		case SceneType::TITLE:
-			mSceneManager->setScene(SceneType::TITLE);
-			clearActors();
-			break;
-		case SceneType::MAP:
-			mSceneManager->setScene(SceneType::MAP);
-			mMapManager->createMap();
-			break;
-		}
-		mNextScene = mSceneManager->getCurrentScene();
-	}
-}
-
 void Game::input()
 {
+	updateInput();
 
 	for (auto& actor : mActors) {
 
@@ -348,10 +322,13 @@ void Game::input()
 		mMapManager->moveToPlayerTurn();
 	}
 	if (GetAsyncKeyState('T')) {
-		moveToTitle();
+		mSceneManager->transitToTitle();
 	}
 	if (GetAsyncKeyState('M')) {
-		moveToMap();
+		mSceneManager->transitToMap();
+	}
+	if (GetAsyncKeyState('H')) {
+		mSceneManager->transitToTown();
 	}
 
 }
@@ -360,49 +337,63 @@ void Game::update()
 {
 	mUpdatingActors = true;
 	//アクターの更新処理
-	for (auto& actor : mActors) {
-		actor->update();
-	}
-
-	for (auto enemy : mEnemies) {
-		enemy->updateActiveProcess();
-	}
-	//敵配列をプレイヤーに近い順にソート
-	std::sort(mEnemies.begin(), mEnemies.end(), [](auto const lenemy, auto const renemy){
-		return lenemy->getDist() < renemy->getDist();
-		});
-
-	mUpdatingActors = false;
-
-	for (auto& pending : mPendingActors) {
-		mActors.emplace_back(std::move(pending));
-	}
-	mPendingActors.clear();
-
-	//シーンの遷移
-	updateScene();
-
-	//死んだアクターを一次配列に追加
-	std::vector<std::unique_ptr<Actor>> deadActors;
-	for (auto& actor : mActors) {
-		if (actor->getState() == Actor::Dead) {
-			actor->endProccess();
-			deadActors.emplace_back(std::move(actor));
+	{
+		for (auto& actor : mActors) {
+			actor->update();
+		}
+		//敵の更新処理
+		for (auto enemy : mEnemies) {
+			enemy->updateActiveProcess();
 		}
 	}
-	//元配列に残ったnullptrを削除
-	std::erase_if(mActors, [](const std::unique_ptr<Actor>& actor) {
-		return actor == nullptr;
-		});
 
+	//各種マネージャーの更新
+	{
+		mSceneManager->transitScene();	//シーンの移行
+		mDamageTextManager->update();	//ダメージテキストの更新
+		mTownManager->update();			//シーンがタウンの時の処理
+	}
 
-	//Base3DDataの更新
-	mGraphic->updateBase3DData();
-	//ダメージテキストの更新
-	mDamageTextManager->update();
-	//ターンの変更
-	mMapManager->update();
+	//Actorの更新中に追加されたアクターをActor配列に追加
+	mUpdatingActors = false;
+	{
+		for (auto& pending : mPendingActors) {
+			mActors.emplace_back(std::move(pending));
+		}
+		mPendingActors.clear();
+	}
 
+	//死んだアクターの除去
+	{
+		//死んだアクターを一次配列に追加
+		std::vector<std::unique_ptr<Actor>> deadActors;
+		for (auto& actor : mActors) {
+			if (actor->getState() == Actor::Dead) {
+				actor->endProccess();
+				deadActors.emplace_back(std::move(actor));
+			}
+		}
+		//元配列に残ったnullptrを削除
+		std::erase_if(mActors, [](const std::unique_ptr<Actor>& actor) {
+			return actor == nullptr;
+			});
+	}
+
+	//アクターの除去後に行う処理
+	{
+		//敵配列をプレイヤーに近い順にソート
+		std::sort(mEnemies.begin(), mEnemies.end(), [](auto const lenemy, auto const renemy) {
+			return lenemy->getDist() < renemy->getDist();
+			});
+		//スプライトをupdateOrderが小さい順にソート
+		std::sort(mSprites.begin(), mSprites.end(), [](auto const lsprite, auto const rsprite) {
+			return lsprite->getUpdateOrder() < rsprite->getUpdateOrder();
+			});
+
+		//各種マネージャーの更新
+		mGraphic->updateBase3DData();		//Base3DDataの更新
+		mMapManager->update();				//ターン制御
+	}
 }
 
 void Game::draw()

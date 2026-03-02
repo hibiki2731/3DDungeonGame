@@ -1,0 +1,22 @@
+{
+    "MainMenu" :{
+        "x" : 20.0,
+        "y" : 20.0,
+        "width" : 400.0,
+        "height" : 380.0,
+        "borderSize" : 24.0,
+        "spriteFileName" : "assets/picture/UI2/PNG/Default/panel_brown.png",
+
+        "arrowOffsetX" : 310.0,
+        "arrowOffsetY" : 30.0,
+        "arrowWidth" : 40.0,
+        "arrowHeight" : 40.0,
+        "arrowFileName" : "assets/picture/UI2/PNG/Default/minimap_arrow_a.png",
+
+        "textOffsetX" : 20.0,
+        "textOffsety" : 10.0,
+        "fontSize" : 50.0,
+        "lineSpace" : 10.0,
+        "text" : "宿屋\n道具屋\n鍛冶屋\n探索道具屋\nダンジョンへ\n"
+    }
+}

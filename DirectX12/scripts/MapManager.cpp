@@ -5,6 +5,7 @@
 #include "Enemy.h"
 #include "Player.h"
 #include "Grass.h"
+#include "MessageWindow.h"
 #include <fstream>
 #include <cassert>
 
@@ -49,6 +50,9 @@ void MapManager::update()
 
 void MapManager::createMap()
 {
+	std::unique_ptr<MessageWindow> messageWindow = std::make_unique<MessageWindow>(mGame);
+	mGame->addActor(std::move(messageWindow));
+
 	loadMap(mStage);	//マップデータの読み込み
 	createWall();	//マップの壁、床の生成
 	createObject(); //オブジェクトの生成
@@ -162,6 +166,7 @@ void MapManager::moveToPlayerTurn()
 void MapManager::moveToEnemyTurn()
 {
 	mNextTurn = TurnType::ENEMY;
+	
 }
 
 void MapManager::clearMap()

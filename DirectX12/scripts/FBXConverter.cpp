@@ -345,7 +345,7 @@ void FBXConverter::CreateTextConbineVertex(const char* txtFilename, float fx, fl
 
 			//テクスチャ名がなかったら、white.pngにする
 			if (textureFilename == "") {
-				ofs << "assets/white.png\n";
+				ofs << "assets/picture/white.png\n";
 				continue;
 			}
 
@@ -421,7 +421,6 @@ void FBXConverter::CreateText(const char* txtFilename, float fx, float fy, float
 		}
 		{
 			ofs << "material\n";
-			//ofs << Parts[k].MaterialName << "\n";
 			float* d = MaterialMap[Parts[k].MaterialName].materials.data();
 			ofs << d[0] << " " << d[1] << " " << d[2] << "\n";
 			ofs << d[3] << " " << d[4] << " " << d[5] << "\n";
@@ -433,7 +432,7 @@ void FBXConverter::CreateText(const char* txtFilename, float fx, float fy, float
 
 			//メッシュ側のマテリアル名でマテリアルマップから引っ張ってくる
 			if (MaterialMap[Parts[k].MaterialName].textureFilename == "") {
-				ofs << "assets/white.png";
+				ofs << "assets/picture/white.png";
 				return;
 			}
 

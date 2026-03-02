@@ -19,6 +19,9 @@ TextComponent::TextComponent(Actor* owner, int updateOrder) : Component(owner, u
 	);
 	mTextColor = D2D1::ColorF(D2D1::ColorF::White);
 	mText = L"";
+	isLineSpaceDefault = true;
+	mLineSpace = 0;
+	mBaseLineSpace = 0;
 
 	mOwner->getGame()->addText(this);
 }
@@ -72,6 +75,13 @@ void TextComponent::showText()
 
 	hr = mTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR); //ã‘µ‚¦
 	assert(SUCCEEDED(hr));
+	
+	if(!isLineSpaceDefault)
+	hr = mTextFormat->SetLineSpacing(
+		DWRITE_LINE_SPACING_METHOD_UNIFORM,
+		mLineSpace,
+		mBaseLineSpace
+	);
 
 	isActive = true;
 }
@@ -100,6 +110,13 @@ void TextComponent::setFontSize(FLOAT size)
 void TextComponent::setTextColor(const D2D1::ColorF& color)
 {
 	mTextColor = color;
+}
+
+void TextComponent::setLineSpace(float space)
+{
+	isLineSpaceDefault = false;
+	mLineSpace = space;
+	mBaseLineSpace = space * 0.8f;
 }
 
 bool TextComponent::getIsActive()

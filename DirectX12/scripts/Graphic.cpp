@@ -791,7 +791,6 @@ void Graphic::updateBase3DData()
 	//光源の更新
 	updateSpotLight(mGame->getSpotLights());
 	updatePointLight(mGame->getPointLights());
-
 	//更新したデータをコンスタントバッファへコピー
 	memcpy(mConstantData, &Base3DData, sizeof(Base3DData));
 

@@ -216,6 +216,7 @@
     <ClCompile Include="scripts\EnemyComponent.cpp" />
     <ClCompile Include="scripts\Grass.cpp" />
     <ClCompile Include="scripts\ItemManager.cpp" />
+    <ClCompile Include="scripts\MyUtility.cpp" />
     <ClCompile Include="scripts\Object.cpp" />
     <ClCompile Include="scripts\Player.cpp" />
     <ClCompile Include="scripts\CameraComponent.cpp" />
@@ -239,6 +240,7 @@
     <ClCompile Include="scripts\SpriteComponent.cpp" />
     <ClCompile Include="scripts\TextComponent.cpp" />
     <ClCompile Include="scripts\timer.cpp" />
+    <ClCompile Include="scripts\TownManager.cpp" />
     <ClCompile Include="scripts\UI.cpp" />
     <ClCompile Include="scripts\WinMain.cpp" />
   </ItemGroup>
@@ -254,6 +256,7 @@
     <ClInclude Include="scripts\ItemManager.h" />
     <ClInclude Include="scripts\json.hpp" />
     <ClInclude Include="scripts\magic_enum.hpp" />
+    <ClInclude Include="scripts\MyUtility.h" />
     <ClInclude Include="scripts\Object.h" />
     <ClInclude Include="scripts\Player.h" />
     <ClInclude Include="scripts\CameraComponent.h" />
@@ -278,8 +281,9 @@
     <ClInclude Include="scripts\stb_image.h" />
     <ClInclude Include="scripts\TextComponent.h" />
     <ClInclude Include="scripts\timer.h" />
-    <ClInclude Include="scripts\UI.h" />
+    <ClInclude Include="scripts\TownManager.h" />
     <ClInclude Include="scripts\WinMain.h" />
+    <ClInclude Include="MyUtility.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="scripts\DTHeader.hlsli" />

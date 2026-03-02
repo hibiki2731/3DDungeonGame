@@ -5,15 +5,12 @@
 #include <DirectXMath.h>
 #include <cassert>
 #include <random>
-
-#include "input.h"
 #include "BIN_FILE12.h"
 #include "Definition.h"
 #include "FBXConverter.h"
 #include "timer.h"
 #include <wrl/client.h>
 #include "ItemManager.h"
-#include "SceneManager.h"
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
@@ -32,6 +29,8 @@ class MapManager;
 class EnemyComponent;
 class DamageTextManager;
 class AssetManager;
+class SceneManager;
+class TownManager;
 
 class Game {
 public:
@@ -84,9 +83,6 @@ public:
 	ItemManager* getItemManager();
 	SceneManager* getSceneManager();
 
-	void moveToTitle();
-	void moveToMap();
-	void updateScene();
 private:
 	//グラフィック
 	std::unique_ptr<Graphic> mGraphic;
@@ -111,6 +107,9 @@ private:
 	std::unique_ptr<MapManager> mMapManager;
 	bool mUpdatingActors;
 
+	//タウンマネージャー
+	std::unique_ptr<TownManager> mTownManager;
+
 	//プレイヤー(所有権はActor配列中にある)
 	Player* mPlayer;
 
@@ -122,7 +121,6 @@ private:
 
 	//シーンマネージャー
 	std::unique_ptr<SceneManager> mSceneManager;
-	SceneType mNextScene;
 
 	//ループ内処理
 	void input();

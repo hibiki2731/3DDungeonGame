@@ -21,6 +21,7 @@ public:
 	void setBaseLine(float x, float y);
 	void setFontSize(FLOAT size);
 	void setTextColor(const D2D1::ColorF& color);
+	void setLineSpace(float space);
 
 	//ゲッター
 	bool getIsActive();
@@ -39,6 +40,9 @@ private:
 	FLOAT mFontSize;
 	const WCHAR* mFontName;
 	D2D1_RECT_F mTextRect;
+	bool isLineSpaceDefault;
+	float mLineSpace; //行の高さ
+	float mBaseLineSpace; //行の上端からベースラインまでの距離
 
 	int mMaxRow;
 };

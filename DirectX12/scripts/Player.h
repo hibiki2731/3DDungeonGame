@@ -26,6 +26,8 @@ public:
 	//プレイヤーにダメージを与える
 	void giveDamage(int damage);
 
+
+
 private:
 	void attack();
 	void calcDamageText(const XMFLOAT3& targetPos, int val);
@@ -44,10 +46,6 @@ private:
 	XMFLOAT3 mTargetRot;
 	bool isMoving;
 	bool isRotating;
-
-	//カウンター
-	float mActionTimer;
-	const float ACTION_WAIT_TIME = 0.5f;
 
 	//ダメージ処理
 	int mPendingDamage;

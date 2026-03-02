@@ -13,6 +13,7 @@
 #include "Game.h"
 #include "MapManager.h"
 #include "Graphic.h"
+#include "input.h"
 
 Player::Player(Game* game, float x, float y) : Actor(game)
 {
@@ -21,7 +22,6 @@ Player::Player(Game* game, float x, float y) : Actor(game)
 	mTargetRot = mRotation;
 	isMoving = false;
 	isRotating = false;
-	mActionTimer = 0.0f;
 	mFlashTimer = 0.0f;
 
 	//jsonファイルからパラメータを読み込む
@@ -89,16 +89,15 @@ void Player::inputActor()
 	if (GetAsyncKeyState(VK_LEFT)) {
 		rotate(Direction::LEFT);
 	}
-	if (GetAsyncKeyState(VK_RETURN)) {
-		if (mActionTimer <= 0) 	attack();
-		if (mActionTimer <= 0) 	collect();
+	if (isKeyJustPressed(VK_RETURN)) {
+		attack();
+	    collect();
 	}
 	
 }
 
 void Player::updateActor()
 {
-	mActionTimer -= deltaTime;
 	//移動処理
 	if (isMoving) {
 		//移動処理
@@ -113,7 +112,7 @@ void Player::updateActor()
 		else {
 			//移動終了時の処理
 			mPosition = mTargetPos;
-
+			
 			isMoving = false;
 		}
 	}
@@ -205,7 +204,6 @@ void Player::attack()
 	target->startFlash(); //敵を点滅させる
 	calcDamageText(target->getPosition(), damage);
 
-	mActionTimer = ACTION_WAIT_TIME;
 	//ターン経過
 	mMapManager->moveToEnemyTurn();
 }
@@ -339,8 +337,6 @@ void Player::collect()
 
 	//ターン経過
 	mMapManager->moveToEnemyTurn();
-
-	mActionTimer = ACTION_WAIT_TIME;
 }
 
 void Player::damageEffect()
