@@ -2,7 +2,19 @@
 #include "Actor.h"
 #include "Game.h"
 
-TextComponent::TextComponent(Actor* owner, int updateOrder) : Component(owner, updateOrder)
+float textVertices[] = {
+	0.0f, 0.0f,
+	0.0f, 1.0f,
+	1.0f, 0.0f,
+	1.0f, 1.0f
+};
+
+UINT16 textIndices[] = {
+	0, 1, 2,
+	2, 1, 3
+};
+
+TextComponent::TextComponent(Actor* owner, float zDepth) : Component(owner)
 {
 	mGraphic = mOwner->getGame()->getGraphic();
 	isActive = false;
@@ -122,4 +134,139 @@ void TextComponent::setLineSpace(float space)
 bool TextComponent::getIsActive()
 {
 	return isActive;
+}
+
+void TextComponent::createEmptyTexture()
+{
+	//キャンバスのサイズ
+	UINT textWidth = mGraphic->getClientWidth();
+	UINT textHeight = mGraphic->getClientHeight();
+
+	D3D12_RESOURCE_DESC textDesc = {};
+	textDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	textDesc.Width = textWidth;
+	textDesc.Height = textHeight;
+	textDesc.DepthOrArraySize = 1;
+	textDesc.MipLevels = 1;
+	textDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textDesc.SampleDesc.Count = 1;
+	textDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	textDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET; //D2Dが書き込めるような設定
+
+	//背景を透明にするための設定
+	D3D12_CLEAR_VALUE clearValue = {};
+	clearValue.Format = textDesc.Format;
+	clearValue.Color[0] = 0.0f, clearValue.Color[1] = 0.0f;
+	clearValue.Color[2] = 0.0f, clearValue.Color[3] = 0.0f;
+
+	D3D12_HEAP_PROPERTIES prop = {};
+		prop.Type = D3D12_HEAP_TYPE_DEFAULT;
+		prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+		prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+		prop.CreationNodeMask = 1;
+		prop.VisibleNodeMask = 1;
+
+		mGraphic->getDevice()->CreateCommittedResource(
+			&prop,
+			D3D12_HEAP_FLAG_NONE,
+			&textDesc,
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			&clearValue,
+			IID_PPV_ARGS(mTexture.ReleaseAndGetAddressOf())
+		);
+	
+}
+
+void TextComponent::wrapTexture()
+{
+	//D3D11のリソースとしてラップ（変換）
+	D3D11_RESOURCE_FLAGS d3d11Flags = { D3D11_BIND_RENDER_TARGET };
+	mGraphic->getD3D11On12Device()->CreateWrappedResource(
+		mTexture.Get(),
+		&d3d11Flags,
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+		IID_PPV_ARGS(mWrappedTexture.ReleaseAndGetAddressOf())
+	);
+
+	//ラップしたテクスチャをDirect2Dのレンダーターゲットにする
+	ComPtr<IDXGISurface> surface;
+	mWrappedTexture.As(&surface);
+
+	D2D1_BITMAP_PROPERTIES1 bitmapProps = D2D1::BitmapProperties1(
+		D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
+		D2D1::PixelFormat(DXGI_FORMAT_R8G8B8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)
+	);
+
+
+}
+
+void TextComponent::createSprite()
+{
+	{
+		//頂点バッファの作成
+		UINT sizeInByte = sizeof(textVertices);
+		HRESULT hr = mGraphic->createBuf(sizeInByte, mVertexBuf);
+		assert(SUCCEEDED(hr));
+
+		//頂点バッファに生データをコピー
+		hr = mGraphic->updateBuf(textVertices, sizeInByte, mVertexBuf);
+		assert(SUCCEEDED(hr));
+
+		//位置バッファのビューを初期化しておく。（ディスクリプタヒープに作らなくてよい）
+		mVertexBufView.BufferLocation = mVertexBuf->GetGPUVirtualAddress();
+		mVertexBufView.SizeInBytes = sizeInByte;//全バイト数
+		mVertexBufView.StrideInBytes = sizeof(float) * 4;//１頂点のバイト数
+	}
+	{
+		//インデックスバッファの作成
+		UINT sizeInByte = sizeof(textIndices);
+		HRESULT hr = mGraphic->createBuf(sizeInByte, mIndexBuf);
+		assert(SUCCEEDED(hr));
+
+		//インデックスバッファに生データをコピー
+		hr = mGraphic->updateBuf(textIndices, sizeInByte, mIndexBuf);
+		assert(SUCCEEDED(hr));
+
+		//インデックスバッファービューを作る
+		mIndexBufView.BufferLocation = mIndexBuf->GetGPUVirtualAddress();
+		mIndexBufView.SizeInBytes = sizeInByte;//全バイト数
+		mIndexBufView.Format = DXGI_FORMAT_R16_UINT;//UINT16
+	}
+	//コンスタントバッファ(World Matrix)
+	{
+		//コンスタントバッファをつくる
+		mGraphic->createBuf(mGraphic->alignedSize(sizeof(Cb3)), mConstBuf3);
+		mGraphic->mapBuf((void**)&Cb3, mConstBuf3);
+	}
+	//ディスクリプタヒープを作る
+	{
+		HRESULT	hr = mGraphic->createCbvTbvHeap(mCbvTbvHeap, NumDescriptors);
+		assert(SUCCEEDED(hr));
+
+		auto hCbvTbvHeap = mCbvTbvHeap->GetCPUDescriptorHandleForHeapStart();
+		CbvTbvSize = mGraphic->getCbvTbvIncSize();
+		mGraphic->createConstantBufferView(mConstBuf3, hCbvTbvHeap);			hCbvTbvHeap.ptr += CbvTbvSize;
+		mGraphic->createShaderResourceView(mTexture, hCbvTbvHeap);		hCbvTbvHeap.ptr += CbvTbvSize;
+		
+	}
+
+	//コンスタントバッファの初期化
+	{
+		Cb3->windowSize = XMFLOAT2(
+			(float)mGraphic->getClientWidth(),
+			(float)mGraphic->getClientHeight()
+		);
+		Cb3->spriteSize = XMFLOAT2(
+			(float)mGraphic->getClientWidth(),
+			(float)mGraphic->getClientHeight()
+		);
+
+		Cb3->textureSize = XMFLOAT2(
+			(float)mGraphic->getClientWidth(),
+			(float)mGraphic->getClientHeight()
+		);
+		Cb3->bordarSize = 0.0f;
+	}
+
 }

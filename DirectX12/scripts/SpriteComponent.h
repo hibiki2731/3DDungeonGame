@@ -9,7 +9,7 @@ class SpriteComponent :
     public Component
 {
 public:
-	SpriteComponent(Actor* owner, int updateOrder = 100);
+	SpriteComponent(Actor* owner, float zDepth = 100.0f);
     ~SpriteComponent();
 
 	void endProccess() override;
@@ -18,7 +18,7 @@ public:
     virtual void draw();
 
 	//描画範囲のセッター
-	void setPosition(const XMFLOAT2& position);
+	void setPosition(const XMFLOAT3& position);
 	void setScale(const XMFLOAT2& scale);
 	void setRotation(const float rotation);
     void setSpriteSize(const XMFLOAT2& size);
@@ -27,7 +27,7 @@ public:
 
 protected:
     //描画範囲
-    XMFLOAT2 mPosition;
+    XMFLOAT3 mPosition;
 	XMFLOAT2 mScale;
 	float mRotation;
     XMFLOAT2 mSpriteSize;

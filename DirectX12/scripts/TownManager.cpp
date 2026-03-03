@@ -8,7 +8,7 @@
 #include "MyUtility.h"
 #include "input.h"
 
-TextWindow::TextWindow(Game* game, std::string windowName, int updateOrder) : Actor(game)
+TextWindow::TextWindow(Game* game, std::string windowName, float zDepth) : Actor(game)
 {
 	mSelectedIndex = 0;
 	mMaxIndex = 5;
@@ -22,11 +22,11 @@ TextWindow::TextWindow(Game* game, std::string windowName, int updateOrder) : Ac
 	file >> textWindowData;
 
 	//ÉEÉBÉìÉhÉEÇÃîwåi
-	auto window = std::make_unique<SpriteComponent>(this, updateOrder);
+	auto window = std::make_unique<SpriteComponent>(this, zDepth);
 	window->create(textWindowData[windowName]["spriteFileName"].get<std::string>());
 	window->setBordarSize(textWindowData[windowName].value("borderSize", 24.0f));
 	window->setSpriteSize(XMFLOAT2(textWindowData[windowName]["width"].get<float>(), textWindowData[windowName]["height"].get<float>()));
-	XMFLOAT2 pos = XMFLOAT2(textWindowData[windowName]["x"].get<float>(), textWindowData[windowName]["y"].get<float>());
+	XMFLOAT3 pos = XMFLOAT3(textWindowData[windowName]["x"].get<float>(), textWindowData[windowName]["y"].get<float>(), zDepth);
 	window->setPosition(pos);
 	addComponent(std::move(window));
 
@@ -44,11 +44,11 @@ TextWindow::TextWindow(Game* game, std::string windowName, int updateOrder) : Ac
 	addComponent(std::move(text));
 
 	//ñÓàÛ
-	auto arrow = std::make_unique<SpriteComponent>(this, updateOrder - 1);
+	auto arrow = std::make_unique<SpriteComponent>(this);
 	arrow->create(textWindowData[windowName]["arrowFileName"].get<std::string>());
 	arrow->setBordarSize(0.0f);
 	arrow->setSpriteSize(XMFLOAT2(textWindowData[windowName]["arrowWidth"].get<float>(), textWindowData[windowName]["arrowHeight"].get<float>()));
-	arrow->setPosition(XMFLOAT2(pos.x + textWindowData[windowName]["arrowOffsetX"].get<float>(), pos.y + textWindowData[windowName]["arrowOffsetY"].get<float>()));
+	arrow->setPosition(XMFLOAT3(pos.x + textWindowData[windowName]["arrowOffsetX"].get<float>(), pos.y + textWindowData[windowName]["arrowOffsetY"].get<float>(), zDepth - 1.0f));
 	arrow->setRotation(-XM_PIDIV2);
 	mArrow = arrow.get();
 	addComponent(std::move(arrow));
@@ -135,7 +135,7 @@ void TownManager::update()
 		auto bg = std::make_unique<BackGround>(mGame);
 		mGame->addActor(std::move(bg));
 
-		auto textWindow = std::make_unique<TextWindow>(mGame, "MainMenu", 99);
+		auto textWindow = std::make_unique<TextWindow>(mGame, "MainMenu", 99.0f);
 		mMainMenu = textWindow.get();
 		mGame->addActor(std::move(textWindow));
 	}
@@ -152,7 +152,7 @@ void TownManager::update()
 			switch (mMainMenu->getSelectedIndex()) {
 			case 0: {
 				//èhâÆ
-				auto inn = std::make_unique<TextWindow>(mGame, "InnMenu", 97);
+				auto inn = std::make_unique<TextWindow>(mGame, "InnMenu", 97.0f);
 				inn->setMaxIndex(2);
 				mSubMenu = inn.get();
 				mGame->addActor(std::move(inn));
@@ -160,7 +160,7 @@ void TownManager::update()
 			}
 			case 1: {
 				//ìπãÔâÆ
-				auto shop = std::make_unique<TextWindow>(mGame, "ShopMenu", 97);
+				auto shop = std::make_unique<TextWindow>(mGame, "ShopMenu", 97.0f);
 				shop->setMaxIndex(2);
 				mSubMenu = shop.get();
 				mGame->addActor(std::move(shop));
@@ -168,7 +168,7 @@ void TownManager::update()
 			}
 			case 2: {
 				//íbñËâÆ
-				auto forge = std::make_unique<TextWindow>(mGame, "ForgeMenu", 97);
+				auto forge = std::make_unique<TextWindow>(mGame, "ForgeMenu", 97.0f);
 				forge->setMaxIndex(2);
 				mSubMenu = forge.get();
 				mGame->addActor(std::move(forge));
@@ -176,7 +176,7 @@ void TownManager::update()
 			}
 			case 3: {
 				//íTçıìπãÔâÆ
-				auto explorerShop = std::make_unique<TextWindow>(mGame, "ExplorerShopMenu", 97);
+				auto explorerShop = std::make_unique<TextWindow>(mGame, "ExplorerShopMenu", 97.0f);
 				explorerShop->setMaxIndex(2);
 				mSubMenu = explorerShop.get();
 				mGame->addActor(std::move(explorerShop));

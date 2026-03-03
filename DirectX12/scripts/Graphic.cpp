@@ -1407,6 +1407,11 @@ float Graphic::getClientHeight()
 	return ClientHeight;
 }
 
+ID3D11On12Device* Graphic::getD3D11On12Device()
+{
+	return mD3D11On12Device.Get();
+}
+
 ID2D1DeviceContext* Graphic::getD2DDeviceContext()
 {
 	return mD2DDeviceContext.Get();

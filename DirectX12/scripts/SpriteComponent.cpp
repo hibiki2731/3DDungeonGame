@@ -47,13 +47,12 @@ UINT16 spriteIndices[] = {
 	12, 13, 14,
 	14, 13, 15,
 };
-SpriteComponent::SpriteComponent(Actor* owner, int updateOrder) : Component(owner, updateOrder)
+SpriteComponent::SpriteComponent(Actor* owner, float zDepth) : Component(owner)
 {
-	mPosition = { 0.0f, 0.0f };
+	mPosition = { 0.0f, 0.0f, zDepth};
 	mScale = { 1.0f, 1.0f };
 	mSpriteSize = { 100.0f, 100.0f };
 	mBordarSize = 0.0f;
-	mUpdateOrder = updateOrder;
 	mRotation = 0.0f;
 
 	mGraphic = mOwner->getGame()->getGraphic();
@@ -149,7 +148,7 @@ void SpriteComponent::draw()
 		* XMMatrixTranslation(-mSpriteSize.x * 0.5f, -mSpriteSize.y * 0.5f, 0.0f)
 		* XMMatrixRotationZ(mRotation)
 		* XMMatrixTranslation(mSpriteSize.x * 0.5f, mSpriteSize.y * 0.5f, 0.0f)
-		* XMMatrixTranslation(mPosition.x, mPosition.y, 0.0f)
+		* XMMatrixTranslation(mPosition.x, mPosition.y, mPosition.z)
 		;
 	Cb3->world = world;
 	Cb3->spriteSize = mSpriteSize;	//スプライトサイズ
@@ -174,7 +173,7 @@ void SpriteComponent::draw()
 	
 }
 
-void SpriteComponent::setPosition(const XMFLOAT2& position)
+void SpriteComponent::setPosition(const XMFLOAT3& position)
 {
 	mPosition = position;
 }

@@ -8,7 +8,7 @@ class SpriteComponent;
 class TextWindow : public Actor
 {
 public:
-	TextWindow(Game* game, std::string windowName, int updateOrder);
+	TextWindow(Game* game, std::string windowName, float zDepth);
 	void inputActor() override;
 
 

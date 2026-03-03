@@ -7,6 +7,8 @@ cbuffer b0 : register(b0)
     float BorderSize;
 }
 
+static const float MAX_Z_DEPTH = 100.1;
+
 void calcNineSlicePosition(float pos, float spriteSize, float textureSize, float borderSize, out float outputPos, out float outputUV)
 {
     if (pos == 0.0)
@@ -44,7 +46,6 @@ void main( in float4 i_pos : POSITION,
     //頂点が9スライスのどの部分にあるかを判定
     calcNineSlicePosition(i_pos.x, SpriteSize.x, TextureSize.x, BorderSize, outputPos.x, outputUV.x);
     calcNineSlicePosition(i_pos.y, SpriteSize.y, TextureSize.y, BorderSize, outputPos.y, outputUV.y);
-    outputPos.z = 0.0f;
     outputPos.w = 1.0f;
     
     //ワールド変換
@@ -52,6 +53,8 @@ void main( in float4 i_pos : POSITION,
     //画面座標変換
     outputPos.x = (outputPos.x / WindowSize.x) * 2.0f - 1.0f;
     outputPos.y = 1.0f - (outputPos.y / WindowSize.y) * 2.0f;
+    float z = outputPos.z / MAX_Z_DEPTH;
+    outputPos.z = clamp(z, 0.0, 1.0);
     o_svpos = outputPos;
     o_uv = outputUV;
     

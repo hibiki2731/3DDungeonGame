@@ -20,7 +20,7 @@ MessageWindow::MessageWindow(Game* game) : Actor(game)
 	mText = text.get();
 	addComponent(std::move(text));
 
-	auto window = std::make_unique<SpriteComponent>(this);
+	auto window = std::make_unique<SpriteComponent>(this, 1.0f);
 	window->create("assets\\picture\\UI2\\PNG\\Default\\panel_brown.png");
 	window->setBordarSize(24.0f);
 	window->setSpriteSize(XMFLOAT2(600.0f, 100.0f));

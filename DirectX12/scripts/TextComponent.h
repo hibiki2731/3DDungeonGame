@@ -6,7 +6,7 @@
 class TextComponent : public Component
 {
 public:
-	TextComponent(Actor* owner, int updateOrder = 100);
+	TextComponent(Actor* owner, float zDepth = 100.0f);
 	~TextComponent();
 
 	void draw();
@@ -31,6 +31,23 @@ private:
 	Graphic* mGraphic;
 	ComPtr<ID2D1SolidColorBrush> mTextBrush;
 	ComPtr<IDWriteTextFormat> mTextFormat;
+	ComPtr<ID3D12Resource> mTexture;
+	ComPtr<ID3D11Resource> mWrappedTexture;
+	ComPtr<ID2D1Bitmap1> mD2DTarget;
+	//コンスタントバッファ1(World Matrix)
+    SpriteConstBuf* Cb3;
+    ComPtr<ID3D12Resource> mConstBuf3;
+
+    //頂点バッファ
+    ComPtr<ID3D12Resource> mVertexBuf;
+    D3D12_VERTEX_BUFFER_VIEW mVertexBufView;
+    ComPtr<ID3D12Resource> mIndexBuf;
+    D3D12_INDEX_BUFFER_VIEW mIndexBufView;
+    //ディスクリプタヒープ
+    ComPtr<ID3D12DescriptorHeap> mCbvTbvHeap;
+    UINT CbvTbvSize;//ビューのサイズ
+	const UINT NumDescriptors = 2;
+
 
 	std::wstring mText;
 	bool isActive;
@@ -45,5 +62,11 @@ private:
 	float mBaseLineSpace; //行の上端からベースラインまでの距離
 
 	int mMaxRow;
+
+	//D2D11からD3D12へテクスチャを渡すための準備
+	void createEmptyTexture();
+	void wrapTexture();
+	void createSprite();
+
 };
 
