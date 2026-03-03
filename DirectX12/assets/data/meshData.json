@@ -1,0 +1,26 @@
+{
+    "ROCK_WALL_SIDE" : {
+        "filePath" : "assets/3DModels/rock_side/wall_side.txt"
+    },
+
+    "ROCK_WALL" : {
+        "filePath" : "assets/3DModels/rockObj/rockWall.txt"
+    },
+
+    "ROCK_FLOOR" : {
+        "filePath" : "assets/3DModels/rockObj/rockFloor.txt"
+    },
+
+    "GRASS" : {
+        "filePath" : "assets/3DModels/Grass/grass.txt"
+    },
+
+    "SLIME" : {
+        "filePath" : "assets/3DModels/Slime/slime.txt",
+        "scale" : [0.3, 0.3, 0.3]
+    },
+
+    "NURIKABE" : {
+        "filePath" : "assets/3DModels/Nurikabe/nurikabe.txt"
+    }
+}

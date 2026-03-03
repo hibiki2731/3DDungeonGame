@@ -17,7 +17,7 @@ public:
 
 	void endProccess() override;
 
-    void create(ObjectName objectName);
+    void create(MeshName objectName);
 	void draw();
 
     void updateFlashIntensity(float intensity);

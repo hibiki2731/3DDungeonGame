@@ -32,7 +32,7 @@ public:
 	void setPower(int power);
 	void setDefense(int defense);
 	void setDirection(int direction);
-	void setIndexPos(const std::vector<int>& indexPos);
+	void setIndexPos(int x, int y);
 	void setIndexPosInt(int indexPos);
 
 	void giveDamage(int damage);

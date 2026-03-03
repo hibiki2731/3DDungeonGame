@@ -142,6 +142,7 @@ float4 main(
     outputColor = max(outputColor, MIN_LIGHT_INTENSITY);
     
     //ì_ñ≈èàóù
+    outputColor = lerp(outputColor, playerFlashColor, playerFlashIntensity);
     outputColor = lerp(outputColor, FlashColor, FlashIntensity);
     
     return Texture.Sample(Sampler, i_uv) * float4(outputColor, 1.0f);

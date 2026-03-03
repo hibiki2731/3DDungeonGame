@@ -53,6 +53,8 @@ SpriteComponent::SpriteComponent(Actor* owner, int updateOrder) : Component(owne
 	mScale = { 1.0f, 1.0f };
 	mSpriteSize = { 100.0f, 100.0f };
 	mBordarSize = 0.0f;
+	mUpdateOrder = updateOrder;
+	mRotation = 0.0f;
 
 	mGraphic = mOwner->getGame()->getGraphic();
 	mCommandList = mGraphic->getCommandList();
@@ -144,7 +146,9 @@ void SpriteComponent::draw()
 	//ワールドマトリックス
 	XMMATRIX world = XMMatrixIdentity()
 		* XMMatrixScaling(mScale.x, mScale.y, 1.0f)
-		* XMMatrixRotationZ(mOwner->getRotation().z)
+		* XMMatrixTranslation(-mSpriteSize.x * 0.5f, -mSpriteSize.y * 0.5f, 0.0f)
+		* XMMatrixRotationZ(mRotation)
+		* XMMatrixTranslation(mSpriteSize.x * 0.5f, mSpriteSize.y * 0.5f, 0.0f)
 		* XMMatrixTranslation(mPosition.x, mPosition.y, 0.0f)
 		;
 	Cb3->world = world;
@@ -180,6 +184,11 @@ void SpriteComponent::setScale(const XMFLOAT2& scale)
 	mScale = scale;
 }
 
+void SpriteComponent::setRotation(const float rotation)
+{
+	mRotation = rotation;
+}
+
 void SpriteComponent::setSpriteSize(const XMFLOAT2& size)
 {
 	mSpriteSize = size;
@@ -188,4 +197,10 @@ void SpriteComponent::setSpriteSize(const XMFLOAT2& size)
 void SpriteComponent::setBordarSize(const float size)
 {
 	mBordarSize = size;
+}
+
+void SpriteComponent::movePositon(const XMFLOAT2& diff)
+{
+	mPosition.x += diff.x;
+	mPosition.y += diff.y;
 }

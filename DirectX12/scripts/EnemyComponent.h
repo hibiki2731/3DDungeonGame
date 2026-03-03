@@ -6,9 +6,10 @@
 
 class Player;
 
-enum class EnemyState{
+enum class MovePattern{
 	RANDOM,
 	ASTAR,
+	SENSE,
 };
 
 class EnemyComponent : public CharacterComponent
@@ -25,7 +26,8 @@ public:
 
 	void setMesh(MeshComponent* mesh);
 	void setEnemyTtype(int type);
-	void setEnemyState(EnemyState state);
+	void setMovePattern(MovePattern state);
+	void setSenseRange(int range);
 	void activate();
 
 	void startFlash();
@@ -77,8 +79,9 @@ private:
 	//敵タイプ
 	int mEnemyType;
 
-	//enemyState
-	EnemyState mState;
+	//行動パターン
+	MovePattern mState;
+	int mSenseRange; //プレイヤーを感知する範囲(マンハッタン距離)
 	
 	//ターン制御
 	bool isActive;

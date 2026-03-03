@@ -24,6 +24,8 @@ cbuffer b0 : register(b0)
     float4 CameraPos;
     PointLight pointLights[NUM_LIGHTS];
     SpotLight spotLights[NUM_LIGHTS];
+    float playerFlashIntensity;
+    float3 playerFlashColor;
 }
 
 cbuffer b1 : register(b1)

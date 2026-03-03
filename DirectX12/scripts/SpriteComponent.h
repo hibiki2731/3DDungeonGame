@@ -20,13 +20,16 @@ public:
 	//描画範囲のセッター
 	void setPosition(const XMFLOAT2& position);
 	void setScale(const XMFLOAT2& scale);
+	void setRotation(const float rotation);
     void setSpriteSize(const XMFLOAT2& size);
 	void setBordarSize(const float size);
+	void movePositon(const XMFLOAT2& diff);
 
 protected:
     //描画範囲
     XMFLOAT2 mPosition;
 	XMFLOAT2 mScale;
+	float mRotation;
     XMFLOAT2 mSpriteSize;
 	XMFLOAT2 mTextureSize;
 	float mBordarSize;
@@ -55,6 +58,7 @@ protected:
     ComPtr<ID3D12DescriptorHeap> CbvTbvHeap;
     UINT CbvTbvSize;//ビューのサイズ
     UINT NumDescriptors;//ひとつのパーツで使用するディスクリプタの数
+
 
 
 };

@@ -8,7 +8,7 @@
 
 MessageWindow::MessageWindow(Game* game) : Actor(game)
 {
-
+	
 	std::wstring message = L"初期化";
 	mMessage = message;
 	auto text = std::make_unique<TextComponent>(this);
@@ -21,8 +21,8 @@ MessageWindow::MessageWindow(Game* game) : Actor(game)
 	addComponent(std::move(text));
 
 	auto window = std::make_unique<SpriteComponent>(this);
-	window->create("assets\\Default\\Panel\\panel-001.png");
-	window->setBordarSize(12.0f);
+	window->create("assets\\picture\\UI2\\PNG\\Default\\panel_brown.png");
+	window->setBordarSize(24.0f);
 	window->setSpriteSize(XMFLOAT2(600.0f, 100.0f));
 	addComponent(std::move(window));
 }
@@ -33,6 +33,8 @@ void MessageWindow::inputActor()
 
 void MessageWindow::updateActor()
 {
+	mPlayer = mGame->getPlayer();
+	if (mPlayer == nullptr) return;
 	//デバッグ用
 	std::wstring message = L"x:" + std::to_wstring(mPlayer->getPosition().x) +
 		L" y:" + std::to_wstring(mPlayer->getPosition().y) +

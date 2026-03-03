@@ -3,6 +3,7 @@
 #include <memory>
 #include "Definition.h"
 #include "Random.h"
+#include "SceneManager.h"
 
 class Game;
 
@@ -17,11 +18,12 @@ struct TileType {
 	};
 };
 
-struct ObjectType {
+struct CharacterType {
 	enum Type {
 		EMPTY = 0,
 		PLAYER = 1,
 		SLIME = 2,
+		NURIKABE = 3,
 	};
 };
 
@@ -53,6 +55,7 @@ public:
 	//ƒ^[ƒ“§Œä
 	void moveToPlayerTurn();
 	void moveToEnemyTurn();
+	void clearMap();
 
 private:
 	void loadMap(Stage stage);
@@ -67,6 +70,7 @@ private:
 	int mMapSize;
 	Stage mStage;
 	Game* mGame;
+	SceneManager* mSceneManager;
 
 	//–¢s“®“G”
 	int mPendingEnemyCount;

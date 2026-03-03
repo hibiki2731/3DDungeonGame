@@ -27,7 +27,7 @@ void MeshComponent::endProccess()
 	mOwner->getGame()->getAssetManager()->deleteHeap(mHeapIndex, mHeapSize);
 }
 
-void MeshComponent::create(ObjectName objectName)
+void MeshComponent::create(MeshName objectName)
 {	
 
 	//メッシュデータの取得
@@ -47,7 +47,7 @@ void MeshComponent::create(ObjectName objectName)
 	Cb1.flashColor = XMFLOAT3(1.0f, 1.0f, 1.0f);	//白く光る
 	Cb1.flashIntensity = 0.0f;				//最初は光らない
 
-	//パーツごとに各バッファをつくる
+	//パーツごとに各バッファ情報を取得
 	for (int k = 0; k < NumParts; k++) {
 		//頂点バッファ
 		{
@@ -60,12 +60,8 @@ void MeshComponent::create(ObjectName objectName)
 			Parts[k].Cb2.diffuse = meshData->Material[k * 3 + 1];
 			Parts[k].Cb2.specular = meshData->Material[k * 3 + 2];
 		}
-		//テクスチャバッファ
 		{
-			//ファイルを読み込み、テクスチャバッファをつくる
-			Hr = mGraphic->createShaderResource(meshData->TextureName[k], Parts[k].TextureBuf);
-			assert(SUCCEEDED(Hr));
-			
+			Parts[k].TextureBuf = meshData->TextureBuf[k];
 		}
 	}
 
@@ -81,6 +77,9 @@ void MeshComponent::create(ObjectName objectName)
 		mGraphic->createConstantBufferView(mCBIndex + 256 * (k + 1), 256, heapIndex); heapIndex++;
 		mGraphic->createShaderResourceView(Parts[k].TextureBuf, heapIndex); heapIndex++;
 	}
+
+	//スケールを設定
+	mOwner->setScale(meshData->Scale);
 
 }
 

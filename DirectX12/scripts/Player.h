@@ -1,6 +1,7 @@
 #pragma once
 #include "Actor.h"
 #include "Definition.h"
+#include "json.hpp"
 #include <vector>
 
 class CameraComponent;
@@ -25,14 +26,17 @@ public:
 	//プレイヤーにダメージを与える
 	void giveDamage(int damage);
 
+
+
 private:
 	void attack();
 	void calcDamageText(const XMFLOAT3& targetPos, int val);
 	void move(Direction direction);
 	void rotate(Direction direction);
 	void calcMoveDirectionToIndexPos(Direction moveDirection, int (& indexPos)[2]);
-
 	void collect();
+	void damageEffect();
+	void updateFlash();
 
 	float mMoveSpeed;
 	float mRotSpeed;
@@ -43,9 +47,11 @@ private:
 	bool isMoving;
 	bool isRotating;
 
-	//カウンター
-	float mActionTimer;
-	const float ACTION_WAIT_TIME = 0.5f;
+	//ダメージ処理
+	int mPendingDamage;
+	float mFlashTimer;
+	float mFlashDuration;
+
 
 	CameraComponent* mCamera;
 	CharacterComponent* mCharacter;

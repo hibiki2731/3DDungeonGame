@@ -108,6 +108,11 @@ void Actor::setZRot(float z)
 	mRotation.z = z;
 }
 
+void Actor::movePositon(const XMFLOAT3& diff)
+{
+	mPosition = mPosition + diff;
+}
+
 Actor::State Actor::getState()
 {
 	return mState;

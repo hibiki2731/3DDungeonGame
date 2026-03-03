@@ -63,7 +63,7 @@ DamageTextManager::DamageTextManager(Game* game)
 	mBC->proj = proj;
 
 	////ファイルを読み込み、テクスチャバッファをつくる
-	hr = mGame->getGraphic()->createShaderResource("assets\\digits.png", mTextureBuf);
+	hr = mGame->getGraphic()->createShaderResource("assets\\picture\\digits.png", mTextureBuf);
 	assert(SUCCEEDED(hr));
 
 	////DescripterHeapの作成
