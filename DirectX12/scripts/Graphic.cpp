@@ -1291,6 +1291,17 @@ void Graphic::begin3DRender()
 
 void Graphic::end3DRender()
 {
+	
+	//バリアでバックバッファを表示用に切り替える
+	D3D12_RESOURCE_BARRIER barrier;
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;//このバリアは状態遷移タイプ
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = BackBuffers[BackBufIdx].Get();//リソースはバックバッファ
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;//遷移前はPresent
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;//遷移後は描画ターゲット
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	CommandList->ResourceBarrier(1, &barrier);
+
 	//コマンドリストをクローズする
 	CommandList->Close();
 	//コマンドリストを実行する
@@ -1410,6 +1421,11 @@ float Graphic::getClientHeight()
 ID3D11On12Device* Graphic::getD3D11On12Device()
 {
 	return mD3D11On12Device.Get();
+}
+
+ID3D11DeviceContext* Graphic::getD3D11DeviceContext()
+{
+	return mD3D11DeviceContext.Get();
 }
 
 ID2D1DeviceContext* Graphic::getD2DDeviceContext()

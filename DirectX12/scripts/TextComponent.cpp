@@ -3,15 +3,43 @@
 #include "Game.h"
 
 float textVertices[] = {
-	0.0f, 0.0f,
-	0.0f, 1.0f,
-	1.0f, 0.0f,
-	1.0f, 1.0f
+	0.0f, 0.0f, 0.0f, 0.0f,
+	0.0f, 0.3333f, 0.0f, 0.3333f,
+	 0.3333f, 0.0f, 0.3333f, 0.0f,
+	 0.3333f, 0.3333f, 0.3333f, 0.3333f,
+	 0.6666f, 0.0f, 0.6666f, 0.0f,
+	 0.6666f, 0.3333f, 0.6666f, 0.3333f,
+	 1.0f, 0.0f, 1.0f, 0.0f,
+	 1.0f, 0.3333f, 1.0f, 0.3333f,
+	 0.0f,  0.6666f, 0.0f, 0.6666f,
+	 0.0f,  1.0f, 0.0f, 1.0f,
+	 0.3333f,  0.6666f, 0.3333f, 0.6666f,
+	 0.3333f,  1.0f, 0.3333f, 1.0f,
+	 0.6666f,  0.6666f, 0.6666f, 0.6666f,
+	 0.6666f,  1.0f, 0.6666f, 1.0f,
+	 1.0f,  0.6666f, 1.0f, 0.6666f,
+	 1.0f,  1.0f, 1.0f, 1.0f,
 };
 
 UINT16 textIndices[] = {
 	0, 1, 2,
-	2, 1, 3
+	2, 1, 3,
+	2, 3, 4,
+	4, 3, 5,
+	4, 5, 6,
+	6, 5, 7,
+	1, 8, 3,
+	3, 8, 10,
+	3, 10, 5,
+	5, 10, 12,
+	5, 12, 7,
+	7, 12, 14,
+	8, 9, 10,
+	10, 9, 11,
+	10, 11, 12,
+	12, 11, 13,
+	12, 13, 14,
+	14, 13, 15,
 };
 
 TextComponent::TextComponent(Actor* owner, float zDepth) : Component(owner)
@@ -36,22 +64,61 @@ TextComponent::TextComponent(Actor* owner, float zDepth) : Component(owner)
 	mBaseLineSpace = 0;
 
 	mOwner->getGame()->addText(this);
+
+	createEmptyTexture();
+	wrapTexture();
+	createSprite(zDepth);
 }
 
 TextComponent::~TextComponent()
 {
 }
 
-void TextComponent::draw()  
+void TextComponent::drawTextTexture()  
 {  
-   mGraphic->getD2DDeviceContext()->SetTransform(D2D1::Matrix3x2F::Identity());  
-   mGraphic->getD2DDeviceContext()->DrawTextW(  
-       mText.c_str(), 
+	mGraphic->getD3D11On12Device()->AcquireWrappedResources(mWrappedTexture.GetAddressOf(), 1);
+	mGraphic->getD2DDeviceContext()->SetTarget(mD2DTarget.Get());
+	mGraphic->getD2DDeviceContext()->BeginDraw();
+
+	mGraphic->getD2DDeviceContext()->Clear(D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
+
+	mGraphic->getD2DDeviceContext()->SetTransform(D2D1::Matrix3x2F::Identity());  
+	mGraphic->getD2DDeviceContext()->DrawTextW(  
+	   mText.c_str(), 
        static_cast<UINT32>(mText.size() - 1), 
        mTextFormat.Get(),  
        &mTextRect,
        mTextBrush.Get()  
    );  
+
+	mGraphic->getD2DDeviceContext()->EndDraw();
+	//バックバッファを表示用に切り替えてくれる
+	mGraphic->getD3D11On12Device()->ReleaseWrappedResources(mWrappedTexture.GetAddressOf(), 1);
+
+	mGraphic->getD3D11DeviceContext()->Flush();
+
+
+}
+
+void TextComponent::draw()
+{
+	//ディスクリプタヒープをＧＰＵにセット
+	UINT numDescriptorHeaps = 1;
+	mGraphic->getCommandList()->SetDescriptorHeaps(numDescriptorHeaps, mCbvTbvHeap.GetAddressOf());
+
+	//頂点をセット
+	mGraphic->getCommandList()->IASetVertexBuffers(0, 1, &mVertexBufView);
+
+	//ディスクリプタヒープをディスクリプタテーブルにセット
+	auto hCbvTbvHeap = mCbvTbvHeap->GetGPUDescriptorHandleForHeapStart();
+	UINT CbvTbvSize = mGraphic->getCbvTbvIncSize();
+	mGraphic->getCommandList()->SetGraphicsRootDescriptorTable(0, hCbvTbvHeap);
+	hCbvTbvHeap.ptr += CbvTbvSize;
+	mGraphic->getCommandList()->SetGraphicsRootDescriptorTable(1, hCbvTbvHeap);
+	//描画。インデックスを使用
+	mGraphic->getCommandList()->IASetIndexBuffer(&mIndexBufView);
+	mGraphic->getCommandList()->DrawIndexedInstanced(std::size(textIndices), 1, 0, 0, 0);
+
 }
 
 void TextComponent::endProccess()
@@ -198,10 +265,16 @@ void TextComponent::wrapTexture()
 		D2D1::PixelFormat(DXGI_FORMAT_R8G8B8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)
 	);
 
+	HRESULT hr = mGraphic->getD2DDeviceContext()->CreateBitmapFromDxgiSurface(
+		surface.Get(),
+		&bitmapProps,
+		mD2DTarget.ReleaseAndGetAddressOf()
+	);
+	assert(SUCCEEDED(hr));
 
 }
 
-void TextComponent::createSprite()
+void TextComponent::createSprite(float zDepth)
 {
 	{
 		//頂点バッファの作成
@@ -253,6 +326,8 @@ void TextComponent::createSprite()
 
 	//コンスタントバッファの初期化
 	{
+		Cb3->world = XMMatrixIdentity()
+			*XMMatrixTranslation(0.0f, 0.0f, zDepth);
 		Cb3->windowSize = XMFLOAT2(
 			(float)mGraphic->getClientWidth(),
 			(float)mGraphic->getClientHeight()

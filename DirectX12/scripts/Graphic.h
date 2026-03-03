@@ -80,6 +80,7 @@ public:
 	float getClientWidth();
 	float getClientHeight();
 	ID3D11On12Device* getD3D11On12Device();
+	ID3D11DeviceContext* getD3D11DeviceContext();
 	ID2D1DeviceContext* getD2DDeviceContext();
 	IDWriteFactory* getDWriteFactory();
 	ID2D1Bitmap1* getD2DRenderTarget();

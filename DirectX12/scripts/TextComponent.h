@@ -9,6 +9,7 @@ public:
 	TextComponent(Actor* owner, float zDepth = 100.0f);
 	~TextComponent();
 
+	void drawTextTexture();
 	void draw();
 
 	void endProccess() override;
@@ -66,7 +67,7 @@ private:
 	//D2D11からD3D12へテクスチャを渡すための準備
 	void createEmptyTexture();
 	void wrapTexture();
-	void createSprite();
+	void createSprite(float zDepth);
 
 };
 

@@ -11,7 +11,7 @@ MessageWindow::MessageWindow(Game* game) : Actor(game)
 	
 	std::wstring message = L"‰Šú‰»";
 	mMessage = message;
-	auto text = std::make_unique<TextComponent>(this);
+	auto text = std::make_unique<TextComponent>(this, 0.9f);
 	text->setText(mMessage);
 	text->setBaseLine(100.0f, 10.0f);
 	text->setFontSize(24.0f);

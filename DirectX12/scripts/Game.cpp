@@ -401,7 +401,11 @@ void Game::update()
 
 void Game::draw()
 {
-	//描画
+	//テキストをスプライトに描画
+	for (auto& text : mTexts) {
+		text->drawTextTexture();
+	}
+
 	//3D描画
 	mGraphic->begin3DRender();
 	mGraphic->setRenderType(Graphic::RENDER_3D);
@@ -414,21 +418,15 @@ void Game::draw()
 	for (auto& sprite : mSprites) {
 		sprite->draw();
 	}
+	for (auto& text : mTexts) {
+		text->draw();
+	}
 
 	//ダメージエフェクト
 	mGraphic->setRenderType(Graphic::RENDER_DT);
 	mDamageTextManager->draw();
 
 	mGraphic->end3DRender();
-
-	////テキスト描画
-	mGraphic->begin2DRender();
-	for (auto& text : mTexts) {
-		text->draw();
-	}
-
-	mGraphic->end2DRender();
-
 
 	mGraphic->moveToNextFrame();
 
