@@ -22,13 +22,13 @@ TextWindow::TextWindow(Game* game, std::string windowName, float zDepth) : Actor
 	file >> textWindowData;
 
 	////ウィンドウの背景
-	//auto window = std::make_unique<SpriteComponent>(this, zDepth);
-	//window->create(textWindowData[windowName]["spriteFileName"].get<std::string>());
-	//window->setBordarSize(textWindowData[windowName].value("borderSize", 24.0f));
-	//window->setSpriteSize(XMFLOAT2(textWindowData[windowName]["width"].get<float>(), textWindowData[windowName]["height"].get<float>()));
+	auto window = std::make_unique<SpriteComponent>(this, zDepth);
+	window->create(textWindowData[windowName]["spriteFileName"].get<std::string>());
+	window->setBordarSize(textWindowData[windowName].value("borderSize", 24.0f));
+	window->setSpriteSize(XMFLOAT2(textWindowData[windowName]["width"].get<float>(), textWindowData[windowName]["height"].get<float>()));
 	XMFLOAT3 pos = XMFLOAT3(textWindowData[windowName]["x"].get<float>(), textWindowData[windowName]["y"].get<float>(), zDepth);
-	//window->setPosition(pos);
-	//addComponent(std::move(window));
+	window->setPosition(pos);
+	addComponent(std::move(window));
 
 	//テキスト
 	std::wstring message = Utility::stringToWString(textWindowData[windowName]["text"].get<std::string>());
@@ -132,8 +132,8 @@ void TownManager::update()
 	if (!isTown && mGame->getSceneManager()->getCurrentScene() == SceneType::TOWN) {
 		isTown = true;
 
-		//auto bg = std::make_unique<BackGround>(mGame);
-		//mGame->addActor(std::move(bg));
+		auto bg = std::make_unique<BackGround>(mGame);
+		mGame->addActor(std::move(bg));
 
 		auto textWindow = std::make_unique<TextWindow>(mGame, "MainMenu", 99.0f);
 		mMainMenu = textWindow.get();

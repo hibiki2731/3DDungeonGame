@@ -1,122 +1,91 @@
 #include "Anime2DComponent.h"
 #include "Game.h"
 #include "Actor.h"
+#include "AssetManager.h"
 #include <string>
 
-
-float anime2DVertices[] = {
-	-1.0f, 1.0f, 0.0f, 0.0f,
-	-1.0f,-1.0f, 0.0f, 1.0f,
-	 1.0f, 1.0f, 1.0f, 0.0f,
-	 1.0f,-1.0f, 1.0f, 1.0f
-};
-
-UINT16 anime2DIndices[] = {
-	0, 1, 2,
-	2, 1, 3
-};
-
-Anime2DComponent::Anime2DComponent(Actor* owner, int updateOrder)
-	: SpriteComponent(owner, updateOrder)
+Anime2DComponent::Anime2DComponent(Actor* owner, float zDepth)
+	: SpriteComponent(owner, zDepth)
 {
 	mTextureIndex = 0;
 }
 
 void Anime2DComponent::create(const std::string filename, int textureNum)
 {
+
+	//コンスタントバッファ、ディスクリプタヒープ用のインデックスを取得
+	mCBSize = 256 * (1 + textureNum); //spriteConstantBuf + textureの数
+	mHeapSize = 1 + textureNum;
+	mCBIndex = mAssetManager->getCBEndIndex(mCBSize);
+	mHeapIndex = mAssetManager->getHeapEndIndex(mHeapSize);
+
+	//Sprite用の各Viewを取得
+	SpriteData spriteData= mAssetManager->getSpriteData();
+	mVertexBufView = spriteData.VertexBufView;
+	mIndexBufView = spriteData.IndexBufView;
+
+	//テクスチャを取得
 	mTextureNum = textureNum;
+	mTextureBufs.resize(mTextureNum);
+	int dotPos = filename.rfind('.');
+	std::string preName = filename.substr(0, dotPos);
+	std::string postName = filename.substr(dotPos);
+	for (int i = 0;i < mTextureNum;i++)
 	{
-		//頂点バッファの作成
-		UINT sizeInByte = sizeof(float) * 16;
-		Hr = mGraphic->createBuf(sizeInByte, VertexBuf);
-		assert(SUCCEEDED(Hr));
-
-		//頂点バッファに生データをコピー
-		Hr = mGraphic->updateBuf(anime2DVertices, sizeInByte, VertexBuf);
-		assert(SUCCEEDED(Hr));
-
-		//位置バッファのビューを初期化しておく。（ディスクリプタヒープに作らなくてよい）
-		VertexBufView.BufferLocation = VertexBuf->GetGPUVirtualAddress();
-		VertexBufView.SizeInBytes = sizeInByte;//全バイト数
-		VertexBufView.StrideInBytes = sizeof(float) * 4;//１頂点のバイト数
+		std::string textureName = preName + std::to_string(i) + postName;
+		auto textureData = mAssetManager->getShaderResource(textureName);
+		mTextureBufs[i] = textureData.TextureBuf;
+		mTextureSize = textureData.textureSize;
 	}
-	{
-		//インデックスバッファの作成
-		UINT sizeInByte = sizeof(UINT16) * 6;
-		Hr = mGraphic->createBuf(sizeInByte, IndexBuf);
-		assert(SUCCEEDED(Hr));
+	
+	//コンスタントバッファの初期化
+	Cb3.windowSize = XMFLOAT2(
+		(float)mGraphic->getClientWidth(),
+		(float)mGraphic->getClientHeight()
+	);
+	Cb3.spriteSize = mSpriteSize;
+	Cb3.textureSize = mTextureSize;
+	Cb3.bordarSize = mBordarSize;
+	memcpy(mGraphic->getConstantData() + mCBIndex, &Cb3, sizeof(SpriteConstBuf));
 
-		//インデックスバッファ人生データをコピー
-		Hr = mGraphic->updateBuf(anime2DIndices, sizeInByte, IndexBuf);
-		assert(SUCCEEDED(Hr));
+	//ディスクリプタヒープにViewを作る
+	auto heapIndex = mHeapIndex;
+	mGraphic->createConstantBufferView(mCBIndex, 256, heapIndex); heapIndex++;
+	for (int i = 0; i < mTextureNum; i++) mGraphic->createShaderResourceView(mTextureBufs[i], heapIndex); heapIndex++;
 
-		//インデックスバッファービューを作る
-		IndexBufView.BufferLocation = IndexBuf->GetGPUVirtualAddress();
-		IndexBufView.SizeInBytes = sizeInByte;//全バイト数
-		IndexBufView.Format = DXGI_FORMAT_R16_UINT;//UINT16
-	}
-	//コンスタントバッファ1(World Matrix)
-	{
-		//コンスタントバッファ1をつくる
-		mGraphic->createBuf(mGraphic->alignedSize(sizeof(Cb3)), ConstBuf3);
-		mGraphic->mapBuf((void**)&Cb3, ConstBuf3);
-	}
-	//シェーダーリソース
-	{
-		int dotPos = filename.rfind('.');
-		std::string preName = filename.substr(0, dotPos);
-		std::string postName = filename.substr(dotPos);
-
-		for (int i = 0;i < mTextureNum;i++)
-		{
-			ComPtr<ID3D12Resource> textureBuf;
-			std::string textureName = preName + std::to_string(i) + postName;
-			Hr = mGraphic->createShaderResource(textureName, textureBuf);
-			TextureBufs.emplace_back(textureBuf);
-			assert(SUCCEEDED(Hr));
-		}
-	}
-	//ディスクリプタヒープを作る
-	{
-		Hr = mGraphic->createCbvTbvHeap(CbvTbvHeap, 1 + mTextureNum);
-		assert(SUCCEEDED(Hr));
-
-		auto hCbvTbvHeap = CbvTbvHeap->GetCPUDescriptorHandleForHeapStart();
-		CbvTbvSize = mGraphic->getCbvTbvIncSize();
-		mGraphic->createConstantBufferView(ConstBuf3, hCbvTbvHeap);			hCbvTbvHeap.ptr += CbvTbvSize;
-		for (int i = 0; i < mTextureNum; i++) {
-			mGraphic->createShaderResourceView(TextureBufs[i], hCbvTbvHeap);		hCbvTbvHeap.ptr += CbvTbvSize;
-		}
-	}
 }
 
 void Anime2DComponent::draw()
 {
+	//コンスタントバッファの更新
 	//ワールドマトリックス
 	XMMATRIX world = XMMatrixIdentity()
-		* XMMatrixRotationZ(mOwner->getRotation().z)
-		* XMMatrixTranslation(mOwner->getPosition().x, mOwner->getPosition().y, mOwner->getPosition().z)
-		* XMMatrixScaling(mOwner->getScale().x, mOwner->getScale().y, mOwner->getScale().z)
+		* XMMatrixScaling(mScale.x, mScale.y, 1.0f)
+		* XMMatrixTranslation(-mSpriteSize.x * 0.5f, -mSpriteSize.y * 0.5f, 0.0f)
+		* XMMatrixRotationZ(mRotation)
+		* XMMatrixTranslation(mSpriteSize.x * 0.5f, mSpriteSize.y * 0.5f, 0.0f)
+		* XMMatrixTranslation(mPosition.x, mPosition.y, mPosition.z)
 		;
-	Cb3->world = world;
-
-	//ディスクリプタヒープをＧＰＵにセット
-	UINT numDescriptorHeaps = 1;
-	mCommandList->SetDescriptorHeaps(numDescriptorHeaps, CbvTbvHeap.GetAddressOf());
-	//パーツごとに描画
+	Cb3.world = world;
+	Cb3.spriteSize = mSpriteSize;	//スプライトサイズ
+	Cb3.bordarSize = mBordarSize;	//ボーダーサイズ
+	//コンスタントバッファへコピー
+	memcpy(mGraphic->getConstantData() + mCBIndex, &Cb3, sizeof(SpriteConstBuf));
+\
 	//頂点をセット
-	mCommandList->IASetVertexBuffers(0, 1, &VertexBufView);
+	mCommandList->IASetVertexBuffers(0, 1, &mVertexBufView);
 
 	//ディスクリプタヒープをディスクリプタテーブルにセット
-	auto hCbvTbvHeap = CbvTbvHeap->GetGPUDescriptorHandleForHeapStart();
+	auto hCbvTbvHeap = mGraphic->getHeapHandle();
 	UINT CbvTbvSize = mGraphic->getCbvTbvIncSize();
+	hCbvTbvHeap.ptr += mHeapIndex * CbvTbvSize;
+
 	mCommandList->SetGraphicsRootDescriptorTable(0, hCbvTbvHeap);
 	hCbvTbvHeap.ptr += CbvTbvSize * (1 + mTextureIndex);
 	mCommandList->SetGraphicsRootDescriptorTable(1, hCbvTbvHeap);
 	//描画。インデックスを使用
-	mCommandList->IASetIndexBuffer(&IndexBufView);
-	mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
-
+	mCommandList->IASetIndexBuffer(&mIndexBufView);
+	mCommandList->DrawIndexedInstanced(mAssetManager->getSpriteIndicesSize(), 1, 0, 0, 0);
 }
 
 void Anime2DComponent::endProccess()

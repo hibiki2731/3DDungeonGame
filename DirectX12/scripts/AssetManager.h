@@ -15,9 +15,19 @@ struct MeshData {
 	std::vector<D3D12_VERTEX_BUFFER_VIEW> VertexBufView;
 	//マテリアルデータ
 	std::vector<XMFLOAT4> Material;
-    std::vector<ComPtr<ID3D12Resource>> TextureBuf;
+    std::vector<ID3D12Resource*> TextureBuf;
 	//スケール
 	XMFLOAT3 Scale;
+};
+
+struct SpriteData {
+	D3D12_VERTEX_BUFFER_VIEW VertexBufView;
+	D3D12_INDEX_BUFFER_VIEW IndexBufView;
+};
+
+struct TextureData {
+	ID3D12Resource* TextureBuf;
+	XMFLOAT2 textureSize;
 };
 
 enum class MeshName {
@@ -36,12 +46,15 @@ public:
 	AssetManager(Graphic* graphic);
 	~AssetManager();
 
-	void create(MeshName objectName);
 
 	//getter
 	int getCBEndIndex(int size);//必要なサイズを引数に取る
 	int getHeapEndIndex(int size); //必要なサイズを引数に取る
 	MeshData* getMeshData(MeshName objectName); 
+	SpriteData getSpriteData();
+	TextureData getShaderResource(std::string filePath);
+	UINT getSpriteVerticesSize();
+	UINT getSpriteIndicesSize();
 
 	void deleteMemory(int index, int size);
 	void deleteHeap(int index, int size);
@@ -73,5 +86,15 @@ private:
 	std::map<std::string, ComPtr<ID3D12Resource>> mTextureData; //テクスチャデータのキャッシュ
 	std::vector<ClearedMemory> mClearedMemory; //解放されたメモリ
 	std::vector<ClearedHeap> mClearedHeap; //解放されたメモリ
+
+	//スプライト用
+	ComPtr<ID3D12Resource> mSpriteVertexBuf;
+	D3D12_VERTEX_BUFFER_VIEW mSpriteVertexBufView;
+	ComPtr<ID3D12Resource> mSpriteIndexBuf;
+	D3D12_INDEX_BUFFER_VIEW mSpriteIndexBufView;
+	std::map<std::string, XMFLOAT2> mTextureSizeData;
+
+	void createMesh(MeshName objectName);
+	void createSpriteBuffers();
 };
 

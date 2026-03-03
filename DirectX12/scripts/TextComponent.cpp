@@ -1,50 +1,12 @@
 #include "TextComponent.h"
 #include "Actor.h"
 #include "Game.h"
-
-float textVertices[] = {
-	0.0f, 0.0f, 0.0f, 0.0f,
-	0.0f, 0.3333f, 0.0f, 0.3333f,
-	 0.3333f, 0.0f, 0.3333f, 0.0f,
-	 0.3333f, 0.3333f, 0.3333f, 0.3333f,
-	 0.6666f, 0.0f, 0.6666f, 0.0f,
-	 0.6666f, 0.3333f, 0.6666f, 0.3333f,
-	 1.0f, 0.0f, 1.0f, 0.0f,
-	 1.0f, 0.3333f, 1.0f, 0.3333f,
-	 0.0f,  0.6666f, 0.0f, 0.6666f,
-	 0.0f,  1.0f, 0.0f, 1.0f,
-	 0.3333f,  0.6666f, 0.3333f, 0.6666f,
-	 0.3333f,  1.0f, 0.3333f, 1.0f,
-	 0.6666f,  0.6666f, 0.6666f, 0.6666f,
-	 0.6666f,  1.0f, 0.6666f, 1.0f,
-	 1.0f,  0.6666f, 1.0f, 0.6666f,
-	 1.0f,  1.0f, 1.0f, 1.0f,
-};
-
-UINT16 textIndices[] = {
-	0, 1, 2,
-	2, 1, 3,
-	2, 3, 4,
-	4, 3, 5,
-	4, 5, 6,
-	6, 5, 7,
-	1, 8, 3,
-	3, 8, 10,
-	3, 10, 5,
-	5, 10, 12,
-	5, 12, 7,
-	7, 12, 14,
-	8, 9, 10,
-	10, 9, 11,
-	10, 11, 12,
-	12, 11, 13,
-	12, 13, 14,
-	14, 13, 15,
-};
+#include "AssetManager.h"
 
 TextComponent::TextComponent(Actor* owner, float zDepth) : Component(owner)
 {
 	mGraphic = mOwner->getGame()->getGraphic();
+	mAssetManager = mOwner->getGame()->getAssetManager();
 	isActive = false;
 	mBaseLineX = 0.0f;
 	mBaseLineY = 0.0f;
@@ -102,22 +64,20 @@ void TextComponent::drawTextTexture()
 
 void TextComponent::draw()
 {
-	//ディスクリプタヒープをＧＰＵにセット
-	UINT numDescriptorHeaps = 1;
-	mGraphic->getCommandList()->SetDescriptorHeaps(numDescriptorHeaps, mCbvTbvHeap.GetAddressOf());
-
 	//頂点をセット
 	mGraphic->getCommandList()->IASetVertexBuffers(0, 1, &mVertexBufView);
 
 	//ディスクリプタヒープをディスクリプタテーブルにセット
-	auto hCbvTbvHeap = mCbvTbvHeap->GetGPUDescriptorHandleForHeapStart();
+	auto hCbvTbvHeap = mGraphic->getHeapHandle();
 	UINT CbvTbvSize = mGraphic->getCbvTbvIncSize();
+	hCbvTbvHeap.ptr += mHeapIndex * CbvTbvSize;
+
 	mGraphic->getCommandList()->SetGraphicsRootDescriptorTable(0, hCbvTbvHeap);
 	hCbvTbvHeap.ptr += CbvTbvSize;
 	mGraphic->getCommandList()->SetGraphicsRootDescriptorTable(1, hCbvTbvHeap);
 	//描画。インデックスを使用
 	mGraphic->getCommandList()->IASetIndexBuffer(&mIndexBufView);
-	mGraphic->getCommandList()->DrawIndexedInstanced(std::size(textIndices), 1, 0, 0, 0);
+	mGraphic->getCommandList()->DrawIndexedInstanced(mAssetManager->getSpriteIndicesSize(), 1, 0, 0, 0);
 
 }
 
@@ -276,72 +236,37 @@ void TextComponent::wrapTexture()
 
 void TextComponent::createSprite(float zDepth)
 {
-	{
-		//頂点バッファの作成
-		UINT sizeInByte = sizeof(textVertices);
-		HRESULT hr = mGraphic->createBuf(sizeInByte, mVertexBuf);
-		assert(SUCCEEDED(hr));
+	//コンスタントバッファとディスクリプタヒープのインデックスを取得
+	mCBSize = 256 * 2; //SpriteConstantBuf + テクスチャ
+	mHeapSize = 2;
+	mCBIndex = mAssetManager->getCBEndIndex(mCBSize);
+	mHeapIndex = mAssetManager->getHeapEndIndex(mHeapSize);
 
-		//頂点バッファに生データをコピー
-		hr = mGraphic->updateBuf(textVertices, sizeInByte, mVertexBuf);
-		assert(SUCCEEDED(hr));
+	//各種Viewの取得
+	SpriteData spriteData = mAssetManager->getSpriteData();
+	mVertexBufView = spriteData.VertexBufView;
+	mIndexBufView = spriteData.IndexBufView;
 
-		//位置バッファのビューを初期化しておく。（ディスクリプタヒープに作らなくてよい）
-		mVertexBufView.BufferLocation = mVertexBuf->GetGPUVirtualAddress();
-		mVertexBufView.SizeInBytes = sizeInByte;//全バイト数
-		mVertexBufView.StrideInBytes = sizeof(float) * 4;//１頂点のバイト数
-	}
-	{
-		//インデックスバッファの作成
-		UINT sizeInByte = sizeof(textIndices);
-		HRESULT hr = mGraphic->createBuf(sizeInByte, mIndexBuf);
-		assert(SUCCEEDED(hr));
+	//SpriteConstantBufの初期化
+	Cb3.world = XMMatrixIdentity()
+		*XMMatrixTranslation(0.0f, 0.0f, zDepth);
+	Cb3.windowSize = XMFLOAT2(
+		(float)mGraphic->getClientWidth(),
+		(float)mGraphic->getClientHeight()
+	);
+	Cb3.spriteSize = XMFLOAT2(
+		(float)mGraphic->getClientWidth(),
+		(float)mGraphic->getClientHeight()
+	);
+	Cb3.textureSize = XMFLOAT2(
+		(float)mGraphic->getClientWidth(),
+		(float)mGraphic->getClientHeight()
+	);
+	Cb3.bordarSize = 0.0f;
+	memcpy(mGraphic->getConstantData() + mCBIndex, &Cb3, sizeof(SpriteConstBuf));
 
-		//インデックスバッファに生データをコピー
-		hr = mGraphic->updateBuf(textIndices, sizeInByte, mIndexBuf);
-		assert(SUCCEEDED(hr));
-
-		//インデックスバッファービューを作る
-		mIndexBufView.BufferLocation = mIndexBuf->GetGPUVirtualAddress();
-		mIndexBufView.SizeInBytes = sizeInByte;//全バイト数
-		mIndexBufView.Format = DXGI_FORMAT_R16_UINT;//UINT16
-	}
-	//コンスタントバッファ(World Matrix)
-	{
-		//コンスタントバッファをつくる
-		mGraphic->createBuf(mGraphic->alignedSize(sizeof(Cb3)), mConstBuf3);
-		mGraphic->mapBuf((void**)&Cb3, mConstBuf3);
-	}
-	//ディスクリプタヒープを作る
-	{
-		HRESULT	hr = mGraphic->createCbvTbvHeap(mCbvTbvHeap, NumDescriptors);
-		assert(SUCCEEDED(hr));
-
-		auto hCbvTbvHeap = mCbvTbvHeap->GetCPUDescriptorHandleForHeapStart();
-		CbvTbvSize = mGraphic->getCbvTbvIncSize();
-		mGraphic->createConstantBufferView(mConstBuf3, hCbvTbvHeap);			hCbvTbvHeap.ptr += CbvTbvSize;
-		mGraphic->createShaderResourceView(mTexture, hCbvTbvHeap);		hCbvTbvHeap.ptr += CbvTbvSize;
-		
-	}
-
-	//コンスタントバッファの初期化
-	{
-		Cb3->world = XMMatrixIdentity()
-			*XMMatrixTranslation(0.0f, 0.0f, zDepth);
-		Cb3->windowSize = XMFLOAT2(
-			(float)mGraphic->getClientWidth(),
-			(float)mGraphic->getClientHeight()
-		);
-		Cb3->spriteSize = XMFLOAT2(
-			(float)mGraphic->getClientWidth(),
-			(float)mGraphic->getClientHeight()
-		);
-
-		Cb3->textureSize = XMFLOAT2(
-			(float)mGraphic->getClientWidth(),
-			(float)mGraphic->getClientHeight()
-		);
-		Cb3->bordarSize = 0.0f;
-	}
-
+	//ディスクリプタヒープにViewを作成
+	int heapIndex = mHeapIndex;
+	mGraphic->createConstantBufferView(mCBIndex, 256, heapIndex); heapIndex++;
+	mGraphic->createShaderResourceView(mTexture.Get(), heapIndex);
 }

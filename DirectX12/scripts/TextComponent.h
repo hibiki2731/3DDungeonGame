@@ -3,6 +3,8 @@
 #include "Graphic.h"
 #include <string>
 
+class AssetManager;
+
 class TextComponent : public Component
 {
 public:
@@ -30,25 +32,22 @@ public:
 private:
 	D2D1::ColorF mTextColor = D2D1::ColorF(0, 0, 0);
 	Graphic* mGraphic;
+	AssetManager* mAssetManager;
 	ComPtr<ID2D1SolidColorBrush> mTextBrush;
 	ComPtr<IDWriteTextFormat> mTextFormat;
 	ComPtr<ID3D12Resource> mTexture;
 	ComPtr<ID3D11Resource> mWrappedTexture;
 	ComPtr<ID2D1Bitmap1> mD2DTarget;
 	//コンスタントバッファ1(World Matrix)
-    SpriteConstBuf* Cb3;
-    ComPtr<ID3D12Resource> mConstBuf3;
+    SpriteConstBuf Cb3;
+	int mCBIndex;
+	int mCBSize;
+	int mHeapIndex;
+	int mHeapSize;
 
     //頂点バッファ
-    ComPtr<ID3D12Resource> mVertexBuf;
     D3D12_VERTEX_BUFFER_VIEW mVertexBufView;
-    ComPtr<ID3D12Resource> mIndexBuf;
     D3D12_INDEX_BUFFER_VIEW mIndexBufView;
-    //ディスクリプタヒープ
-    ComPtr<ID3D12DescriptorHeap> mCbvTbvHeap;
-    UINT CbvTbvSize;//ビューのサイズ
-	const UINT NumDescriptors = 2;
-
 
 	std::wstring mText;
 	bool isActive;

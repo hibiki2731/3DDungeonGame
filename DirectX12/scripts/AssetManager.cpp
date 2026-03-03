@@ -2,18 +2,61 @@
 #include <string>
 #include <fstream>
 
+static float spriteVertices[] = {
+	0.0f, 0.0f, 0.0f, 0.0f,
+	0.0f, 0.3333f, 0.0f, 0.3333f,
+	 0.3333f, 0.0f, 0.3333f, 0.0f,
+	 0.3333f, 0.3333f, 0.3333f, 0.3333f,
+	 0.6666f, 0.0f, 0.6666f, 0.0f,
+	 0.6666f, 0.3333f, 0.6666f, 0.3333f,
+	 1.0f, 0.0f, 1.0f, 0.0f,
+	 1.0f, 0.3333f, 1.0f, 0.3333f,
+	 0.0f,  0.6666f, 0.0f, 0.6666f,
+	 0.0f,  1.0f, 0.0f, 1.0f,
+	 0.3333f,  0.6666f, 0.3333f, 0.6666f,
+	 0.3333f,  1.0f, 0.3333f, 1.0f,
+	 0.6666f,  0.6666f, 0.6666f, 0.6666f,
+	 0.6666f,  1.0f, 0.6666f, 1.0f,
+	 1.0f,  0.6666f, 1.0f, 0.6666f,
+	 1.0f,  1.0f, 1.0f, 1.0f,
+};
+
+static UINT16 spriteIndices[] = {
+	0, 1, 2,
+	2, 1, 3,
+	2, 3, 4,
+	4, 3, 5,
+	4, 5, 6,
+	6, 5, 7,
+	1, 8, 3,
+	3, 8, 10,
+	3, 10, 5,
+	5, 10, 12,
+	5, 12, 7,
+	7, 12, 14,
+	8, 9, 10,
+	10, 9, 11,
+	10, 11, 12,
+	12, 11, 13,
+	12, 13, 14,
+	14, 13, 15,
+};
+
+
+
 AssetManager::AssetManager(Graphic* graphic)
 {
 	mGraphic = graphic;
 	mCBEndIndex = mGraphic->alignedSize(sizeof(Base3DData));
 	mHeapEndIndex = 0;
+	createSpriteBuffers();
 }
 
 AssetManager::~AssetManager()
 {
 }
 
-void AssetManager::create(MeshName objectName)
+void AssetManager::createMesh(MeshName objectName)
 {
 	if (mLoadData.contains(objectName)) return; //すでに読み込まれたオブジェクトはスルー
 
@@ -116,18 +159,50 @@ void AssetManager::create(MeshName objectName)
 			auto iter = mTextureData.find(textureFileName);
 			if (iter != mTextureData.end()) {
 				//すでに読み込まれたテクスチャはスルー
-				meshData->TextureBuf[k] = iter->second;
+				meshData->TextureBuf[k] = iter->second.Get();
 				continue;
 			}
 
-			HRESULT hr = mGraphic->createShaderResource(textureFileName, meshData->TextureBuf[k]);
+			ComPtr<ID3D12Resource> textureBuf;
+			HRESULT hr = mGraphic->createShaderResource(textureFileName, textureBuf);
 			assert(SUCCEEDED(hr));
-			mTextureData[textureFileName] = meshData->TextureBuf[k];
+			meshData->TextureBuf[k] = textureBuf.Get();
+			mTextureData[textureFileName] = std::move(textureBuf);
 
 		}
 	}
 
 	mLoadData[objectName] = std::move(meshData);
+}
+
+TextureData AssetManager::getShaderResource(std::string filePath)
+{
+	TextureData textureData;
+
+	auto iter = mTextureData.find(filePath);
+	if (iter != mTextureData.end()) {
+		//すでに読み込まれたテクスチャはそのまま返す
+		textureData.TextureBuf = iter->second.Get();
+		textureData.textureSize = mTextureSizeData[filePath];
+	}
+	else {
+		ComPtr<ID3D12Resource> textureBuf;
+		textureData.textureSize = mGraphic->createShaderResourceGetSize(filePath, textureBuf);
+		mTextureSizeData[filePath] = textureData.textureSize;
+		textureData.TextureBuf = textureBuf.Get();
+		mTextureData[filePath] = std::move(textureBuf);
+	}
+
+	return textureData;
+}
+
+UINT AssetManager::getSpriteVerticesSize()
+{
+	return std::size(spriteVertices);
+}
+
+UINT AssetManager::getSpriteIndicesSize() {
+	return std::size(spriteIndices);
 }
 
 int AssetManager::getCBEndIndex(int size)
@@ -189,9 +264,19 @@ MeshData* AssetManager::getMeshData(MeshName objectName)
 		return iter->second.get();
 	}
 	else {
-		create(objectName);
+		createMesh(objectName);
 		return mLoadData[objectName].get();
 	}
+}
+
+SpriteData AssetManager::getSpriteData()
+{
+	SpriteData spriteData = {
+		mSpriteVertexBufView,
+		mSpriteIndexBufView
+	};
+
+	return spriteData;
 }
 
 void AssetManager::deleteMemory(int index, int size)
@@ -204,6 +289,41 @@ void AssetManager::deleteHeap(int index, int size)
 {
 	ClearedHeap heap = { index, size };
 	mClearedHeap.emplace_back(heap);
+}
+
+void AssetManager::createSpriteBuffers()
+{
+	{
+		//頂点バッファの作成
+		UINT sizeInByte = sizeof(spriteVertices);
+		HRESULT hr = mGraphic->createBuf(sizeInByte, mSpriteVertexBuf);
+		assert(SUCCEEDED(hr));
+
+		//頂点バッファに生データをコピー
+		hr = mGraphic->updateBuf(spriteVertices, sizeInByte, mSpriteVertexBuf);
+		assert(SUCCEEDED(hr));
+
+		//位置バッファのビューを初期化しておく。（ディスクリプタヒープに作らなくてよい）
+		mSpriteVertexBufView.BufferLocation = mSpriteVertexBuf->GetGPUVirtualAddress();
+		mSpriteVertexBufView.SizeInBytes = sizeInByte;//全バイト数
+		mSpriteVertexBufView.StrideInBytes = sizeof(float) * 4;//１頂点のバイト数
+	}
+	{
+		//インデックスバッファの作成
+		UINT sizeInByte = sizeof(spriteIndices);
+		HRESULT hr = mGraphic->createBuf(sizeInByte, mSpriteIndexBuf);
+		assert(SUCCEEDED(hr));
+
+		//インデックスバッファに生データをコピー
+		hr = mGraphic->updateBuf(spriteIndices, sizeInByte, mSpriteIndexBuf);
+		assert(SUCCEEDED(hr));
+
+		//インデックスバッファービューを作る
+		mSpriteIndexBufView.BufferLocation = mSpriteIndexBuf->GetGPUVirtualAddress();
+		mSpriteIndexBufView.SizeInBytes = sizeInByte;//全バイト数
+		mSpriteIndexBufView.Format = DXGI_FORMAT_R16_UINT;//UINT16
+	}
+
 }
 
 

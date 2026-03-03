@@ -1188,7 +1188,7 @@ void Graphic::createShaderResourceView(ComPtr<ID3D12Resource>& shaderResource, D
 	Device->CreateShaderResourceView(shaderResource.Get(), &desc, handle);
 }
 
-void Graphic::createShaderResourceView(ComPtr<ID3D12Resource>& shaderResource, int heapIndex)
+void Graphic::createShaderResourceView(ID3D12Resource* shaderResource, int heapIndex)
 {
 	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
 	desc.Format = shaderResource->GetDesc().Format;
@@ -1199,7 +1199,7 @@ void Graphic::createShaderResourceView(ComPtr<ID3D12Resource>& shaderResource, i
 	auto hCbvTbvHeap = mCbvTbvHeap->GetCPUDescriptorHandleForHeapStart();
 	hCbvTbvHeap.ptr += getCbvTbvIncSize() * heapIndex;
 
-	Device->CreateShaderResourceView(shaderResource.Get(), &desc, hCbvTbvHeap);
+	Device->CreateShaderResourceView(shaderResource, &desc, hCbvTbvHeap);
 }
 
 void Graphic::updateViewProj(XMMATRIX& viewProj)

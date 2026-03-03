@@ -56,7 +56,7 @@ public:
 	void createConstantBufferView(int cbIndex, int cbSize, int heapIndex);
 	void createBase3DBufferView(int heapIndex);
 	void createShaderResourceView(ComPtr<ID3D12Resource>& shaderResource, D3D12_CPU_DESCRIPTOR_HANDLE handle);
-	void createShaderResourceView(ComPtr<ID3D12Resource>& shaderResource, int heapIndex);
+	void createShaderResourceView(ID3D12Resource* shaderResource, int heapIndex);
 	
 	void clearColor(float r, float g, float b);
 	void begin3DRender();

@@ -5,6 +5,9 @@
 #include "Component.h"
 #include "Graphic.h"
 
+class AssetManager;
+struct SpriteData;
+
 class SpriteComponent :
     public Component
 {
@@ -39,27 +42,26 @@ protected:
 
     //グラフィック
     Graphic* mGraphic;
+    AssetManager* mAssetManager;
+
     //コマンドリスト
     ID3D12GraphicsCommandList* mCommandList;
 
     //コンスタントバッファ1(World Matrix)
-    SpriteConstBuf* Cb3;
-    ComPtr<ID3D12Resource> ConstBuf3;
+    //使用するディスクリプタヒープおよびコンスタントバッファのインデックス
+    int mHeapIndex;
+    int mHeapSize;
+    int mCBIndex;
+    int mCBSize;
+    int mNumSprites;
+
+    SpriteConstBuf Cb3;
 
     //頂点バッファ
-    ComPtr<ID3D12Resource> VertexBuf;
-    D3D12_VERTEX_BUFFER_VIEW VertexBufView;
-    ComPtr<ID3D12Resource> IndexBuf;
-    D3D12_INDEX_BUFFER_VIEW IndexBufView;
+    D3D12_VERTEX_BUFFER_VIEW mVertexBufView;
+    D3D12_INDEX_BUFFER_VIEW mIndexBufView;
     //テクスチャバッファ
-    ComPtr<ID3D12Resource> TextureBuf;
-
-    //ディスクリプタヒープ
-    ComPtr<ID3D12DescriptorHeap> CbvTbvHeap;
-    UINT CbvTbvSize;//ビューのサイズ
-    UINT NumDescriptors;//ひとつのパーツで使用するディスクリプタの数
-
-
+    ID3D12Resource* mTextureBuf;
 
 };
 

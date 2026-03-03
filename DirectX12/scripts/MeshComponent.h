@@ -42,7 +42,7 @@ private:
         //コンスタントバッファ2(マテリアル)
         MaterialConstBuf Cb2;//マップしたアドレスを入れる
         //テクスチャバッファ
-        ComPtr<ID3D12Resource> TextureBuf;
+        ID3D12Resource* TextureBuf;
     };
 
 	std::vector<PARTS> Parts;
