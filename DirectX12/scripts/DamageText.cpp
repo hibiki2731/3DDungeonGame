@@ -90,6 +90,9 @@ void DamageTextManager::update()
 
 	int t = 0;
 	for (auto& damageText : mDamageTexts) {
+		//t‚ª”ÍˆÍŠO‚É‚È‚ç‚È‚¢‚æ‚¤
+		if (t < 0 || t >= mVertexRawData.size()) continue;
+
 		damageText->update();
 
 		mVertexRawData[t * 6] = damageText->getPosX();

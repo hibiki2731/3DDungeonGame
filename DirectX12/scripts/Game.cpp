@@ -118,24 +118,6 @@ void Game::addActor(std::unique_ptr<Actor> actor)
 	}
 }
 
-void Game::removeActor(std::unique_ptr<Actor>& actor)
-{
-	auto iter = std::find(mPendingActors.begin(), mPendingActors.end(), actor);
-	if (iter != mPendingActors.end()) {
-		std::iter_swap(iter, mPendingActors.end() - 1);
-		mPendingActors.pop_back();
-	}
-
-	//除去時の処理
-	actor->endProccess();
-
-	iter = std::find(mActors.begin(), mActors.end(), actor);
-	if (iter != mActors.end()) {
-		std::iter_swap(iter, mActors.end() - 1);
-		mActors.pop_back();
-	}
-}
-
 void Game::addMesh(MeshComponent* mesh)
 {
 	mMeshes.emplace_back(mesh);
@@ -316,6 +298,7 @@ void Game::input()
 	//各種マネージャーの入力
 	mTownManager->input();
 
+#ifdef DEBUG
 	//デバック用
 	if (GetAsyncKeyState('P')) {
 		auto slime = std::make_unique<Enemy>(this, CharacterType::SLIME, static_cast<float>(MAPTIPSIZE * 5.0f), static_cast<float>(MAPTIPSIZE * 5.0f));
@@ -333,6 +316,7 @@ void Game::input()
 	if (GetAsyncKeyState('H')) {
 		mSceneManager->transitToTown();
 	}
+#endif
 
 }
 
@@ -387,10 +371,6 @@ void Game::update()
 		//敵配列をプレイヤーに近い順にソート
 		std::sort(mEnemies.begin(), mEnemies.end(), [](auto const lenemy, auto const renemy) {
 			return lenemy->getDist() < renemy->getDist();
-			});
-		//スプライトをupdateOrderが小さい順にソート
-		std::sort(mSprites.begin(), mSprites.end(), [](auto const lsprite, auto const rsprite) {
-			return lsprite->getUpdateOrder() < rsprite->getUpdateOrder();
 			});
 
 		//各種マネージャーの更新

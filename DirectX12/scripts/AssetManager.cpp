@@ -91,7 +91,7 @@ void AssetManager::createMesh(MeshName objectName)
 	meshData->VertexBuf.resize(numParts);
 	meshData->VertexBufView.resize(numParts);
 	meshData->Material.resize(3 * numParts); 
-	meshData->TextureBuf.resize(numParts);
+	meshData->TextureName.resize(numParts);
 	meshData->Scale = XMFLOAT3(meshFileData.scale[0], meshFileData.scale[1], meshFileData.scale[2]);
 
 	//パーツごとのデータを読み込む
@@ -159,14 +159,14 @@ void AssetManager::createMesh(MeshName objectName)
 			auto iter = mTextureData.find(textureFileName);
 			if (iter != mTextureData.end()) {
 				//すでに読み込まれたテクスチャはスルー
-				meshData->TextureBuf[k] = iter->second.Get();
+				meshData->TextureName[k] = textureFileName;
 				continue;
 			}
 
 			ComPtr<ID3D12Resource> textureBuf;
 			HRESULT hr = mGraphic->createShaderResource(textureFileName, textureBuf);
 			assert(SUCCEEDED(hr));
-			meshData->TextureBuf[k] = textureBuf.Get();
+			meshData->TextureName[k] = textureFileName;
 			mTextureData[textureFileName] = std::move(textureBuf);
 
 		}
@@ -175,25 +175,30 @@ void AssetManager::createMesh(MeshName objectName)
 	mLoadData[objectName] = std::move(meshData);
 }
 
-TextureData AssetManager::getShaderResource(std::string filePath)
+XMFLOAT2 AssetManager::createTextureAndGetSize(const std::string& filePath)
 {
-	TextureData textureData;
+	XMFLOAT2 size;
 
 	auto iter = mTextureData.find(filePath);
 	if (iter != mTextureData.end()) {
 		//すでに読み込まれたテクスチャはそのまま返す
-		textureData.TextureBuf = iter->second.Get();
-		textureData.textureSize = mTextureSizeData[filePath];
+		size = mTextureSizeData[filePath];
 	}
 	else {
 		ComPtr<ID3D12Resource> textureBuf;
-		textureData.textureSize = mGraphic->createShaderResourceGetSize(filePath, textureBuf);
-		mTextureSizeData[filePath] = textureData.textureSize;
-		textureData.TextureBuf = textureBuf.Get();
+		size = mGraphic->createShaderResourceGetSize(filePath, textureBuf);
+		mTextureSizeData[filePath] = size;
 		mTextureData[filePath] = std::move(textureBuf);
 	}
 
-	return textureData;
+	return size;
+}
+
+ID3D12Resource* AssetManager::getShaderResource(const std::string& textureName)
+{
+	auto iter = mTextureData.find(textureName);
+	assert(iter != mTextureData.end());	//存在するか判定
+	return iter->second.Get();
 }
 
 UINT AssetManager::getSpriteVerticesSize()

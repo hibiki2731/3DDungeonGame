@@ -61,7 +61,7 @@ void MeshComponent::create(MeshName objectName)
 			Parts[k].Cb2.specular = meshData->Material[k * 3 + 2];
 		}
 		{
-			Parts[k].TextureBuf = meshData->TextureBuf[k];
+			Parts[k].TextureBuf = mOwner->getGame()->getAssetManager()->getShaderResource(meshData->TextureName[k]);
 		}
 	}
 

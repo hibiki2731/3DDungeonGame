@@ -15,7 +15,7 @@ struct MeshData {
 	std::vector<D3D12_VERTEX_BUFFER_VIEW> VertexBufView;
 	//マテリアルデータ
 	std::vector<XMFLOAT4> Material;
-    std::vector<ID3D12Resource*> TextureBuf;
+    std::vector<std::string> TextureName;
 	//スケール
 	XMFLOAT3 Scale;
 };
@@ -23,11 +23,6 @@ struct MeshData {
 struct SpriteData {
 	D3D12_VERTEX_BUFFER_VIEW VertexBufView;
 	D3D12_INDEX_BUFFER_VIEW IndexBufView;
-};
-
-struct TextureData {
-	ID3D12Resource* TextureBuf;
-	XMFLOAT2 textureSize;
 };
 
 enum class MeshName {
@@ -52,7 +47,8 @@ public:
 	int getHeapEndIndex(int size); //必要なサイズを引数に取る
 	MeshData* getMeshData(MeshName objectName); 
 	SpriteData getSpriteData();
-	TextureData getShaderResource(std::string filePath);
+	XMFLOAT2 createTextureAndGetSize(const std::string& filePath);
+	ID3D12Resource* getShaderResource(const std::string& textureName);
 	UINT getSpriteVerticesSize();
 	UINT getSpriteIndicesSize();
 

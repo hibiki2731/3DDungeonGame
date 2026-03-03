@@ -33,9 +33,8 @@ void Anime2DComponent::create(const std::string filename, int textureNum)
 	for (int i = 0;i < mTextureNum;i++)
 	{
 		std::string textureName = preName + std::to_string(i) + postName;
-		auto textureData = mAssetManager->getShaderResource(textureName);
-		mTextureBufs[i] = textureData.TextureBuf;
-		mTextureSize = textureData.textureSize;
+		mTextureSize = mAssetManager->createTextureAndGetSize(textureName);
+		mTextureBufs[i] = mAssetManager->getShaderResource(textureName);
 	}
 	
 	//コンスタントバッファの初期化

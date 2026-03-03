@@ -126,7 +126,4 @@ private:
 	void input();
 	void update();
 	void draw();
-
-	//アクターの削除
-	void removeActor(std::unique_ptr<Actor>& actor);
 };

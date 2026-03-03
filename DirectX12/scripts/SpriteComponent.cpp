@@ -48,9 +48,8 @@ void SpriteComponent::create(const std::string filename)
 	mIndexBufView = spriteData.IndexBufView;
 
 	//テクスチャを取得
-	auto textureData = mAssetManager->getShaderResource(filename);
-	mTextureBuf = textureData.TextureBuf;
-	mTextureSize = textureData.textureSize;
+	mTextureSize = mAssetManager->createTextureAndGetSize(filename);
+	mTextureBuf = mAssetManager->getShaderResource(filename);
 
 	//コンスタントバッファの初期化
 	Cb3.windowSize = XMFLOAT2(
