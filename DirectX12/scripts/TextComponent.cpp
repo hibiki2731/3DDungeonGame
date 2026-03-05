@@ -30,6 +30,7 @@ TextComponent::TextComponent(Actor* owner, float zDepth) : Component(owner)
 	createEmptyTexture();
 	wrapTexture();
 	createSprite(zDepth);
+
 }
 
 TextComponent::~TextComponent()
@@ -59,7 +60,7 @@ void TextComponent::drawTextTexture()
 
 	mGraphic->getD3D11DeviceContext()->Flush();
 
-
+	mGraphic->waitGPU();
 }
 
 void TextComponent::draw()
@@ -70,10 +71,11 @@ void TextComponent::draw()
 	//ディスクリプタヒープをディスクリプタテーブルにセット
 	auto hCbvTbvHeap = mGraphic->getHeapHandle();
 	UINT CbvTbvSize = mGraphic->getCbvTbvIncSize();
-	hCbvTbvHeap.ptr += mHeapIndex * CbvTbvSize;
+	hCbvTbvHeap.ptr += (mHeapIndex + mGraphic->getBackBufIdx()) * CbvTbvSize;
 
 	mGraphic->getCommandList()->SetGraphicsRootDescriptorTable(0, hCbvTbvHeap);
-	hCbvTbvHeap.ptr += CbvTbvSize;
+	hCbvTbvHeap = mGraphic->getHeapHandle();
+	hCbvTbvHeap.ptr += (mHeapIndex + 2) * CbvTbvSize;
 	mGraphic->getCommandList()->SetGraphicsRootDescriptorTable(1, hCbvTbvHeap);
 	//描画。インデックスを使用
 	mGraphic->getCommandList()->IASetIndexBuffer(&mIndexBufView);
@@ -123,6 +125,8 @@ void TextComponent::showText()
 	);
 
 	isActive = true;
+
+	drawTextTexture();
 }
 
 void TextComponent::closeText()
@@ -197,11 +201,13 @@ void TextComponent::createEmptyTexture()
 			&prop,
 			D3D12_HEAP_FLAG_NONE,
 			&textDesc,
-			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			&clearValue,
 			IID_PPV_ARGS(mTexture.ReleaseAndGetAddressOf())
 		);
 	
+		mTexture->SetName(L"TextComponent_Texture");
+
 }
 
 void TextComponent::wrapTexture()
@@ -267,6 +273,6 @@ void TextComponent::createSprite(float zDepth)
 
 	//ディスクリプタヒープにViewを作成
 	int heapIndex = mHeapIndex;
-	mGraphic->createConstantBufferView(mCBIndex, 256, heapIndex); heapIndex++;
+	mGraphic->createConstantBufferView(mCBIndex, 256, heapIndex, 1); heapIndex += 2;
 	mGraphic->createShaderResourceView(mTexture.Get(), heapIndex);
 }

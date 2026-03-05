@@ -381,10 +381,6 @@ void Game::update()
 
 void Game::draw()
 {
-	//テキストをスプライトに描画
-	for (auto& text : mTexts) {
-		text->drawTextTexture();
-	}
 
 	//3D描画
 	mGraphic->begin3DRender();

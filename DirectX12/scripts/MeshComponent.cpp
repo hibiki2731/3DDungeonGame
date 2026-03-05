@@ -37,7 +37,7 @@ void MeshComponent::create(MeshName objectName)
 	mCBSize = (meshData->NumParts + 1) * 256;
 	mCBIndex = mOwner->getGame()->getAssetManager()->getCBEndIndex(mCBSize);
 	mHeapSize = NumDescriptors * meshData->NumParts;
-	mHeapIndex = mOwner->getGame()->getAssetManager()->getHeapEndIndex(mHeapSize);
+	mHeapIndex = mOwner->getGame()->getAssetManager()->getHeapEndIndex(mHeapSize * 2); //二つ分Viewを作る必要がある
 
 	//メッシュパーツ数を読み込み、メモリを確保
 	NumParts = meshData->NumParts;
@@ -66,16 +66,23 @@ void MeshComponent::create(MeshName objectName)
 	}
 
 	//コンスタントバッファへデータをコピー
-	for (int i = 0; i < NumParts; i++) memcpy(mGraphic->getConstantData() + mCBIndex + 256 * (i + 1), &Parts[i].Cb2, sizeof(MaterialConstBuf));
+	for (int i = 0; i < NumParts; i++) {
+		memcpy(mGraphic->getConstantData(0) + mCBIndex + 256 * (i + 1), &Parts[i].Cb2, sizeof(MaterialConstBuf));
+		memcpy(mGraphic->getConstantData(1) + mCBIndex + 256 * (i + 1), &Parts[i].Cb2, sizeof(MaterialConstBuf));
+
+	}
+
 
 
 	int heapIndex = mHeapIndex;
 	//コンスタントバッファビューを作成
 	for (int k = 0; k < NumParts; k++) {
-		mGraphic->createBase3DBufferView(heapIndex); heapIndex++;
-		mGraphic->createConstantBufferView(mCBIndex, 256, heapIndex); heapIndex++;
-		mGraphic->createConstantBufferView(mCBIndex + 256 * (k + 1), 256, heapIndex); heapIndex++;
-		mGraphic->createShaderResourceView(Parts[k].TextureBuf, heapIndex); heapIndex++;
+		mGraphic->createBase3DBufferView(heapIndex, mHeapSize); heapIndex++;
+		mGraphic->createConstantBufferView(mCBIndex, 256, heapIndex, mHeapSize); heapIndex++;
+		mGraphic->createConstantBufferView(mCBIndex + 256 * (k + 1), 256, heapIndex, mHeapSize); heapIndex++;
+		mGraphic->createShaderResourceView(Parts[k].TextureBuf, heapIndex); 
+		mGraphic->createShaderResourceView(Parts[k].TextureBuf, heapIndex + mHeapSize); 
+		heapIndex++;
 	}
 
 	//スケールを設定
@@ -98,7 +105,7 @@ void MeshComponent::draw()
 	memcpy(mGraphic->getConstantData() + mCBIndex, &Cb1, sizeof(World3DConstBuf));
 
 	auto hCbvTbvHeap = mGraphic->getHeapHandle();
-	hCbvTbvHeap.ptr += CbvTbvSize * mHeapIndex;
+	hCbvTbvHeap.ptr += CbvTbvSize * (mHeapIndex + mGraphic->getBackBufIdx() * mHeapSize);
 
 	//パーツごとに描画
 	for (int k = 0; k < NumParts; ++k)

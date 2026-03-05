@@ -50,13 +50,16 @@ private:
 	const UINT NumElements = NumElementsPerVertex * MaxNum; //全要素数
 	const UINT SizeInByte = sizeof(float) * NumElements; //全バイト数
 	std::vector<float> mVertexRawData;	//{中心座標x, y, z, 大きさ, 数値, alpha}
-	ComPtr<ID3D12Resource> mVertexBuf;
-	D3D12_VERTEX_BUFFER_VIEW mVertexBufView;
+	ComPtr<ID3D12Resource> mVertexBuf[2];
+	D3D12_VERTEX_BUFFER_VIEW mVertexBufView[2];
 
-	BillboardConstBuf* mBC;
-	ComPtr<ID3D12Resource> mBillboardConstBuf;
-	ComPtr<ID3D12Resource> mTextureBuf;
-	ComPtr<ID3D12DescriptorHeap> mDescHeap;
+	BillboardConstBuf mBC;
+	ID3D12Resource* mTextureBuf;
+
+	int mCBIndex;
+	int mCBSize;
+	int mHeapIndex;
+	int mHeapSize;
 
 	Game* mGame;
 

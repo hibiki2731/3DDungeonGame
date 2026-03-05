@@ -1,6 +1,6 @@
 #include "DamageText.h"
 #include "Game.h"
-
+#include "AssetManager.h"
 
 
 DamageText::DamageText(XMFLOAT3& position, int digit, float maxLifeTime, XMFLOAT3 velocity)
@@ -43,45 +43,41 @@ float DamageText::getLifeTime()
 DamageTextManager::DamageTextManager(Game* game)
 {
 	mGame = game;
+	mCBSize = 256; //使用するコンスタントバッファは一つだけ
+	mHeapSize = 1;
+	mCBIndex = mGame->getAssetManager()->getCBEndIndex(mCBSize);
+	mHeapIndex = mGame->getAssetManager()->getHeapEndIndex(mHeapSize);
 
 	////vertexBuffer作成
 	mVertexRawData.reserve(SizeInByte);
-	HRESULT hr = mGame->getGraphic()->createBuf(SizeInByte, mVertexBuf);
+	HRESULT hr;
+	for(int i = 0; i < 2; i ++) hr = mGame->getGraphic()->createBuf(SizeInByte, mVertexBuf[i]);
 	assert(SUCCEEDED(hr));
 
 	////vertexBufferView作成
-	mVertexBufView.BufferLocation = mVertexBuf->GetGPUVirtualAddress();
-	mVertexBufView.SizeInBytes = SizeInByte;
-	mVertexBufView.StrideInBytes = sizeof(float) * NumElementsPerVertex; //頂点ごとのバイト数
+	for (int i = 0; i < 2; i++) {
+		mVertexBufView[i].BufferLocation = mVertexBuf[i]->GetGPUVirtualAddress();
+		mVertexBufView[i].SizeInBytes = SizeInByte;
+		mVertexBufView[i].StrideInBytes = sizeof(float) * NumElementsPerVertex; //頂点ごとのバイト数
+	}
 
-	////ビルボード処理用のコンスタントバッファを作成
-	hr = mGame->getGraphic()->createBuf(mGame->getGraphic()->alignedSize(sizeof(BillboardConstBuf)), mBillboardConstBuf);
-	assert(SUCCEEDED(hr));
-	////コンスタントバッファの初期化
-	hr = mGame->getGraphic()->mapBuf((void**)&mBC, mBillboardConstBuf);
+	//コンスタントバッファの初期化
 	XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, mGame->getGraphic()->getAspect(), 0.01f, 50.0f);
-	mBC->proj = proj;
+	mBC.proj = proj;
+	memcpy(mGame->getGraphic()->getConstantData() + mCBIndex, &mBC, sizeof(BillboardConstBuf));
 
 	////ファイルを読み込み、テクスチャバッファをつくる
-	hr = mGame->getGraphic()->createShaderResource("assets\\picture\\digits.png", mTextureBuf);
-	assert(SUCCEEDED(hr));
-
-	////DescripterHeapの作成
-	hr = mGame->getGraphic()->createCbvTbvHeap(mDescHeap, 2);
-	assert(SUCCEEDED(hr));
+	mTextureBuf = mGame->getAssetManager()->getShaderResource("assets\\picture\\digits.png");
 
 	////ディスクリプタヒープにビューを作成
-	auto hDescHeap = mDescHeap->GetCPUDescriptorHandleForHeapStart();
-	UINT cbvTbvSize = mGame->getGraphic()->getCbvTbvIncSize();
-	mGame->getGraphic()->createConstantBufferView(mBillboardConstBuf, hDescHeap);
-	hDescHeap.ptr += cbvTbvSize;
-	mGame->getGraphic()->createShaderResourceView(mTextureBuf, hDescHeap);
+	auto heapIndex = mHeapIndex;
+	mGame->getGraphic()->createConstantBufferView(mCBIndex, mCBSize, heapIndex, mHeapSize); heapIndex += 2;
+	mGame->getGraphic()->createShaderResourceView(mTextureBuf, heapIndex);
 
 }
 
 DamageTextManager::~DamageTextManager()
 {
-	mBillboardConstBuf->Unmap(0, nullptr);
 }
 
 void DamageTextManager::update()
@@ -109,7 +105,7 @@ void DamageTextManager::update()
 	}
 
 	//VertexBufferを更新
-	mGame->getGraphic()->updateBuf(mVertexRawData.data(), SizeInByte, mVertexBuf);
+	mGame->getGraphic()->updateBuf(mVertexRawData.data(), SizeInByte, mVertexBuf[mGame->getGraphic()->getBackBufIdx()]);
 
 	//削除待ち配列中の要素を削除
 	for (auto text : deadTexts) {
@@ -144,15 +140,13 @@ void DamageTextManager::draw()
 
 	mGame->getGraphic()->getCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 
-	//ディスクリプタヒープをGPUにセット
-	UINT numDescriptorHeaps = 1;
-	mGame->getGraphic()->getCommandList()->SetDescriptorHeaps(numDescriptorHeaps, mDescHeap.GetAddressOf());
-	//パーツごとに描画
 	//頂点をセット
-	mGame->getGraphic()->getCommandList()->IASetVertexBuffers(0, 1, &mVertexBufView);
+	int backBufIdx = mGame->getGraphic()->getBackBufIdx();
+	mGame->getGraphic()->getCommandList()->IASetVertexBuffers(0, 1, &mVertexBufView[backBufIdx]);
 
 	//ディスクリプタヒープをディスクリプタテーブルにセット
-	auto hDescHeap = mDescHeap->GetGPUDescriptorHandleForHeapStart();
+	auto hDescHeap = mGame->getGraphic()->getHeapHandle();
+	hDescHeap.ptr += backBufIdx * mGame->getGraphic()->getCbvTbvIncSize();
 	mGame->getGraphic()->getCommandList()->SetGraphicsRootDescriptorTable(0, hDescHeap);
 	//描画。インデックスを使用しない
 	mGame->getGraphic()->getCommandList()->DrawInstanced(1, mDamageTexts.size(), 0, 0);
@@ -189,7 +183,8 @@ void DamageTextManager::createDamageText(XMFLOAT3& position, int digit)
 
 void DamageTextManager::updateView(XMMATRIX& view)
 {
-	mBC->view = view;
+	mBC.view = view;
+	memcpy(mGame->getGraphic()->getConstantData() + mCBIndex, &mBC, sizeof(BillboardConstBuf));
 }
 
 float DamageTextManager::getSize()

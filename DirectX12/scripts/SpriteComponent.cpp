@@ -40,10 +40,10 @@ void SpriteComponent::create(const std::string filename)
 	mCBSize = 256 * (1 + mNumSprites); //spriteConstantBuf + textureの数
 	mHeapSize = 1 + mNumSprites;
 	mCBIndex = mAssetManager->getCBEndIndex(mCBSize);
-	mHeapIndex = mAssetManager->getHeapEndIndex(mHeapSize);
+	mHeapIndex = mAssetManager->getHeapEndIndex(mHeapSize * 2);
 
 	//Sprite用の各Viewを取得
-	SpriteData spriteData= mAssetManager->getSpriteData();
+	SpriteData spriteData = mAssetManager->getSpriteData();
 	mVertexBufView = spriteData.VertexBufView;
 	mIndexBufView = spriteData.IndexBufView;
 
@@ -63,7 +63,7 @@ void SpriteComponent::create(const std::string filename)
 
 	//ディスクリプタヒープにViewを作る
 	int heapIndex = mHeapIndex;
-	mGraphic->createConstantBufferView(mCBIndex, 256, heapIndex); heapIndex++;
+	mGraphic->createConstantBufferView(mCBIndex, 256, heapIndex, 1); heapIndex += 2;
 	mGraphic->createShaderResourceView(mTextureBuf, heapIndex);
 }
 
@@ -90,10 +90,11 @@ void SpriteComponent::draw()
 	//ディスクリプタヒープをディスクリプタテーブルにセット
 	auto hCbvTbvHeap = mGraphic->getHeapHandle();
 	UINT CbvTbvSize = mGraphic->getCbvTbvIncSize();
-	hCbvTbvHeap.ptr += mHeapIndex * CbvTbvSize;
+	hCbvTbvHeap.ptr += (mHeapIndex + mGraphic->getBackBufIdx()) * CbvTbvSize;
 
 	mCommandList->SetGraphicsRootDescriptorTable(0, hCbvTbvHeap);
-	hCbvTbvHeap.ptr += CbvTbvSize;
+	hCbvTbvHeap = mGraphic->getHeapHandle();
+	hCbvTbvHeap.ptr += (mHeapIndex + 2) * CbvTbvSize;
 	mCommandList->SetGraphicsRootDescriptorTable(1, hCbvTbvHeap);
 	//描画。インデックスを使用
 	mCommandList->IASetIndexBuffer(&mIndexBufView);

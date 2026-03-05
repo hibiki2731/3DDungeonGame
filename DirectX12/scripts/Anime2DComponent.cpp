@@ -49,7 +49,7 @@ void Anime2DComponent::create(const std::string filename, int textureNum)
 
 	//ディスクリプタヒープにViewを作る
 	auto heapIndex = mHeapIndex;
-	mGraphic->createConstantBufferView(mCBIndex, 256, heapIndex); heapIndex++;
+	mGraphic->createConstantBufferView(mCBIndex, 256, heapIndex, 1); heapIndex += 2;
 	for (int i = 0; i < mTextureNum; i++) mGraphic->createShaderResourceView(mTextureBufs[i], heapIndex); heapIndex++;
 
 }
@@ -77,10 +77,11 @@ void Anime2DComponent::draw()
 	//ディスクリプタヒープをディスクリプタテーブルにセット
 	auto hCbvTbvHeap = mGraphic->getHeapHandle();
 	UINT CbvTbvSize = mGraphic->getCbvTbvIncSize();
-	hCbvTbvHeap.ptr += mHeapIndex * CbvTbvSize;
+	hCbvTbvHeap.ptr += (mHeapIndex + mGraphic->getBackBufIdx()) * CbvTbvSize;
 
 	mCommandList->SetGraphicsRootDescriptorTable(0, hCbvTbvHeap);
-	hCbvTbvHeap.ptr += CbvTbvSize * (1 + mTextureIndex);
+	hCbvTbvHeap = mGraphic->getHeapHandle();
+	hCbvTbvHeap.ptr += CbvTbvSize * (mHeapIndex + 2 + mTextureIndex);
 	mCommandList->SetGraphicsRootDescriptorTable(1, hCbvTbvHeap);
 	//描画。インデックスを使用
 	mCommandList->IASetIndexBuffer(&mIndexBufView);

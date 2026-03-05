@@ -196,9 +196,21 @@ XMFLOAT2 AssetManager::createTextureAndGetSize(const std::string& filePath)
 
 ID3D12Resource* AssetManager::getShaderResource(const std::string& textureName)
 {
+	ID3D12Resource* texture;
 	auto iter = mTextureData.find(textureName);
-	assert(iter != mTextureData.end());	//存在するか判定
-	return iter->second.Get();
+	if (iter != mTextureData.end()) {
+		//すでに読み込まれたテクスチャはそのまま返す
+		texture = mTextureData[textureName].Get();
+	}
+	else {
+		ComPtr<ID3D12Resource> textureBuf;
+		mTextureSizeData[textureName] = mGraphic->createShaderResourceGetSize(textureName, textureBuf);
+		texture = textureBuf.Get();
+		mTextureData[textureName] = std::move(textureBuf);
+	}
+
+	return texture;
+
 }
 
 UINT AssetManager::getSpriteVerticesSize()

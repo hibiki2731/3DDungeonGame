@@ -53,17 +53,16 @@ public:
 	void createVertexBufferView(ComPtr<ID3D12Resource>& vertexBuf, UINT sizeInBytes, UINT strideInBytes, D3D12_VERTEX_BUFFER_VIEW& vertexBufferView);
 	void createIndexBufferView(ComPtr<ID3D12Resource>& indexBuf, UINT sizeInBytes, D3D12_INDEX_BUFFER_VIEW& indexBufferView);
 	void createConstantBufferView(ComPtr<ID3D12Resource>& constantBuf, D3D12_CPU_DESCRIPTOR_HANDLE handle);
-	void createConstantBufferView(int cbIndex, int cbSize, int heapIndex);
-	void createBase3DBufferView(int heapIndex);
+	void createConstantBufferView(int cbIndex, int cbSize, int heapIndex, int heapSize);
+	void createBase3DBufferView(int heapIndex, int heapSize);
 	void createShaderResourceView(ComPtr<ID3D12Resource>& shaderResource, D3D12_CPU_DESCRIPTOR_HANDLE handle);
 	void createShaderResourceView(ID3D12Resource* shaderResource, int heapIndex);
 	
 	void clearColor(float r, float g, float b);
 	void begin3DRender();
 	void end3DRender();
-	void begin2DRender();
-	void end2DRender();
 	void moveToNextFrame();
+	void prepareCommandList();
 
 	bool quit();
 	int msg_wparam();
@@ -85,7 +84,9 @@ public:
 	IDWriteFactory* getDWriteFactory();
 	ID2D1Bitmap1* getD2DRenderTarget();
 	UINT8* getConstantData();
+	UINT8* getConstantData(int frame);
 	D3D12_GPU_DESCRIPTOR_HANDLE getHeapHandle();
+	int getBackBufIdx();
 
 	//Setter
 	void setRenderType(STATE state);
@@ -128,7 +129,8 @@ private:
 
 	HWND hWnd = nullptr;
 	MSG Msg;
-	
+	static const int FrameCount = 2;
+
 	//デバイス
 	ComPtr<ID3D12Device> Device;
 	ComPtr<ID2D1Device> mD2DDevice;
@@ -137,20 +139,23 @@ private:
 	//ファクトリー
 	ComPtr<ID2D1Factory1> mD2DFactory;
 	//コマンド
-	ComPtr<ID3D12CommandAllocator> CommandAllocator;
-	ComPtr<ID3D12GraphicsCommandList> CommandList;
-	ComPtr<ID3D12CommandQueue> CommandQueue;
+	ComPtr<ID3D12CommandAllocator> mCommandAllocator[FrameCount];
+	ComPtr<ID3D12CommandAllocator> mLoadAllocator;
+	ComPtr<ID3D12GraphicsCommandList> mCommandList;
+	ComPtr<ID3D12GraphicsCommandList> mLoadList;
+	ComPtr<ID3D12CommandQueue> mCommandQueue;
 	//フェンス
-	ComPtr<ID3D12Fence> Fence;
-	HANDLE FenceEvent;
-	UINT64 FenceValue;
+	ComPtr<ID3D12Fence> mFence;
+	HANDLE mFenceEvent;
+	UINT64 mFenceValue;
+	UINT64 mFenceValues[FrameCount] = {};
 	//デバッグ
 	HRESULT Hr;
 
 	//リソース
 	//バックバッファ
 	ComPtr<IDXGISwapChain4> SwapChain;
-	ComPtr<ID3D12Resource> BackBuffers[2];
+	ComPtr<ID3D12Resource> BackBuffers[FrameCount];
 	UINT BackBufIdx;
 	ComPtr<ID3D12DescriptorHeap> BbvHeap; //BackBufferViewHeap
 	UINT BbvHeapSize;
@@ -176,13 +181,13 @@ private:
 	ComPtr<ID3D11On12Device> mD3D11On12Device;
 	ComPtr<ID3D11DeviceContext> mD3D11DeviceContext;
 	ComPtr<IDWriteFactory> mDWriteFactory;
-	ComPtr<ID2D1Bitmap1> mD2DRenderTargets[2];
-	ComPtr<ID3D11Resource> mWrappedBackBuffers[2];
+	ComPtr<ID2D1Bitmap1> mD2DRenderTargets[FrameCount];
+	ComPtr<ID3D11Resource> mWrappedBackBuffers[FrameCount];
 
 	//共有して使用するヒープ、コンスタントバッファ
 	ComPtr<ID3D12DescriptorHeap> mCbvTbvHeap;
-	ComPtr<ID3D12Resource> mConstantBuf;
-	UINT8* mConstantData;	//生データ
+	ComPtr<ID3D12Resource> mConstantBuf[FrameCount];
+	UINT8* mConstantData[FrameCount];	//生データ
 
 	Game* mGame;
 
