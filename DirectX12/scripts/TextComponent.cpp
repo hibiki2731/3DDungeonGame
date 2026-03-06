@@ -244,7 +244,7 @@ void TextComponent::createSprite(float zDepth)
 {
 	//コンスタントバッファとディスクリプタヒープのインデックスを取得
 	mCBSize = 256 * 2; //SpriteConstantBuf + テクスチャ
-	mHeapSize = 2;
+	mHeapSize = 3;
 	mCBIndex = mAssetManager->getCBEndIndex(mCBSize);
 	mHeapIndex = mAssetManager->getHeapEndIndex(mHeapSize);
 
@@ -269,7 +269,8 @@ void TextComponent::createSprite(float zDepth)
 		(float)mGraphic->getClientHeight()
 	);
 	Cb3.bordarSize = 0.0f;
-	memcpy(mGraphic->getConstantData() + mCBIndex, &Cb3, sizeof(SpriteConstBuf));
+	memcpy(mGraphic->getConstantData(0) + mCBIndex, &Cb3, sizeof(SpriteConstBuf));
+	memcpy(mGraphic->getConstantData(1) + mCBIndex, &Cb3, sizeof(SpriteConstBuf));
 
 	//ディスクリプタヒープにViewを作成
 	int heapIndex = mHeapIndex;

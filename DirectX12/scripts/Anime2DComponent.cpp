@@ -15,7 +15,7 @@ void Anime2DComponent::create(const std::string filename, int textureNum)
 
 	//コンスタントバッファ、ディスクリプタヒープ用のインデックスを取得
 	mCBSize = 256 * (1 + textureNum); //spriteConstantBuf + textureの数
-	mHeapSize = 1 + textureNum;
+	mHeapSize = 2 + textureNum;
 	mCBIndex = mAssetManager->getCBEndIndex(mCBSize);
 	mHeapIndex = mAssetManager->getHeapEndIndex(mHeapSize);
 
