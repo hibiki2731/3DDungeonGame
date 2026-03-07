@@ -18,6 +18,7 @@ public:
 	float getPosX();
 	float getPosY();
 	float getPosZ();
+	XMFLOAT3 getPos();
 	float getLifeTime();
 
 private:
@@ -43,13 +44,21 @@ public:
 	float getSize();
 
 private:
-	std::vector<std::unique_ptr<DamageText>> mDamageTexts;
+	struct DamageTextInstance {
+		XMFLOAT3 pos;
+		float size;
+		float  digit;
+		float alpha;
+	};
 
 	const UINT NumElementsPerVertex = 6; //頂点ごとの要素数
 	const int MaxNum = 16;
+	//const int MaxInstanceNum = MaxNum;
 	const UINT NumElements = NumElementsPerVertex * MaxNum; //全要素数
 	const UINT SizeInByte = sizeof(float) * NumElements; //全バイト数
-	std::vector<float> mVertexRawData;	//{中心座標x, y, z, 大きさ, 数値, alpha}
+	std::vector<DamageTextInstance> mInstanceRawData;	//{中心座標x, y, z, 大きさ, 数値, alpha}
+	int mNextInstanceIndex; //次にインスタンスデータを入れるインデックス
+	UINT8* mMappedData[2];
 	ComPtr<ID3D12Resource> mVertexBuf[2];
 	D3D12_VERTEX_BUFFER_VIEW mVertexBufView[2];
 

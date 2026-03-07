@@ -13,7 +13,6 @@ TextWindow::TextWindow(Game* game, std::string windowName, float zDepth) : Actor
 	mSelectedIndex = 0;
 	mMaxIndex = 5;
 	isActive = true;
-	isSelected = false;
 
 	//jsonファイルからテキストウィンドウのパラメータを読み込む
 	nlohmann::json textWindowData;
@@ -75,7 +74,6 @@ void TextWindow::inputActor() {
 	}
 
 	if (isKeyJustPressed(VK_RETURN)) {
-		isSelected = true;
 	}
 }
 
@@ -83,22 +81,10 @@ int TextWindow::getSelectedIndex()
 {
 	return mSelectedIndex;
 }
-
-bool TextWindow::getIsSelected()
-{
-	return isSelected;
-}
-
 bool TextWindow::getIsActive()
 {
 	return isActive;
 }
-
-void TextWindow::resetSelected()
-{
-	isSelected = false;
-}
-
 void TextWindow::setMaxIndex(int maxIndex)
 {
 	mMaxIndex = maxIndex;

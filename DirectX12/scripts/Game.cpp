@@ -19,10 +19,6 @@
 #include "Graphic.h"
 #include "input.h"
 
-#define DEBUG
-
-
-
 Game::Game(){
 	mUpdatingActors = false;
 }
@@ -70,7 +66,7 @@ void Game::init() {
 		"assets/3DModels/Nurikabe/nurikabe.txt"
 	};
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	//FBX→テキスト変換
 	FBXConverter fbxConverter;
 	const int fbxNum = _countof(fbx);

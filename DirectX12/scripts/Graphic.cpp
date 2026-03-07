@@ -21,6 +21,7 @@ Graphic::Graphic(Game* game)
 
 Graphic::~Graphic()
 {
+	for (int i = 0; i < FrameCount; i++) mConstantBuf[i]->Unmap(0, nullptr);
 	waitGPU();
 }
 
@@ -84,6 +85,25 @@ HRESULT Graphic::createDevice() {
 		D3D_FEATURE_LEVEL_12_0,
 		IID_PPV_ARGS(Device.GetAddressOf())
 	);
+
+#ifdef _DEBUG
+	//誤検知エラーを無視するフィルタの作成
+	ComPtr<ID3D12InfoQueue> infoQueue;
+	if (SUCCEEDED(Device->QueryInterface(IID_PPV_ARGS(&infoQueue)))) {
+
+		D3D12_MESSAGE_ID denyIds[] = {
+			D3D12_MESSAGE_ID_REFLECTSHAREDPROPERTIES_INVALIDOBJECT
+		};
+
+		D3D12_INFO_QUEUE_FILTER filter = {};
+		filter.DenyList.NumIDs = _countof(denyIds);
+		filter.DenyList.pIDList = denyIds;
+
+		//フィルタを適用
+		infoQueue->PushStorageFilter(&filter);
+	}
+
+#endif
 	return hr;
 }
 

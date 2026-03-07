@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <stack>
 #include "Actor.h"
 
 class Game;
@@ -13,10 +14,8 @@ public:
 
 
 	int getSelectedIndex();
-	bool getIsSelected();
 	bool getIsActive();
 
-	void resetSelected();
 	void setMaxIndex(int maxIndex);
 	void setActive(bool active);
 
@@ -24,7 +23,6 @@ private:
 	SpriteComponent* mArrow;
 	float mArrowMoveLength;	//矢印の移動距離
 	int mSelectedIndex;	//選択されているメニューのインデックス
-	bool isSelected;	//選択されているか
 
 	int mMaxIndex;	//メニューの最大インデックス
 
@@ -50,5 +48,6 @@ private:
 	bool isTown;
 	TextWindow* mMainMenu;
 	TextWindow* mSubMenu;
+	std::stack<TextWindow*> mMenuStack; //アクティブなメニューを管理
 };
 
