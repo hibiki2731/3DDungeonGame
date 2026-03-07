@@ -8,12 +8,32 @@
 #include "MyUtility.h"
 #include "input.h"
 
-TextWindow::TextWindow(Game* game, std::string windowName, float zDepth) : Actor(game)
+Menu::Menu(Game* game, std::string windowName, float zDepth) : Actor(game)
 {
 	mSelectedIndex = 0;
-	mMaxIndex = 5;
-	isActive = true;
+	mMaxIndex = 0;
+	
+	game->getTownManager()->pushMenu(this);
+	initComponent(windowName, zDepth);
+}
 
+void Menu::inputMenu() {
+
+	if (isKeyJustPressed(VK_UP)) {
+		if (mSelectedIndex == 0) return;
+		mSelectedIndex--;
+		mArrow->movePositon(XMFLOAT2(0.0f, -mArrowMoveLength));
+	}
+
+	if (isKeyJustPressed(VK_DOWN)) {
+		if (mSelectedIndex == mMaxIndex - 1) return;
+		mSelectedIndex++;
+		mArrow->movePositon(XMFLOAT2(0.0f, mArrowMoveLength));
+	}		
+}
+
+void Menu::initComponent(std::string windowName, float zDepth)
+{
 	//jsonファイルからテキストウィンドウのパラメータを読み込む
 	nlohmann::json textWindowData;
 	std::ifstream file("assets\\data\\townMenuData.json");
@@ -54,47 +74,110 @@ TextWindow::TextWindow(Game* game, std::string windowName, float zDepth) : Actor
 
 	mArrowMoveLength = fontSize + lineSpace;
 
-
 }
 
-void TextWindow::inputActor() {
+//各種メニューのコンストラクタ
+MainMenu::MainMenu(Game* game, float zDepth) : Menu(game, "MainMenu", zDepth)
+{
+	mMaxIndex = 5;
+}
 
-	if (!isActive) return;
+InnMenu::InnMenu(Game* game, float zDepth) : Menu(game, "InnMenu", zDepth)
+{
+	mMaxIndex = 2;
+}
 
-	if (isKeyJustPressed(VK_UP)) {
-		if (mSelectedIndex == 0) return;
-		mSelectedIndex--;
-		mArrow->movePositon(XMFLOAT2(0.0f, -mArrowMoveLength));
+ShopMenu::ShopMenu(Game* game, float zDepth) : Menu(game, "ShopMenu", zDepth)
+{
+	mMaxIndex = 3;
+}
+
+ForgeMenu::ForgeMenu(Game* game, float zDepth) : Menu(game, "ForgeMenu", zDepth)
+{
+	mMaxIndex = 3;
+}
+
+ExplorerMenu::ExplorerMenu(Game* game, float zDepth) : Menu(game, "ExplorerShopMenu", zDepth)
+{
+	mMaxIndex = 3;
+}
+
+//各種メニューのupdate
+void MainMenu::updateMenu() {
+	switch (mSelectedIndex) {
+	case 0: {
+		auto inn = std::make_unique<InnMenu>(mGame, 97.0f);
+		mGame->addActor(std::move(inn));
+		break;
 	}
-
-	if (isKeyJustPressed(VK_DOWN)) {
-		if (mSelectedIndex == mMaxIndex - 1) return;
-		mSelectedIndex++;
-		mArrow->movePositon(XMFLOAT2(0.0f, mArrowMoveLength));
+	case 1: {
+		auto shop = std::make_unique<ShopMenu>(mGame, 97.0f);
+		mGame->addActor(std::move(shop));
+		break;
 	}
-
-	if (isKeyJustPressed(VK_RETURN)) {
+	case 2: {
+		auto forge = std::make_unique<ForgeMenu>(mGame, 97.0f);
+		mGame->addActor(std::move(forge));
+		break;
+	}
+	case 3: {
+		auto explorer = std::make_unique<ExplorerMenu>(mGame, 97.0f);
+		mGame->addActor(std::move(explorer));
+		break;
+	}
+	case 4: {
+		mGame->getSceneManager()->transitToMap();
+	}
 	}
 }
 
-int TextWindow::getSelectedIndex()
+void InnMenu::updateMenu()
 {
-	return mSelectedIndex;
-}
-bool TextWindow::getIsActive()
-{
-	return isActive;
-}
-void TextWindow::setMaxIndex(int maxIndex)
-{
-	mMaxIndex = maxIndex;
+	switch (mSelectedIndex) {
+	case 0:
+		break;
+	case 1:
+		break;
+	}
 }
 
-void TextWindow::setActive(bool active)
+void ShopMenu::updateMenu()
 {
-	isActive = active;
+	switch (mSelectedIndex) {
+	case 0:
+		break;
+	case 1:
+		break;
+	case 2:
+		break;
+	}
 }
 
+void ForgeMenu::updateMenu()
+{
+	switch (mSelectedIndex) {
+	case 0:
+		break;
+	case 1:
+		break;
+	case 2:
+		break;
+	}
+}
+
+void ExplorerMenu::updateMenu()
+{
+	switch (mSelectedIndex) {
+	case 0:
+		break;
+	case 1:
+		break;
+	case 2:
+		break;
+	}
+}
+
+//BackGround
 BackGround::BackGround(Game* game) : Actor(game)
 {
 	auto window = std::make_unique<SpriteComponent>(this);
@@ -104,95 +187,72 @@ BackGround::BackGround(Game* game) : Actor(game)
 	addComponent(std::move(window));
 }
 
+//TownManager
 TownManager::TownManager(Game* game)
 {
 	mGame = game;
 	isTown = false;
-	mMainMenu = nullptr;
-	mSubMenu = nullptr;
-}
-
-void TownManager::update()
-{
-	//シーンがTONWに切り替わった際の処理
-	if (!isTown && mGame->getSceneManager()->getCurrentScene() == SceneType::TOWN) {
-		isTown = true;
-
-		auto bg = std::make_unique<BackGround>(mGame);
-		mGame->addActor(std::move(bg));
-
-		auto textWindow = std::make_unique<TextWindow>(mGame, "MainMenu", 99.0f);
-		mMainMenu = textWindow.get();
-		mGame->addActor(std::move(textWindow));
-	}
-
-	//シーンがTONWNの時の処理
-	if (isTown) {
-
-		if (mMainMenu->getIsSelected()) {
-			//メインメニューを非アクティブにする
-			mMainMenu->resetSelected();
-			mMainMenu->setActive(false);
-
-			//選択されているメニューのインデックスに応じた処理
-			switch (mMainMenu->getSelectedIndex()) {
-			case 0: {
-				//宿屋
-				auto inn = std::make_unique<TextWindow>(mGame, "InnMenu", 97.0f);
-				inn->setMaxIndex(2);
-				mSubMenu = inn.get();
-				mGame->addActor(std::move(inn));
-				break;
-			}
-			case 1: {
-				//道具屋
-				auto shop = std::make_unique<TextWindow>(mGame, "ShopMenu", 97.0f);
-				shop->setMaxIndex(2);
-				mSubMenu = shop.get();
-				mGame->addActor(std::move(shop));
-				break;
-			}
-			case 2: {
-				//鍛冶屋
-				auto forge = std::make_unique<TextWindow>(mGame, "ForgeMenu", 97.0f);
-				forge->setMaxIndex(2);
-				mSubMenu = forge.get();
-				mGame->addActor(std::move(forge));
-				break;
-			}
-			case 3: {
-				//探索道具屋
-				auto explorerShop = std::make_unique<TextWindow>(mGame, "ExplorerShopMenu", 97.0f);
-				explorerShop->setMaxIndex(2);
-				mSubMenu = explorerShop.get();
-				mGame->addActor(std::move(explorerShop));
-				break;
-			}
-			case 4:
-				//ダンジョンへ
-				mGame->getSceneManager()->transitToMap();
-				break;
-			}
-		}
-	}
-
-	//シーンがTONWN以外に切り替わった際の処理
-	if (mGame->getSceneManager()->getCurrentScene() != SceneType::TOWN) {
-		isTown = false;
-		mMainMenu = nullptr;
-	}
+	isSelected = false;
+	mBg = nullptr;
 }
 
 void TownManager::input()
 {
 	if (!isTown) return;
 
-	if (mSubMenu != nullptr) {
-		//メインメニュー以外のウィンドウがアクティブな時は、エスケープキーでメインメニューをアクティブにする
-		if (isKeyJustPressed(VK_ESCAPE)) {
-			mMainMenu->setActive(true);
-			mSubMenu->setState(Actor::Dead);
-			mSubMenu = nullptr;
-		}
+	if (!mMenuStack.empty()) mMenuStack.top()->inputMenu();
+
+	if (isKeyJustPressed(VK_RETURN)) isSelected = true;
+
+	if (isKeyJustPressed(VK_ESCAPE) && mMenuStack.size() > 1) {
+		popMenu();
 	}
 }
+
+void TownManager::update()
+{
+	//シーンがTOWNに切り替わった際の処理
+	if (!isTown && mGame->getSceneManager()->getCurrentScene() == SceneType::TOWN) {
+		isTown = true;
+
+		auto bg = std::make_unique<BackGround>(mGame);
+		mBg = bg.get();
+		mGame->addActor(std::move(bg));
+
+		auto textWindow = std::make_unique<MainMenu>(mGame, 99.0f);
+		mGame->addActor(std::move(textWindow));
+	}
+
+	//シーンがTOWNの際の処理
+	if (isTown) {
+		//決定キーが押された場合の処理
+		if (!mMenuStack.empty() && isSelected) {
+			isSelected = false;
+			mMenuStack.top()->updateMenu();
+		}
+	}
+
+	//シーンがTONWN以外に切り替わった際の処理
+	if (isTown && mGame->getSceneManager()->getCurrentScene() != SceneType::TOWN) {
+		isTown = false;
+		//スタックを空にする
+		for (int i = 0; i < mMenuStack.size(); i++) popMenu();
+		mBg->setState(Actor::State::Dead);
+
+	}
+}
+
+void TownManager::pushMenu(Menu* menu)
+{
+	mMenuStack.push(menu);
+}
+
+void TownManager::popMenu()
+{
+	if (mMenuStack.empty()) return;
+
+	mMenuStack.top()->setState(Actor::State::Dead);
+	mMenuStack.pop();
+
+}
+

@@ -282,6 +282,11 @@ SceneManager* Game::getSceneManager()
 	return mSceneManager.get();
 }
 
+TownManager* Game::getTownManager()
+{
+	return mTownManager.get();
+}
+
 void Game::input()
 {
 	updateInput();
@@ -294,7 +299,7 @@ void Game::input()
 	//各種マネージャーの入力
 	mTownManager->input();
 
-#ifdef DEBUG
+#ifdef _DEBUG
 	//デバック用
 	if (GetAsyncKeyState('P')) {
 		auto slime = std::make_unique<Enemy>(this, CharacterType::SLIME, static_cast<float>(MAPTIPSIZE * 5.0f), static_cast<float>(MAPTIPSIZE * 5.0f));

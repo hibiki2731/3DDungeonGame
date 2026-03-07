@@ -82,6 +82,7 @@ public:
 	Player* getPlayer();
 	ItemManager* getItemManager();
 	SceneManager* getSceneManager();
+	TownManager* getTownManager();
 
 private:
 	//グラフィック
