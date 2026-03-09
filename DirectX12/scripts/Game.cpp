@@ -10,7 +10,6 @@
 #include "SpriteComponent.h"
 #include "PointLightComponent.h"
 #include "PointLight.h"
-#include "RockObject.h"
 #include "TextComponent.h"
 #include "Enemy.h"
 #include "MapManager.h"
@@ -18,12 +17,15 @@
 #include "DamageText.h"
 #include "Graphic.h"
 #include "input.h"
+#include "ItemManager.h"
+#include "json.hpp"
 
 Game::Game(){
 	mUpdatingActors = false;
 }
 
-Game::~Game() {
+Game::~Game()
+{
 }
 
 void Game::runLoop()
@@ -100,6 +102,19 @@ void Game::init() {
 
 	//damageTextの初期化
 	mDamageTextManager = std::make_unique<DamageTextManager>(this);
+
+	//プレイヤーデータの初期化
+	std::ifstream file("assets\\data\\playerData.json");
+	assert(!file.fail());
+	nlohmann::json json;
+	file >> json;
+	mPlayerData.maxHp = json["maxhp"].get<int>();
+	mPlayerData.hp = json["hp"].get<int>();
+	mPlayerData.power = json["power"].get<int>();
+	mPlayerData.defence = json["defense"].get<int>();
+	mPlayerData.moveSpeed = json["moveSpeed"].get<float>();
+	mPlayerData.rotSpeed = json["rotSpeed"].get<float>();
+	mPlayerData.flushDuration = json["flashDuration"].get<float>();
 
 }
 
@@ -187,11 +202,6 @@ void Game::removeEnemy(EnemyComponent* enemy)
 	}
 }
 
-void Game::setPlayer(Player* player)
-{
-	mPlayer = player;
-}
-
 void Game::activateEnemies()
 {
 	for (auto enemy : mEnemies) {
@@ -267,11 +277,6 @@ std::vector<SpotLightComponent*>& Game::getSpotLights()
 	return mSpotLights;
 }
 
-Player* Game::getPlayer()
-{
-	return mPlayer;
-}
-
 ItemManager* Game::getItemManager()
 {
 	return mItemManager.get();
@@ -285,6 +290,11 @@ SceneManager* Game::getSceneManager()
 TownManager* Game::getTownManager()
 {
 	return mTownManager.get();
+}
+
+PlayerData& Game::getPlayerData()
+{
+	return mPlayerData;
 }
 
 void Game::input()
@@ -310,9 +320,6 @@ void Game::input()
 	}
 	if (GetAsyncKeyState('T')) {
 		mSceneManager->transitToTitle();
-	}
-	if (GetAsyncKeyState('M')) {
-		mSceneManager->transitToMap();
 	}
 	if (GetAsyncKeyState('H')) {
 		mSceneManager->transitToTown();
@@ -340,6 +347,7 @@ void Game::update()
 		mSceneManager->transitScene();	//シーンの移行
 		mDamageTextManager->update();	//ダメージテキストの更新
 		mTownManager->update();			//シーンがタウンの時の処理
+		mMapManager->sceneProcess(); //シーン変更時の初期化、終了処理
 	}
 
 	//Actorの更新中に追加されたアクターをActor配列に追加
@@ -376,7 +384,7 @@ void Game::update()
 
 		//各種マネージャーの更新
 		mGraphic->updateBase3DData();		//Base3DDataの更新
-		mMapManager->update();				//ターン制御
+		mMapManager->updateTurn();				//ターン制御
 	}
 }
 

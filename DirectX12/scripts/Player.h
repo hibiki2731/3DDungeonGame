@@ -12,13 +12,14 @@ class Player : public Actor
 {
 public:
 	Player(Game* game, float x, float y);
-	~Player() {};
+	~Player();
 
 	void inputActor() override;
 	void updateActor() override;
 
 	int getDirection();
 	void getIndexPos(int(&pos)[2]);
+	int getMaxHP();
 	int getHP();
 	int getPower();
 	int getDefense();

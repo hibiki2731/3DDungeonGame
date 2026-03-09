@@ -37,6 +37,7 @@ TextComponent::~TextComponent()
 {
 }
 
+//要マルチスレッド化
 void TextComponent::drawTextTexture()  
 {  
 	mGraphic->getD3D11On12Device()->AcquireWrappedResources(mWrappedTexture.GetAddressOf(), 1);
@@ -93,8 +94,8 @@ void TextComponent::showText()
 	mTextRect = D2D1::RectF(
 		mBaseLineX,
 		mBaseLineY,
-		mMaxRow * mFontSize,
-		mFontSize * (mText.size() / mMaxRow + 1)
+		mBaseLineX + mMaxRow * mFontSize,
+		mBaseLineY + mFontSize * (mText.size() / mMaxRow + 1)
 	);
 
     HRESULT hr = mGraphic->getD2DDeviceContext()->CreateSolidColorBrush(mTextColor, &mTextBrush);
@@ -158,8 +159,8 @@ void TextComponent::setTextColor(const D2D1::ColorF& color)
 void TextComponent::setLineSpace(float space)
 {
 	isLineSpaceDefault = false;
-	mLineSpace = space;
-	mBaseLineSpace = space * 0.8f;
+	mLineSpace = space + mFontSize; //行間の大きさ
+	mBaseLineSpace = mFontSize; //文字のベースライン
 }
 
 bool TextComponent::getIsActive()

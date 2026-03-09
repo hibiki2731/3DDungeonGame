@@ -1,10 +1,12 @@
 #include "MessageWindow.h"
 #include "TextComponent.h"
 #include "SpriteComponent.h"
+#include "SceneManager.h"
 #include "Graphic.h"
 #include "Game.h"
 #include "Player.h"
 #include "MapManager.h"
+#include "ItemManager.h"
 
 MessageWindow::MessageWindow(Game* game) : Actor(game)
 {
@@ -33,37 +35,17 @@ void MessageWindow::inputActor()
 
 void MessageWindow::updateActor()
 {
-	mPlayer = mGame->getPlayer();
-	if (mPlayer == nullptr) return;
 	//デバッグ用
-	std::wstring message = L"x:" + std::to_wstring(mPlayer->getPosition().x) +
-		L" y:" + std::to_wstring(mPlayer->getPosition().y) +
-		L" z:" + std::to_wstring(mPlayer->getPosition().z) + L"\n";
-	message += L"TURN: ";
-
-	switch (mGame->getMapManager()->getTurnType()) {
-	case TurnType::PLAYER:
-		message += L"PLAYER ";
-		break;
-	case TurnType::ENEMY:
-		message += L"ENEMY ";
-		break;
+	std::wstring message;
+	if (mGame->getSceneManager()->getCurrentScene() == SceneType::TOWN) {
+		message += L"HP: " + std::to_wstring(mGame->getPlayerData().hp) + L" ";
+	}
+	else if (mGame->getSceneManager()->getCurrentScene() == SceneType::MAP) {
+		message += L"HP: " + std::to_wstring(mGame->getMapManager()->getPlayer()->getHP()) + L" ";
 	}
 
-	message += L"HP: " + std::to_wstring(mPlayer->getHP()) + L" ";
-
-	message += L"G:" + std::to_wstring(mGame->getItemManager()->getItemNum(Item::GRASS)) + L".";
-
+	message += L"G:" + std::to_wstring(mGame->getItemManager()->getResourceNum("GRASS")) + L"\n";
 	mMessage = message;
 	mText->setText(mMessage);
-}
-
-void MessageWindow::setTarget(Actor* actor)
-{
-	mTarget = actor;
-}
-
-void MessageWindow::setPlayer(Player* player)
-{
-	mPlayer = player;
+	mText->showText();  //マルチスレッド化したい
 }

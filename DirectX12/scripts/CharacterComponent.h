@@ -18,6 +18,7 @@ public:
 
 	//getter
 	int getHP();
+	int getMaxHP();
 	int getPower();
 	int getDefense();
 	int getDirection();

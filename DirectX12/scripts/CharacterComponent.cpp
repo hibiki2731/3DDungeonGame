@@ -40,6 +40,11 @@ int CharacterComponent::getHP()
 	return mHP;
 }
 
+int CharacterComponent::getMaxHP()
+{
+	return mMaxHP;
+}
+
 int CharacterComponent::getPower()
 {
 	return mPower;

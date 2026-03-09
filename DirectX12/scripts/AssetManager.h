@@ -26,12 +26,12 @@ struct SpriteData {
 };
 
 enum class MeshName {
-	ROCK_WALL_SIDE,
 	ROCK_WALL,
 	ROCK_FLOOR,
 	GRASS,
 	SLIME,
 	NURIKABE,
+	COUNT,
 };
 
 class AssetManager

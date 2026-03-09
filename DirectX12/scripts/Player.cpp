@@ -13,6 +13,7 @@
 #include "Game.h"
 #include "MapManager.h"
 #include "Graphic.h"
+#include "ItemManager.h"
 #include "input.h"
 
 Player::Player(Game* game, float x, float y) : Actor(game)
@@ -24,16 +25,13 @@ Player::Player(Game* game, float x, float y) : Actor(game)
 	isRotating = false;
 	mFlashTimer = 0.0f;
 
-	//jsonファイルからパラメータを読み込む
-	std::ifstream file("assets\\data\\playerData.json");
-	assert(!file.fail());
-	nlohmann::json playerData;
-	file >> playerData;
+	//プレイヤーデータの取得
+	PlayerData& data = game->getPlayerData();
 
 	//移動速度、回転速度、点滅時間の設定
-	mMoveSpeed = playerData["moveSpeed"].get<float>();
-	mRotSpeed = playerData["rotSpeed"].get<float>();
-	mFlashDuration = playerData["flashDuration"].get<float>();
+	mMoveSpeed = data.moveSpeed;
+	mRotSpeed = data.rotSpeed;
+	mFlashDuration = data.flushDuration;
 
 	//カメラの生成
 	std::unique_ptr camera = std::make_unique<CameraComponent>(this);
@@ -55,17 +53,25 @@ Player::Player(Game* game, float x, float y) : Actor(game)
 	auto character = std::make_unique<CharacterComponent>(this);
 	character->setDirection(Direction::UP);
 	character->setIndexPos(static_cast<int>(std::round(x / MAPTIPSIZE)), static_cast<int>(std::round(y / MAPTIPSIZE)));
-	character->setMaxHP(playerData["hp"].get<int>());
-	character->setPower(playerData["power"].get<int>());
-	character->setDefense(playerData["defense"].get<int>());
+	character->setMaxHP(data.maxHp);
+	character->setHP(data.hp);
+	character->setPower(data.power);
+	character->setDefense(data.defence);
 	mCharacter = character.get();
 	addComponent(std::move(character));
 
 	//マップマネージャーの取得
 	mMapManager = mGame->getMapManager();
+}
 
-	//Gameにプレイヤーをセット
-	mGame->setPlayer(this);
+Player::~Player()
+{
+	PlayerData& data = mGame->getPlayerData();
+	data.maxHp = mCharacter->getMaxHP();
+	data.hp = mCharacter->getHP();
+	data.power = mCharacter->getPower();
+	data.defence = mCharacter->getDefense();
+
 }
 
 void Player::inputActor()
@@ -146,6 +152,11 @@ void Player::getIndexPos(int(&pos)[2])
 {
 	pos[0] = mCharacter->getIndexPos()[0];
 	pos[1] = mCharacter->getIndexPos()[1];
+}
+
+int Player::getMaxHP()
+{
+	return mCharacter->getMaxHP();
 }
 
 int Player::getHP()
@@ -332,7 +343,7 @@ void Player::collect()
 
 	switch (tileData) {
 	case TileType::GRASS:
-		mGame->getItemManager()->addItem(Item::GRASS, 1);
+		mGame->getItemManager()->addResource("GRASS", 1);
 	}
 
 	//ターン経過

@@ -1,25 +1,38 @@
 #include "ItemManager.h"
+#include "json.hpp"
+#include <fstream>
 
 ItemManager::ItemManager()
 {
-	//各アイテムの所持数を0に
-	mItemData[Item::GRASS] = 0;
+	std::fstream file("assets/data/ItemData.json");
+	assert(!file.fail());
+
+	nlohmann::json json;
+	file >> json;
+	//保存してあるリソース数を読み込む
+	for (auto& resourceJson : json["Resource"]) {
+		mResourceData[resourceJson["id"]] = resourceJson["num"];
+	}
 }
 
-ItemManager::~ItemManager()
+void ItemManager::addResource(std::string id, int num)
 {
+	mResourceData[id] += static_cast<size_t>(num);
 }
 
-void ItemManager::addItem(Item itemName, int num)
+void ItemManager::subResource(std::string id, int num)
 {
-	mItemData[itemName] += num;
+	int value = static_cast<int>(mResourceData[id]) - num;
+	if (value < 0) return; //数が負の数になる場合、0で止める
+
+	mResourceData[id] = static_cast<size_t>(value);
 }
 
-void ItemManager::subItem(Item itemName, int num)
+int ItemManager::getResourceNum(std::string id) {
+	return static_cast<int>(mResourceData[id]);
+}
+
+std::unordered_map<std::string, size_t>& ItemManager::getResourceData()
 {
-	mItemData[itemName] -= num;
-}
-
-int ItemManager::getItemNum(Item itemName) {
-	return mItemData[itemName];
+	return mResourceData;
 }

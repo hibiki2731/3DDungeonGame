@@ -50,6 +50,8 @@ AssetManager::AssetManager(Graphic* graphic)
 	mCBEndIndex = mGraphic->alignedSize(sizeof(Base3DData));
 	mHeapEndIndex = 0;
 	createSpriteBuffers();
+	//全メッシュの読み込みを最初に行う
+	for (int i = 0; i < static_cast<int>(MeshName::COUNT); i++) createMesh(static_cast<MeshName>(i));
 }
 
 AssetManager::~AssetManager()

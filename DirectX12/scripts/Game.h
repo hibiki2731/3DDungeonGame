@@ -10,7 +10,6 @@
 #include "FBXConverter.h"
 #include "timer.h"
 #include <wrl/client.h>
-#include "ItemManager.h"
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;
@@ -31,6 +30,17 @@ class DamageTextManager;
 class AssetManager;
 class SceneManager;
 class TownManager;
+class ItemManager;
+
+struct PlayerData {
+	int maxHp;
+	int hp;
+	int power;
+	int defence;
+	float moveSpeed;
+	float rotSpeed;
+	float flushDuration;
+};
 
 class Game {
 public:
@@ -64,8 +74,6 @@ public:
 	//エネミーの追加
 	void addEnemy(EnemyComponent* enemy);
 	void removeEnemy(EnemyComponent* enemy);
-	//プレイヤーのセット
-	void setPlayer(Player* player);
 	void activateEnemies();
 
 	void clearActors();
@@ -79,12 +87,13 @@ public:
 	AssetManager* getAssetManager();
 	std::vector<PointLightComponent*>& getPointLights();
 	std::vector<SpotLightComponent*>& getSpotLights();
-	Player* getPlayer();
 	ItemManager* getItemManager();
 	SceneManager* getSceneManager();
 	TownManager* getTownManager();
+	PlayerData& getPlayerData();
 
 private:
+
 	//グラフィック
 	std::unique_ptr<Graphic> mGraphic;
 	//アクター配列（所有権を持つ）
@@ -111,8 +120,8 @@ private:
 	//タウンマネージャー
 	std::unique_ptr<TownManager> mTownManager;
 
-	//プレイヤー(所有権はActor配列中にある)
-	Player* mPlayer;
+	//プレイヤー
+	PlayerData mPlayerData;
 
 	//AssetManager
 	std::unique_ptr<AssetManager> mAssetManager;

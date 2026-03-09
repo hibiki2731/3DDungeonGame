@@ -233,7 +233,6 @@
     <ClCompile Include="scripts\Math.cpp" />
     <ClCompile Include="scripts\MeshComponent.cpp" />
     <ClCompile Include="scripts\Random.cpp" />
-    <ClCompile Include="scripts\RockObject.cpp" />
     <ClCompile Include="scripts\Enemy.cpp" />
     <ClCompile Include="scripts\SceneManager.cpp" />
     <ClCompile Include="scripts\SpotLightComponent.cpp" />
@@ -273,7 +272,6 @@
     <ClInclude Include="scripts\Math.h" />
     <ClInclude Include="scripts\MeshComponent.h" />
     <ClInclude Include="scripts\Random.h" />
-    <ClInclude Include="scripts\RockObject.h" />
     <ClInclude Include="scripts\Enemy.h" />
     <ClInclude Include="scripts\SceneManager.h" />
     <ClInclude Include="scripts\SpotLightComponent.h" />

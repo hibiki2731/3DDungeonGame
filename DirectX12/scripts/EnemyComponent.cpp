@@ -90,7 +90,7 @@ void EnemyComponent::updateActiveProcess()
 	{
 		//プレイヤーとの距離を計算
 		int playerIndex[2];
-		mOwner->getGame()->getPlayer()->getIndexPos(playerIndex);
+		mMapManager->getPlayer()->getIndexPos(playerIndex);
 		mDistPlayer = abs(playerIndex[0] - mIndexPos[0]) + abs(playerIndex[1] - mIndexPos[1]);
 
 		attack();
@@ -204,7 +204,7 @@ void EnemyComponent::attack()
 	if (!isActive) return;
 
 	//プレイヤーのインデックス座標を取得
-	Player* player = mOwner->getGame()->getPlayer();
+	Player* player = mMapManager->getPlayer();
 	int playerIndexPos[2];
 	player->getIndexPos(playerIndexPos);
 
@@ -275,7 +275,7 @@ void EnemyComponent::Astar(int(&targetIndex)[2])
 
 
 	int playerIndex[2];
-	mOwner->getGame()->getPlayer()->getIndexPos(playerIndex);
+	mMapManager->getPlayer()->getIndexPos(playerIndex);
 
 	while (!openList.empty()) {
 		//openListの先頭ノードをカレントノードに

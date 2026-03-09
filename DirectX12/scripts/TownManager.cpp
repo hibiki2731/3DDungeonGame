@@ -7,6 +7,12 @@
 #include "json.hpp"
 #include "MyUtility.h"
 #include "input.h"
+#include "MessageWindow.h"
+#include "ItemManager.h"
+#include "fstream"
+#include "filesystem"
+#include <iostream>
+
 
 Menu::Menu(Game* game, std::string windowName, float zDepth) : Actor(game)
 {
@@ -49,16 +55,29 @@ void Menu::initComponent(std::string windowName, float zDepth)
 	window->setPosition(pos);
 	addComponent(std::move(window));
 
+	//見出し
+	std::wstring titleName = Utility::stringToWString(textWindowData[windowName].value("title", ""));
+	if (titleName != L"") {
+		float fontSize = textWindowData[windowName]["titleFontSize"].get<float>();
+		auto title = std::make_unique<TextComponent>(this, zDepth - 0.5f);
+		title->setText(titleName);
+		title->setBaseLine(pos.x + textWindowData[windowName]["titleOffsetX"].get<float>(), pos.y + textWindowData[windowName]["titleOffsetY"].get<float>());
+		title->setFontSize(fontSize);
+		title->setTextColor(D2D1::ColorF(D2D1::ColorF::Black));
+		title->showText();
+		addComponent(std::move(title));
+	}
+
 	//テキスト
 	std::wstring message = Utility::stringToWString(textWindowData[windowName]["text"].get<std::string>());
 	float fontSize = textWindowData[windowName]["fontSize"].get<float>();
 	float lineSpace = textWindowData[windowName].value("lineSpace", 0.0f);
 	auto text = std::make_unique<TextComponent>(this, zDepth - 0.5f);
 	text->setText(message);
-	text->setBaseLine(pos.x + textWindowData[windowName]["textOffsetX"].get<float>(), pos.y + textWindowData[windowName]["textOffsetX"].get<float>());
+	text->setBaseLine(pos.x + textWindowData[windowName]["textOffsetX"].get<float>(), pos.y + textWindowData[windowName]["textOffsetY"].get<float>());
 	text->setFontSize(fontSize);
 	text->setTextColor(D2D1::ColorF(D2D1::ColorF::Black));
-	text->setLineSpace(fontSize + lineSpace);
+	text->setLineSpace(lineSpace);
 	text->showText();
 	addComponent(std::move(text));
 
@@ -135,10 +154,81 @@ void InnMenu::updateMenu()
 {
 	switch (mSelectedIndex) {
 	case 0:
+		stay();
 		break;
 	case 1:
+		save();
 		break;
 	}
+}
+
+void InnMenu::stay()
+{
+	auto& playerData = mGame->getPlayerData();
+	playerData.hp = playerData.maxHp;
+}
+
+void InnMenu::save()
+{
+	//リソースデータの保存
+	{
+		nlohmann::json itemJson;
+		std::ifstream itemFile("assets/data/itemData.json");
+		itemFile >> itemJson;
+		itemFile.close();
+
+		for (auto& resource : itemJson["Resource"]) {
+			resource["num"] = mGame->getItemManager()->getResourceNum(resource["id"]);
+		}
+
+		//一時ファイルへの書き出し
+		try {
+			std::ofstream os("assets/data/itemData.json.tmp");
+			if (!os) throw std::runtime_error("ファイルが開けません");
+
+			os << itemJson.dump(4);
+		}
+		catch (const std::exception& e) {
+			std::cerr << e.what() << std::endl;
+		}
+		//書き込みが成功したら、一時ファイルを正式な名前にリネームする
+		try {
+			// すでに正式なファイルが存在する場合は上書きされる
+			std::filesystem::rename("assets/data/itemData.json.tmp", "assets/data/itemData.json");
+		}
+		catch (const std::filesystem::filesystem_error& e) {
+			std::cerr << e.what() << std::endl;
+		}
+	}
+
+	//プレイヤーデータの保存
+	{
+		nlohmann::json playerJson;
+		std::ifstream playerFile("assets/data/playerData.json");
+		playerFile >> playerJson;
+		playerFile.close();
+		playerJson["hp"] = mGame->getPlayerData().hp;
+
+		//一時ファイルへの書き出し
+		try {
+			std::ofstream os("assets/data/playerData.json.tmp");
+			if (!os) throw std::runtime_error("ファイルが開けません");
+
+			os << playerJson.dump(4);
+		}
+		catch (const std::exception& e) {
+			std::cerr << e.what() << std::endl;
+		}
+		//書き込みが成功したら、一時ファイルを正式な名前にリネームする
+		try {
+			// すでに正式なファイルが存在する場合は上書きされる
+			std::filesystem::rename("assets/data/playerData.json.tmp", "assets/data/playerData.json");
+		}
+		catch (const std::filesystem::filesystem_error& e) {
+			std::cerr << e.what() << std::endl;
+		}
+	}
+
 }
 
 void ShopMenu::updateMenu()
@@ -221,6 +311,9 @@ void TownManager::update()
 
 		auto textWindow = std::make_unique<MainMenu>(mGame, 99.0f);
 		mGame->addActor(std::move(textWindow));
+
+		auto playerWindow = std::make_unique<MessageWindow>(mGame);
+		mGame->addActor(std::move(playerWindow));
 	}
 
 	//シーンがTOWNの際の処理

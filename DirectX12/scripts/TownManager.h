@@ -35,6 +35,10 @@ class InnMenu : public Menu {
 public:
 	InnMenu(Game* game, float zDepth);
 	void updateMenu() override;
+
+private:
+	void stay();
+	void save();
 };
 
 class ShopMenu : public Menu {

@@ -891,9 +891,6 @@ UINT Graphic::alignedSize(UINT size)
 HRESULT Graphic::createShaderResource(const std::string& filename, ComPtr<ID3D12Resource>& shaderResource)
 {
 
-	//テクスチャロード用の一次アロケータ
-	mLoadAllocator->Reset();
-	mLoadList->Reset(mLoadAllocator.Get(), nullptr);
 
 
 	//ファイルを読み込み、生データを取り出す
@@ -1018,6 +1015,10 @@ HRESULT Graphic::createShaderResource(const std::string& filename, ComPtr<ID3D12
 		mFence->SetEventOnCompletion(fenceValue, mFenceEvent);
 		WaitForSingleObject(mFenceEvent, INFINITE);
 	}
+
+	//テクスチャロード用の一次アロケータ
+	mLoadAllocator->Reset();
+	mLoadList->Reset(mLoadAllocator.Get(), nullptr);
 
 	//開放
 	stbi_image_free(pixels);

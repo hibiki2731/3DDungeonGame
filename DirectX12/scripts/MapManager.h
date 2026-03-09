@@ -3,9 +3,10 @@
 #include <memory>
 #include "Definition.h"
 #include "Random.h"
-#include "SceneManager.h"
 
 class Game;
+class Player;
+class SceneManager;
 
 enum class Stage {
 	MAP1,
@@ -33,7 +34,8 @@ public:
 	MapManager(Game* game);
 	~MapManager() {};
 
-	void update();
+	void updateTurn();
+	void sceneProcess();
 
 	void createMap();
 	
@@ -50,6 +52,7 @@ public:
 	int getMapDataAt(int index);
 	int getObjectDataAt(int x, int y);
 	int getObjectDataAt(int index);
+	Player* getPlayer();
 	TurnType getTurnType();
 
 	//ターン制御
@@ -74,5 +77,11 @@ private:
 
 	//未行動敵数
 	int mPendingEnemyCount;
+
+	//参照用プレイヤー
+	Player* mPlayer;
+
+	//シーン制御
+	bool isMap;
 };
 

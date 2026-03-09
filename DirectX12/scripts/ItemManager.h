@@ -1,22 +1,19 @@
 #pragma once
 #include <unordered_map>
-
-enum class Item{
-	GRASS,
-};
+#include <string>
 
 class ItemManager
 {
 public:
 	ItemManager();
-	~ItemManager();
 
-	void addItem(Item itemName, int num);
-	void subItem(Item itemName, int num);
+	void addResource(std::string id, int num);
+	void subResource(std::string id, int num);
 
-	int getItemNum(Item itemName);
+	int getResourceNum(std::string id);
+	std::unordered_map<std::string, size_t>& getResourceData();
 
 private:
-	std::unordered_map<Item, int> mItemData;
+	std::unordered_map<std::string, size_t> mResourceData;
 };
 

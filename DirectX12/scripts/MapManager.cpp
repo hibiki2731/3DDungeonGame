@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Grass.h"
 #include "MessageWindow.h"
+#include "SceneManager.h"
 #include <fstream>
 #include <cassert>
 
@@ -19,43 +20,60 @@ MapManager::MapManager(Game* game)
 	mTurnType = TurnType::PLAYER;
 	mPendingEnemyCount = 0;
 	mSceneManager = mGame->getSceneManager();
+	isMap = false;
 
 }
 
-void MapManager::update()
+void MapManager::updateTurn()
 {
-	
-	//エネミーターン時に敵が全滅していたらプレイヤーターンへ
-	if (mTurnType == TurnType::ENEMY && mGame->getEnemies().size() == 0) {
-		mNextTurn = TurnType::PLAYER;
+	//MAPシーン中の処理
+	if (isMap) {
+		//エネミーターン時に敵が全滅していたらプレイヤーターンへ
+		if (mTurnType == TurnType::ENEMY && mGame->getEnemies().size() == 0) {
+			mNextTurn = TurnType::PLAYER;
+		}
+
+		//プレイヤーターン→エネミーターンへの移行時
+		if (mNextTurn == TurnType::ENEMY && mTurnType == TurnType::PLAYER) {
+			//初期化
+			mPendingEnemyCount = static_cast<int>(mGame->getEnemies().size()); //待機敵数をリセット
+			mGame->activateEnemies();
+		}
+
+		//エネミーターン→プレイヤーターンへの移行時
+		if (mNextTurn == TurnType::PLAYER && mTurnType == TurnType::ENEMY) {
+			//敵のランダム湧き
+			int random = Random::dist(1, 100);
+			if (random <= 10) spawnEnemy();
+		}
+
+
+		mTurnType = mNextTurn;
+	}
+}
+
+void MapManager::sceneProcess() {
+	//マップシーンに切り替わった際の処理
+	if (!isMap && mSceneManager->getCurrentScene() == SceneType::MAP) {
+		isMap = true;
 	}
 
-	//プレイヤーターン→エネミーターンへの移行時
-	if (mNextTurn == TurnType::ENEMY && mTurnType == TurnType::PLAYER) {
-		//初期化
-		mPendingEnemyCount = static_cast<int>(mGame->getEnemies().size()); //待機敵数をリセット
-		mGame->activateEnemies();
+	//マップシーンから他のシーンに切り替わった際の処理
+	if (isMap && mSceneManager->getCurrentScene() != SceneType::MAP) {
+		isMap = false;
+		mPlayer = nullptr;
 	}
-
-	//エネミーターン→プレイヤーターンへの移行時
-	if (mNextTurn == TurnType::PLAYER && mTurnType == TurnType::ENEMY) {
-		//敵のランダム湧き
-		int random = Random::dist(1, 100);
-		if (random <= 10) spawnEnemy();
-	}
-
-
-	mTurnType = mNextTurn;
 }
 
 void MapManager::createMap()
 {
-	std::unique_ptr<MessageWindow> messageWindow = std::make_unique<MessageWindow>(mGame);
-	mGame->addActor(std::move(messageWindow));
 
 	loadMap(mStage);	//マップデータの読み込み
 	createWall();	//マップの壁、床の生成
 	createObject(); //オブジェクトの生成
+
+	std::unique_ptr<MessageWindow> messageWindow = std::make_unique<MessageWindow>(mGame);
+	mGame->addActor(std::move(messageWindow));
 }
 
 void MapManager::setStage(Stage stage)
@@ -149,7 +167,15 @@ int MapManager::getObjectDataAt(int index)
 		y < 0 || y > mMapSize - 1) return CharacterType::EMPTY;
 
 	return mObjectData[x][y];
-} 
+}
+Player* MapManager::getPlayer()
+{
+	//シーンがMAP以外の場合はnullptrを返す
+	if (mGame->getSceneManager()->getCurrentScene() != SceneType::MAP) return nullptr;
+
+	return mPlayer;
+}
+
 
 TurnType MapManager::getTurnType()
 {
@@ -304,6 +330,7 @@ void MapManager::createObject()
 				case CharacterType::PLAYER: {
 					//プレイヤー生成
 					std::unique_ptr player = std::make_unique<Player>(mGame, static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
+					mPlayer = player.get();
 					mGame->addActor(std::move(player)); //所有権をGameへ渡す
 					break;
 				}
@@ -322,7 +349,7 @@ void MapManager::createObject()
 void MapManager::spawnEnemy()
 {
 	int playerIndex[2];
-	mGame->getPlayer()->getIndexPos(playerIndex);
+	mPlayer->getIndexPos(playerIndex);
 
 	int i = 0; //湧き場がない場合、一定回数のループ後にループを抜ける
 
