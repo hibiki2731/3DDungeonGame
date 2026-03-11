@@ -31,16 +31,8 @@ class AssetManager;
 class SceneManager;
 class TownManager;
 class ItemManager;
+class PlayerManager;
 
-struct PlayerData {
-	int maxHp;
-	int hp;
-	int power;
-	int defence;
-	float moveSpeed;
-	float rotSpeed;
-	float flushDuration;
-};
 
 class Game {
 public:
@@ -90,7 +82,7 @@ public:
 	ItemManager* getItemManager();
 	SceneManager* getSceneManager();
 	TownManager* getTownManager();
-	PlayerData& getPlayerData();
+	PlayerManager* getPlayerManager();
 
 private:
 
@@ -121,7 +113,7 @@ private:
 	std::unique_ptr<TownManager> mTownManager;
 
 	//ƒvƒŒƒCƒ„[
-	PlayerData mPlayerData;
+	std::unique_ptr<PlayerManager> mPlayerManager;
 
 	//AssetManager
 	std::unique_ptr<AssetManager> mAssetManager;

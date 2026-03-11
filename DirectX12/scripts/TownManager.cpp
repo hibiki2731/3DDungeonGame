@@ -12,7 +12,12 @@
 #include "fstream"
 #include "filesystem"
 #include <iostream>
-
+#include "PlayerManager.h"
+#include "InnMenu.h"
+#include "ShopMenu.h"
+#include "ForgeMenu.h"
+#include "ExplorerMenu.h"
+#include "StatusMenu.h"
 
 Menu::Menu(Game* game, std::string windowName, float zDepth) : Actor(game)
 {
@@ -101,26 +106,6 @@ MainMenu::MainMenu(Game* game, float zDepth) : Menu(game, "MainMenu", zDepth)
 	mMaxIndex = 5;
 }
 
-InnMenu::InnMenu(Game* game, float zDepth) : Menu(game, "InnMenu", zDepth)
-{
-	mMaxIndex = 2;
-}
-
-ShopMenu::ShopMenu(Game* game, float zDepth) : Menu(game, "ShopMenu", zDepth)
-{
-	mMaxIndex = 3;
-}
-
-ForgeMenu::ForgeMenu(Game* game, float zDepth) : Menu(game, "ForgeMenu", zDepth)
-{
-	mMaxIndex = 3;
-}
-
-ExplorerMenu::ExplorerMenu(Game* game, float zDepth) : Menu(game, "ExplorerShopMenu", zDepth)
-{
-	mMaxIndex = 3;
-}
-
 //各種メニューのupdate
 void MainMenu::updateMenu() {
 	switch (mSelectedIndex) {
@@ -147,123 +132,6 @@ void MainMenu::updateMenu() {
 	case 4: {
 		mGame->getSceneManager()->transitToMap();
 	}
-	}
-}
-
-void InnMenu::updateMenu()
-{
-	switch (mSelectedIndex) {
-	case 0:
-		stay();
-		break;
-	case 1:
-		save();
-		break;
-	}
-}
-
-void InnMenu::stay()
-{
-	auto& playerData = mGame->getPlayerData();
-	playerData.hp = playerData.maxHp;
-}
-
-void InnMenu::save()
-{
-	//リソースデータの保存
-	{
-		nlohmann::json itemJson;
-		std::ifstream itemFile("assets/data/itemData.json");
-		itemFile >> itemJson;
-		itemFile.close();
-
-		for (auto& resource : itemJson["Resource"]) {
-			resource["num"] = mGame->getItemManager()->getResourceNum(resource["id"]);
-		}
-
-		//一時ファイルへの書き出し
-		try {
-			std::ofstream os("assets/data/itemData.json.tmp");
-			if (!os) throw std::runtime_error("ファイルが開けません");
-
-			os << itemJson.dump(4);
-		}
-		catch (const std::exception& e) {
-			std::cerr << e.what() << std::endl;
-		}
-		//書き込みが成功したら、一時ファイルを正式な名前にリネームする
-		try {
-			// すでに正式なファイルが存在する場合は上書きされる
-			std::filesystem::rename("assets/data/itemData.json.tmp", "assets/data/itemData.json");
-		}
-		catch (const std::filesystem::filesystem_error& e) {
-			std::cerr << e.what() << std::endl;
-		}
-	}
-
-	//プレイヤーデータの保存
-	{
-		nlohmann::json playerJson;
-		std::ifstream playerFile("assets/data/playerData.json");
-		playerFile >> playerJson;
-		playerFile.close();
-		playerJson["hp"] = mGame->getPlayerData().hp;
-
-		//一時ファイルへの書き出し
-		try {
-			std::ofstream os("assets/data/playerData.json.tmp");
-			if (!os) throw std::runtime_error("ファイルが開けません");
-
-			os << playerJson.dump(4);
-		}
-		catch (const std::exception& e) {
-			std::cerr << e.what() << std::endl;
-		}
-		//書き込みが成功したら、一時ファイルを正式な名前にリネームする
-		try {
-			// すでに正式なファイルが存在する場合は上書きされる
-			std::filesystem::rename("assets/data/playerData.json.tmp", "assets/data/playerData.json");
-		}
-		catch (const std::filesystem::filesystem_error& e) {
-			std::cerr << e.what() << std::endl;
-		}
-	}
-
-}
-
-void ShopMenu::updateMenu()
-{
-	switch (mSelectedIndex) {
-	case 0:
-		break;
-	case 1:
-		break;
-	case 2:
-		break;
-	}
-}
-
-void ForgeMenu::updateMenu()
-{
-	switch (mSelectedIndex) {
-	case 0:
-		break;
-	case 1:
-		break;
-	case 2:
-		break;
-	}
-}
-
-void ExplorerMenu::updateMenu()
-{
-	switch (mSelectedIndex) {
-	case 0:
-		break;
-	case 1:
-		break;
-	case 2:
-		break;
 	}
 }
 
@@ -297,6 +165,12 @@ void TownManager::input()
 	if (isKeyJustPressed(VK_ESCAPE) && mMenuStack.size() > 1) {
 		popMenu();
 	}
+
+	if (isKeyJustPressed('E') && !isStatusMenu) {
+		isStatusMenu = true;
+		auto status = std::make_unique<StatusMenu>(mGame, 50.0f);
+		mGame->addActor(std::move(status));
+	}
 }
 
 void TownManager::update()
@@ -323,6 +197,7 @@ void TownManager::update()
 			isSelected = false;
 			mMenuStack.top()->updateMenu();
 		}
+
 	}
 
 	//シーンがTONWN以外に切り替わった際の処理
@@ -347,5 +222,10 @@ void TownManager::popMenu()
 	mMenuStack.top()->setState(Actor::State::Dead);
 	mMenuStack.pop();
 
+}
+
+void TownManager::exitStatusMenu()
+{
+	isStatusMenu = false;
 }
 

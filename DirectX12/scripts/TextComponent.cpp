@@ -40,6 +40,17 @@ TextComponent::~TextComponent()
 //要マルチスレッド化
 void TextComponent::drawTextTexture()  
 {  
+	//テクスチャの状態をshader resourceに遷移
+	D3D12_RESOURCE_BARRIER barrier;
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = mTexture.Get();
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	mGraphic->getCommandList()->ResourceBarrier(1, &barrier);
+
+
 	mGraphic->getD3D11On12Device()->AcquireWrappedResources(mWrappedTexture.GetAddressOf(), 1);
 	mGraphic->getD2DDeviceContext()->SetTarget(mD2DTarget.Get());
 	mGraphic->getD2DDeviceContext()->BeginDraw();
@@ -66,6 +77,7 @@ void TextComponent::drawTextTexture()
 
 void TextComponent::draw()
 {
+
 	//頂点をセット
 	mGraphic->getCommandList()->IASetVertexBuffers(0, 1, &mVertexBufView);
 
@@ -192,22 +204,22 @@ void TextComponent::createEmptyTexture()
 	clearValue.Color[2] = 0.0f, clearValue.Color[3] = 0.0f;
 
 	D3D12_HEAP_PROPERTIES prop = {};
-		prop.Type = D3D12_HEAP_TYPE_DEFAULT;
-		prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-		prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-		prop.CreationNodeMask = 1;
-		prop.VisibleNodeMask = 1;
+	prop.Type = D3D12_HEAP_TYPE_DEFAULT;
+	prop.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+	prop.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+	prop.CreationNodeMask = 1;
+	prop.VisibleNodeMask = 1;
 
-		mGraphic->getDevice()->CreateCommittedResource(
-			&prop,
-			D3D12_HEAP_FLAG_NONE,
-			&textDesc,
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			&clearValue,
-			IID_PPV_ARGS(mTexture.ReleaseAndGetAddressOf())
-		);
+	mGraphic->getDevice()->CreateCommittedResource(
+		&prop,
+		D3D12_HEAP_FLAG_NONE,
+		&textDesc,
+		D3D12_RESOURCE_STATE_RENDER_TARGET,
+		&clearValue,
+		IID_PPV_ARGS(mTexture.ReleaseAndGetAddressOf())
+	);
 	
-		mTexture->SetName(L"TextComponent_Texture");
+	mTexture->SetName(L"TextComponent_Texture");
 
 }
 
@@ -238,6 +250,18 @@ void TextComponent::wrapTexture()
 		mD2DTarget.ReleaseAndGetAddressOf()
 	);
 	assert(SUCCEEDED(hr));
+
+	////テクスチャの状態をpixel shader resourceに遷移
+	//D3D12_RESOURCE_BARRIER barrier;
+	//barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	//barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	//barrier.Transition.pResource = mTexture.Get();
+	//barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	//barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	//barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	//mGraphic->getCommandList()->ResourceBarrier(1, &barrier);
+
+
 
 }
 

@@ -125,5 +125,83 @@
         "fontSize" : 50.0,
         "lineSpace" : 10.0,
         "text" : "スキルツリーみたいにしたいね\n"
+    },
+
+    "StatusMenu" : {
+        "x" : 60.0,
+        "y" : 100.0,
+        "width" : 800.0,
+        "height" : 500.0,
+        "borderSize" : 24.0,
+        "spriteFileName" : "assets/picture/UI2/PNG/Default/panel_brown.png",
+        
+        "arrowOffsetX" : 300.0,
+        "arrowOffsetY" : 85.0,
+        "arrowWidth" : 40.0,
+        "arrowHeight" : 40.0,
+        "arrowFileName" : "assets/picture/UI2/PNG/Default/minimap_arrow_a.png",
+
+        "titleOffsetX" : 20.0,
+        "titleOffsetY" : 10.0,
+        "titleFontSize" : 50.0,
+        "title" : "STATUS\n",
+
+        "textOffsetX" : 20.0,
+        "textOffsetY" : 75.0,
+        "fontSize" : 50.0,
+        "lineSpace" : 10.0,
+        "text" : "WEAPON\nARMER\n"
+    },
+
+    "EquipWeaponMenu" : {
+        "x" : 60.0,
+        "y" : 100.0,
+        "width" : 800.0,
+        "height" : 500.0,
+        "borderSize" : 24.0,
+        "spriteFileName" : "assets/picture/UI2/PNG/Default/panel_brown.png",
+        
+        "arrowOffsetX" : 300.0,
+        "arrowOffsetY" : 85.0,
+        "arrowWidth" : 40.0,
+        "arrowHeight" : 40.0,
+        "arrowFileName" : "assets/picture/UI2/PNG/Default/minimap_arrow_a.png",
+
+        "titleOffsetX" : 20.0,
+        "titleOffsetY" : 10.0,
+        "titleFontSize" : 50.0,
+        "title" : "WEAPON\n",
+
+        "textOffsetX" : 20.0,
+        "textOffsetY" : 75.0,
+        "fontSize" : 50.0,
+        "lineSpace" : 10.0,
+        "text" : "WEAPON1\n"
+    },
+
+    "EquipArmerMenu" : {
+        "x" : 60.0,
+        "y" : 100.0,
+        "width" : 800.0,
+        "height" : 500.0,
+        "borderSize" : 24.0,
+        "spriteFileName" : "assets/picture/UI2/PNG/Default/panel_brown.png",
+        
+        "arrowOffsetX" : 300.0,
+        "arrowOffsetY" : 85.0,
+        "arrowWidth" : 40.0,
+        "arrowHeight" : 40.0,
+        "arrowFileName" : "assets/picture/UI2/PNG/Default/minimap_arrow_a.png",
+
+        "titleOffsetX" : 20.0,
+        "titleOffsetY" : 10.0,
+        "titleFontSize" : 50.0,
+        "title" : "ARMER\n",
+
+        "textOffsetX" : 20.0,
+        "textOffsetY" : 75.0,
+        "fontSize" : 50.0,
+        "lineSpace" : 10.0,
+        "text" : "ARMER\n"
     }
 }

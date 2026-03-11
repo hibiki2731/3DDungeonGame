@@ -19,6 +19,7 @@
 #include "input.h"
 #include "ItemManager.h"
 #include "json.hpp"
+#include "PlayerManager.h"
 
 Game::Game(){
 	mUpdatingActors = false;
@@ -103,18 +104,8 @@ void Game::init() {
 	//damageTextの初期化
 	mDamageTextManager = std::make_unique<DamageTextManager>(this);
 
-	//プレイヤーデータの初期化
-	std::ifstream file("assets\\data\\playerData.json");
-	assert(!file.fail());
-	nlohmann::json json;
-	file >> json;
-	mPlayerData.maxHp = json["maxhp"].get<int>();
-	mPlayerData.hp = json["hp"].get<int>();
-	mPlayerData.power = json["power"].get<int>();
-	mPlayerData.defence = json["defense"].get<int>();
-	mPlayerData.moveSpeed = json["moveSpeed"].get<float>();
-	mPlayerData.rotSpeed = json["rotSpeed"].get<float>();
-	mPlayerData.flushDuration = json["flashDuration"].get<float>();
+	//PlayerManager
+	mPlayerManager = std::make_unique<PlayerManager>();
 
 }
 
@@ -292,9 +283,9 @@ TownManager* Game::getTownManager()
 	return mTownManager.get();
 }
 
-PlayerData& Game::getPlayerData()
+PlayerManager* Game::getPlayerManager()
 {
-	return mPlayerData;
+	return mPlayerManager.get();
 }
 
 void Game::input()

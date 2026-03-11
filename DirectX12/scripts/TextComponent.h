@@ -36,6 +36,7 @@ private:
 	ComPtr<ID2D1SolidColorBrush> mTextBrush;
 	ComPtr<IDWriteTextFormat> mTextFormat;
 	ComPtr<ID3D12Resource> mTexture;
+	bool isTextureInitialized = false;
 	ComPtr<ID3D11Resource> mWrappedTexture;
 	ComPtr<ID2D1Bitmap1> mD2DTarget;
 	//コンスタントバッファ1(World Matrix)

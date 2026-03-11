@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "MapManager.h"
 #include "ItemManager.h"
+#include "PlayerManager.h"
 
 MessageWindow::MessageWindow(Game* game) : Actor(game)
 {
@@ -38,10 +39,11 @@ void MessageWindow::updateActor()
 	//デバッグ用
 	std::wstring message;
 	if (mGame->getSceneManager()->getCurrentScene() == SceneType::TOWN) {
-		message += L"HP: " + std::to_wstring(mGame->getPlayerData().hp) + L" ";
+		message += L"HP: " + std::to_wstring(mGame->getPlayerManager()->getPlayerData().hp) + L" ";
 	}
 	else if (mGame->getSceneManager()->getCurrentScene() == SceneType::MAP) {
-		message += L"HP: " + std::to_wstring(mGame->getMapManager()->getPlayer()->getHP()) + L" ";
+		message += L"HP: " + std::to_wstring(mGame->getMapManager()->getPlayer()->getHP()) + L" STR: " + std::to_wstring(mGame->getMapManager()->getPlayer()->getPower())
+			+ L" DEF: " + std::to_wstring(mGame->getMapManager()->getPlayer()->getDefense()) + L" ";
 	}
 
 	message += L"G:" + std::to_wstring(mGame->getItemManager()->getResourceNum("GRASS")) + L"\n";

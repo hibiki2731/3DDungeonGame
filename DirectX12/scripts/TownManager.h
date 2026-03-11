@@ -31,34 +31,6 @@ public:
 	void updateMenu() override;
 };
 
-class InnMenu : public Menu {
-public:
-	InnMenu(Game* game, float zDepth);
-	void updateMenu() override;
-
-private:
-	void stay();
-	void save();
-};
-
-class ShopMenu : public Menu {
-public:
-	ShopMenu(Game* game, float zDepth);
-	void updateMenu() override;
-};
-
-class ForgeMenu : public Menu {
-public:
-	ForgeMenu(Game* game, float zDepth);
-	void updateMenu() override;
-};
-
-class ExplorerMenu : public Menu {
-public:
-	ExplorerMenu(Game* game, float zDepth);
-	void updateMenu() override;
-};
-
 class BackGround : public Actor
 {
 public:
@@ -76,11 +48,15 @@ public:
 	void pushMenu(Menu* menu);
 	void popMenu();
 
+	void exitStatusMenu();
+
 private:
 	Game* mGame;
 	BackGround* mBg;
 	bool isTown;
 	bool isSelected;
+	bool isSelecetdStatus;
+	bool isStatusMenu;
 	std::stack<Menu*> mMenuStack; //アクティブなメニューを管理
 };
 

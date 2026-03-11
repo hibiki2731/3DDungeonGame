@@ -114,9 +114,9 @@ void DamageTextManager::update()
 	}
 
 	//削除待ち配列中の要素を削除
-	for (int index : deadTextsIndex) {
+	for (int index = deadTextsIndex.size() - 1; index >= 0; index--) {
 		//最後尾のデータをindexに入れ、最後尾を除去
-		mInstanceRawData[index] = mInstanceRawData.back();
+		mInstanceRawData[deadTextsIndex[index]] = mInstanceRawData.back();
 		mInstanceRawData.pop_back();
 
 	}

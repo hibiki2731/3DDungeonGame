@@ -15,6 +15,7 @@
 #include "Graphic.h"
 #include "ItemManager.h"
 #include "input.h"
+#include "PlayerManager.h"
 
 Player::Player(Game* game, float x, float y) : Actor(game)
 {
@@ -26,7 +27,7 @@ Player::Player(Game* game, float x, float y) : Actor(game)
 	mFlashTimer = 0.0f;
 
 	//プレイヤーデータの取得
-	PlayerData& data = game->getPlayerData();
+	const PlayerData& data = game->getPlayerManager()->getPlayerData();
 
 	//移動速度、回転速度、点滅時間の設定
 	mMoveSpeed = data.moveSpeed;
@@ -55,8 +56,12 @@ Player::Player(Game* game, float x, float y) : Actor(game)
 	character->setIndexPos(static_cast<int>(std::round(x / MAPTIPSIZE)), static_cast<int>(std::round(y / MAPTIPSIZE)));
 	character->setMaxHP(data.maxHp);
 	character->setHP(data.hp);
-	character->setPower(data.power);
-	character->setDefense(data.defence);
+	//力の計算
+	int power = data.power + mGame->getItemManager()->getWeaponData(data.weaponInventory[data.equippedWeaponIndex]).power;
+	character->setPower(power);
+	//防御力の計算
+	int defence = data.defence + mGame->getItemManager()->getArmerData(data.armerInventory[data.equippedArmerIndex]).defence;
+	character->setDefense(defence);
 	mCharacter = character.get();
 	addComponent(std::move(character));
 
@@ -66,12 +71,8 @@ Player::Player(Game* game, float x, float y) : Actor(game)
 
 Player::~Player()
 {
-	PlayerData& data = mGame->getPlayerData();
-	data.maxHp = mCharacter->getMaxHP();
-	data.hp = mCharacter->getHP();
-	data.power = mCharacter->getPower();
-	data.defence = mCharacter->getDefense();
-
+	PlayerManager* player = mGame->getPlayerManager();
+	player->setHP(mCharacter->getHP());
 }
 
 void Player::inputActor()

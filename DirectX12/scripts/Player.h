@@ -53,7 +53,6 @@ private:
 	float mFlashTimer;
 	float mFlashDuration;
 
-
 	CameraComponent* mCamera;
 	CharacterComponent* mCharacter;
 	MapManager* mMapManager;
