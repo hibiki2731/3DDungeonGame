@@ -10,7 +10,7 @@ ShopMenu::ShopMenu(Game* game, float zDepth) : Menu(game, "ShopMenu", zDepth)
 	prepareSaleItem();
 }
 
-void ShopMenu::updateMenu()
+void ShopMenu::selectedAct()
 {
 	buyItem(mSelectedIndex);
 }

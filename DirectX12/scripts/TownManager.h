@@ -12,23 +12,24 @@ public:
 	Menu(Game* game, std::string windowName, float zDepth);
 	//input
 	void inputMenu();
+	virtual void selectedAct() {};
 	virtual void updateMenu() {};
 
 protected:
 	int mMaxIndex;	//メニューの最大インデックス
 	int mSelectedIndex;	//選択されているメニューのインデックス
+	float mArrowMoveLength;	//矢印の移動距離
 
 private:
 	void initComponent(std::string windowName, float zDepth);
 
 	SpriteComponent* mArrow;
-	float mArrowMoveLength;	//矢印の移動距離
 };
 
 class MainMenu : public Menu {
 public:
 	MainMenu(Game* game, float zDepth);
-	void updateMenu() override;
+	void selectedAct() override;
 };
 
 class BackGround : public Actor

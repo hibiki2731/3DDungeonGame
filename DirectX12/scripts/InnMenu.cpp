@@ -12,7 +12,7 @@ InnMenu::InnMenu(Game* game, float zDepth) : Menu(game, "InnMenu", zDepth)
 	mMaxIndex = 2;
 }
 
-void InnMenu::updateMenu()
+void InnMenu::selectedAct()
 {
 	switch (mSelectedIndex) {
 	case 0:

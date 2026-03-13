@@ -10,7 +10,7 @@ class ForgeMenu : public Menu {
 public:
 
 	ForgeMenu(Game* game, float zDepth);
-	void updateMenu() override;
+	void selectedAct() override;
 
 private:
 	void prepareCraftItems();

@@ -74,17 +74,20 @@ void Menu::initComponent(std::string windowName, float zDepth)
 	}
 
 	//テキスト
-	std::wstring message = Utility::stringToWString(textWindowData[windowName]["text"].get<std::string>());
-	float fontSize = textWindowData[windowName]["fontSize"].get<float>();
-	float lineSpace = textWindowData[windowName].value("lineSpace", 0.0f);
-	auto text = std::make_unique<TextComponent>(this, zDepth - 0.5f);
-	text->setText(message);
-	text->setBaseLine(pos.x + textWindowData[windowName]["textOffsetX"].get<float>(), pos.y + textWindowData[windowName]["textOffsetY"].get<float>());
-	text->setFontSize(fontSize);
-	text->setTextColor(D2D1::ColorF(D2D1::ColorF::Black));
-	text->setLineSpace(lineSpace);
-	text->showText();
-	addComponent(std::move(text));
+	std::wstring message = Utility::stringToWString(textWindowData[windowName].value("text", ""));
+	if (message != L"") {
+		float fontSize = textWindowData[windowName]["fontSize"].get<float>();
+		float lineSpace = textWindowData[windowName].value("lineSpace", 0.0f);
+		auto text = std::make_unique<TextComponent>(this, zDepth - 0.5f);
+		text->setText(message);
+		text->setBaseLine(pos.x + textWindowData[windowName]["textOffsetX"].get<float>(), pos.y + textWindowData[windowName]["textOffsetY"].get<float>());
+		text->setFontSize(fontSize);
+		text->setTextColor(D2D1::ColorF(D2D1::ColorF::Black));
+		text->setLineSpace(lineSpace);
+		text->showText();
+		addComponent(std::move(text));
+		mArrowMoveLength = fontSize + lineSpace;
+	}
 
 	//矢印
 	auto arrow = std::make_unique<SpriteComponent>(this);
@@ -96,7 +99,6 @@ void Menu::initComponent(std::string windowName, float zDepth)
 	mArrow = arrow.get();
 	addComponent(std::move(arrow));
 
-	mArrowMoveLength = fontSize + lineSpace;
 
 }
 
@@ -107,7 +109,7 @@ MainMenu::MainMenu(Game* game, float zDepth) : Menu(game, "MainMenu", zDepth)
 }
 
 //各種メニューのupdate
-void MainMenu::updateMenu() {
+void MainMenu::selectedAct() {
 	switch (mSelectedIndex) {
 	case 0: {
 		auto inn = std::make_unique<InnMenu>(mGame, 97.0f);
@@ -195,8 +197,9 @@ void TownManager::update()
 		//決定キーが押された場合の処理
 		if (!mMenuStack.empty() && isSelected) {
 			isSelected = false;
-			mMenuStack.top()->updateMenu();
+			mMenuStack.top()->selectedAct();
 		}
+		mMenuStack.top()->updateMenu();
 
 	}
 

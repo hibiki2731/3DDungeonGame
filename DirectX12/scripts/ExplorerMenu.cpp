@@ -11,7 +11,7 @@ ExplorerMenu::ExplorerMenu(Game* game, float zDepth) : Menu(game, "ExplorerShopM
 	prepareCraftExplorer();
 }
 
-void ExplorerMenu::updateMenu()
+void ExplorerMenu::selectedAct()
 {
 	craftExplorer(mSelectedIndex);
 }

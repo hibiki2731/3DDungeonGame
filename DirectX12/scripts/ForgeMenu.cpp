@@ -13,7 +13,7 @@ ForgeMenu::ForgeMenu(Game* game, float zDepth) : Menu(game, "ForgeMenu", zDepth)
 }
 
 
-void ForgeMenu::updateMenu()
+void ForgeMenu::selectedAct()
 {
 	if (mSelectedIndex < mWeapons.size()) craftWeapons(mSelectedIndex);
 	else craftArmer(mSelectedIndex - mWeapons.size());

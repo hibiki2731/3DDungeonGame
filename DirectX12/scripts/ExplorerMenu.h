@@ -7,7 +7,7 @@ class ItemManager;
 class ExplorerMenu : public Menu {
 public:
 	ExplorerMenu(Game* game, float zDepth);
-	void updateMenu() override;
+	void selectedAct() override;
 
 private:
 	void prepareCraftExplorer();

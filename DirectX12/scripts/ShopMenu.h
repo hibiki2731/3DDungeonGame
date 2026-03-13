@@ -10,7 +10,7 @@ struct ItemData;
 class ShopMenu : public Menu {
 public:
 	ShopMenu(Game* game, float zDepth);
-	void updateMenu() override;
+	void selectedAct() override;
 
 private:
 	void buyItem(int indes);
