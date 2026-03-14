@@ -1,4 +1,4 @@
-#include "DamageText.h"
+ï»¿#include "DamageText.h"
 #include "Game.h"
 #include "AssetManager.h"
 
@@ -17,8 +17,8 @@ DamageText::~DamageText()
 
 void DamageText::update()
 {
-	mLifeTime -= deltaTime;	//õ–½‚ÌXV
-	mCenterPosition = mCenterPosition + mVelocity * deltaTime;	//ˆÊ’u‚ÌXV
+	mLifeTime -= deltaTime;	//å¯¿å‘½ã®æ›´æ–°
+	mCenterPosition = mCenterPosition + mVelocity * deltaTime;	//ä½ç½®ã®æ›´æ–°
 }
 
 float DamageText::getPosX()
@@ -47,38 +47,38 @@ float DamageText::getLifeTime()
 DamageTextManager::DamageTextManager(Game* game)
 {
 	mGame = game;
-	mCBSize = 256; //g—p‚·‚éƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚Íˆê‚Â‚¾‚¯
+	mCBSize = 256; //ä½¿ç”¨ã™ã‚‹ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã¯ä¸€ã¤ã ã‘
 	mHeapSize = 4;
 	mCBIndex = mGame->getAssetManager()->getCBEndIndex(mCBSize);
 	mHeapIndex = mGame->getAssetManager()->getHeapEndIndex(mHeapSize);
 	mNextInstanceIndex = 0;
 
 	mInstanceRawData.reserve(MaxNum);
-	////vertexBufferì¬
+	////vertexBufferä½œæˆ
 	HRESULT hr;
 	for(int i = 0; i < 2; i ++) hr = mGame->getGraphic()->createBuf(SizeInByte, mVertexBuf[i]);
 	assert(SUCCEEDED(hr));
 
-	////vertexBufferViewì¬
+	////vertexBufferViewä½œæˆ
 	for (int i = 0; i < 2; i++) {
 		mVertexBufView[i].BufferLocation = mVertexBuf[i]->GetGPUVirtualAddress();
 		mVertexBufView[i].SizeInBytes = SizeInByte;
-		mVertexBufView[i].StrideInBytes = sizeof(float) * NumElementsPerVertex; //’¸“_‚²‚Æ‚ÌƒoƒCƒg”
+		mVertexBufView[i].StrideInBytes = sizeof(float) * NumElementsPerVertex; //é ‚ç‚¹ã”ã¨ã®ãƒã‚¤ãƒˆæ•°
 	}
 	
 	for(int i = 0; i < 2; i++) 
 	HRESULT hr = mVertexBuf[i]->Map(0, nullptr, reinterpret_cast<void**>(&mMappedData[i]));
 
-	//ƒRƒ“ƒXƒ^ƒ“ƒgƒoƒbƒtƒ@‚Ì‰Šú‰»
+	//ã‚³ãƒ³ã‚¹ã‚¿ãƒ³ãƒˆãƒãƒƒãƒ•ã‚¡ã®åˆæœŸåŒ–
 	XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, mGame->getGraphic()->getAspect(), 0.01f, 50.0f);
 	mBC.proj = proj;
 	memcpy(mGame->getGraphic()->getConstantData(0) + mCBIndex, &mBC, sizeof(BillboardConstBuf));
 	memcpy(mGame->getGraphic()->getConstantData(1) + mCBIndex, &mBC, sizeof(BillboardConstBuf));
 
-	////ƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚İAƒeƒNƒXƒ`ƒƒƒoƒbƒtƒ@‚ğ‚Â‚­‚é
+	////ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã¿ã€ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒãƒƒãƒ•ã‚¡ã‚’ã¤ãã‚‹
 	mTextureBuf = mGame->getAssetManager()->getShaderResource("assets\\picture\\digits.png");
 
-	////ƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚Éƒrƒ…[‚ğì¬
+	////ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã«ãƒ“ãƒ¥ãƒ¼ã‚’ä½œæˆ
 	auto heapIndex = mHeapIndex;
 	mGame->getGraphic()->createConstantBufferView(mCBIndex, mCBSize, heapIndex, 2); heapIndex ++;
 	mGame->getGraphic()->createShaderResourceView(mTextureBuf, heapIndex); heapIndex += 2;
@@ -99,64 +99,64 @@ void DamageTextManager::update()
 	XMVECTOR vvelocity = XMLoadFloat3(&Velocity);
 	for (int t = 0; t < mInstanceRawData.size(); t++) {
 
-		//ˆÊ’u‚ÌXV
+		//ä½ç½®ã®æ›´æ–°
 		XMVECTOR vpos = XMLoadFloat3(&mInstanceRawData[t].pos);
 		vpos = vpos + vvelocity * deltaTime;
 		XMStoreFloat3(&mInstanceRawData[t].pos, vpos);
-		//alpha’l‚ÌXV
+		//alphaå€¤ã®æ›´æ–°
 		float alpha = (mInstanceRawData[t].alpha - deltaTime) / MaxLifeTime;
 		mInstanceRawData[t].alpha = alpha;
 
-		//õ–½‚ªØ‚ê‚½‚çíœ‘Ò‚¿”z—ñ‚É’Ç‰Á
+		//å¯¿å‘½ãŒåˆ‡ã‚ŒãŸã‚‰å‰Šé™¤å¾…ã¡é…åˆ—ã«è¿½åŠ 
 		if (alpha <= 0.0f) {
 			deadTextsIndex.emplace_back(t);
 		}
 	}
 
-	//íœ‘Ò‚¿”z—ñ’†‚Ì—v‘f‚ğíœ
+	//å‰Šé™¤å¾…ã¡é…åˆ—ä¸­ã®è¦ç´ ã‚’å‰Šé™¤
 	for (int index = deadTextsIndex.size() - 1; index >= 0; index--) {
-		//ÅŒã”ö‚Ìƒf[ƒ^‚ğindex‚É“ü‚êAÅŒã”ö‚ğœ‹
+		//æœ€å¾Œå°¾ã®ãƒ‡ãƒ¼ã‚¿ã‚’indexã«å…¥ã‚Œã€æœ€å¾Œå°¾ã‚’é™¤å»
 		mInstanceRawData[deadTextsIndex[index]] = mInstanceRawData.back();
 		mInstanceRawData.pop_back();
 
 	}
 
-	//VertexBuffer‚ğXV
+	//VertexBufferã‚’æ›´æ–°
 	memcpy(mMappedData[mGame->getGraphic()->getBackBufIdx()], mInstanceRawData.data(), mInstanceRawData.size() * sizeof(DamageTextInstance));
 
 }
 
 void DamageTextManager::draw()
 {
-	//•`‰æ‚·‚éƒ_ƒ[ƒWƒeƒLƒXƒg‚ª‚È‚¯‚ê‚ÎA•`‰æˆ—‚ğ”²‚¯‚é
+	//æç”»ã™ã‚‹ãƒ€ãƒ¡ãƒ¼ã‚¸ãƒ†ã‚­ã‚¹ãƒˆãŒãªã‘ã‚Œã°ã€æç”»å‡¦ç†ã‚’æŠœã‘ã‚‹
 	if (mInstanceRawData.size() == 0)  return; 
 
 	mGame->getGraphic()->getCommandList()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_POINTLIST);
 
-	//’¸“_‚ğƒZƒbƒg
+	//é ‚ç‚¹ã‚’ã‚»ãƒƒãƒˆ
 	int backBufIdx = mGame->getGraphic()->getBackBufIdx();
 	mGame->getGraphic()->getCommandList()->IASetVertexBuffers(0, 1, &mVertexBufView[backBufIdx]);
 
-	//ƒfƒBƒXƒNƒŠƒvƒ^ƒq[ƒv‚ğƒfƒBƒXƒNƒŠƒvƒ^ƒe[ƒuƒ‹‚ÉƒZƒbƒg
+	//ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ’ãƒ¼ãƒ—ã‚’ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ãƒ†ãƒ¼ãƒ–ãƒ«ã«ã‚»ãƒƒãƒˆ
 	auto hDescHeap = mGame->getGraphic()->getHeapHandle();
 	hDescHeap.ptr += (mHeapIndex + backBufIdx * 2) * mGame->getGraphic()->getCbvTbvIncSize();
 	mGame->getGraphic()->getCommandList()->SetGraphicsRootDescriptorTable(0, hDescHeap);
-	//•`‰æBƒCƒ“ƒfƒbƒNƒX‚ğg—p‚µ‚È‚¢
+	//æç”»ã€‚ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ä½¿ç”¨ã—ãªã„
 	mGame->getGraphic()->getCommandList()->DrawInstanced(1, mInstanceRawData.size(), 0, 0);
 	
 }
 
 void DamageTextManager::createDamageText(XMFLOAT3& position, int digit)
 {
-	//¶ƒf[ƒ^‚ğ”z—ñ‚É’Ç‰Á
+	//ç”Ÿãƒ‡ãƒ¼ã‚¿ã‚’é…åˆ—ã«è¿½åŠ 
 	DamageTextInstance text;
 	text.pos = position;
 	text.size = DTSize;
 	text.digit = static_cast<float>(digit);
 	text.alpha = 1.0f;
 
-	//damageText‚ğ”z—ñ‚É’Ç‰Á
-	//ƒ_ƒ[ƒWƒeƒLƒXƒg‚ªÅ‘å”‚É’B‚µ‚Ä‚¢‚½ê‡Aalpha’l‚ªÅ‚à¬‚³‚¢‚à‚Ì‚Æ“ü‚ê‘Ö‚¦‚é
+	//damageTextã‚’é…åˆ—ã«è¿½åŠ 
+	//ãƒ€ãƒ¡ãƒ¼ã‚¸ãƒ†ã‚­ã‚¹ãƒˆãŒæœ€å¤§æ•°ã«é”ã—ã¦ã„ãŸå ´åˆã€alphaå€¤ãŒæœ€ã‚‚å°ã•ã„ã‚‚ã®ã¨å…¥ã‚Œæ›¿ãˆã‚‹
 	if (mInstanceRawData.size() >= MaxNum) {
 		auto it = std::min_element(mInstanceRawData.begin(), mInstanceRawData.end(), [](const DamageTextInstance& a, const DamageTextInstance& b) {
 			return a.alpha < b.alpha;
@@ -165,7 +165,7 @@ void DamageTextManager::createDamageText(XMFLOAT3& position, int digit)
 		int index = std::distance(mInstanceRawData.begin(), it);
 		mInstanceRawData[index] = text;
 	}
-	//Å‘å”‚Å‚È‚¢ê‡A”z—ñ‚ÌŒã‚É’Ç‰Á
+	//æœ€å¤§æ•°ã§ãªã„å ´åˆã€é…åˆ—ã®å¾Œã«è¿½åŠ 
 	else mInstanceRawData.emplace_back(text);
 }
 

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Component.h"
 #include "MapManager.h"
 #include <DirectXMath.h>
@@ -42,17 +42,17 @@ public:
 
 
 protected:
-	//ƒXƒe[ƒ^ƒX
+	//ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
 	int mMaxHP;
 	int mHP;
 	int mPower;
 	int mDefense;
 	bool isAlive;
 
-	//Œü‚«
-	int mDirection; //¶ã‰E‰º 0000
+	//å‘ã
+	int mDirection; //å·¦ä¸Šå³ä¸‹ 0000
 
-	//ˆÊ’u
+	//ä½ç½®
 	std::vector<int> mIndexPos; //{x, y}
 
 	MapManager* mMapManager;

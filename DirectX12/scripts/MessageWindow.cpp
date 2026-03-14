@@ -1,4 +1,4 @@
-#include "MessageWindow.h"
+ï»¿#include "MessageWindow.h"
 #include "TextComponent.h"
 #include "SpriteComponent.h"
 #include "SceneManager.h"
@@ -12,7 +12,7 @@
 MessageWindow::MessageWindow(Game* game) : Actor(game)
 {
 	
-	std::wstring message = L"‰Šú‰»";
+	std::wstring message = L"åˆæœŸåŒ–";
 	mMessage = message;
 	auto text = std::make_unique<TextComponent>(this, 0.9f);
 	text->setText(mMessage);
@@ -36,7 +36,7 @@ void MessageWindow::inputActor()
 
 void MessageWindow::updateActor()
 {
-	//ƒfƒoƒbƒO—p
+	//ãƒ‡ãƒãƒƒã‚°ç”¨
 	std::wstring message;
 	if (mGame->getSceneManager()->getCurrentScene() == SceneType::TOWN) {
 		message += L"HP: " + std::to_wstring(mGame->getPlayerManager()->getPlayerData().hp) + L" ";
@@ -49,5 +49,5 @@ void MessageWindow::updateActor()
 	message += L"G:" + std::to_wstring(mGame->getItemManager()->getResourceNum("GRASS")) + L"\n";
 	mMessage = message;
 	mText->setText(mMessage);
-	mText->showText();  //ƒ}ƒ‹ƒ`ƒXƒŒƒbƒh‰»‚µ‚½‚¢
+	mText->showText();  //ãƒãƒ«ãƒã‚¹ãƒ¬ãƒƒãƒ‰åŒ–ã—ãŸã„
 }

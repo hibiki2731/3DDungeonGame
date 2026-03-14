@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <vector>
 #include <memory>
 #include "Definition.h"
@@ -55,7 +55,7 @@ public:
 	Player* getPlayer();
 	TurnType getTurnType();
 
-	//ƒ^[ƒ“§Œä
+	//ã‚¿ãƒ¼ãƒ³åˆ¶å¾¡
 	void moveToPlayerTurn();
 	void moveToEnemyTurn();
 	void clearMap();
@@ -75,13 +75,13 @@ private:
 	Game* mGame;
 	SceneManager* mSceneManager;
 
-	//–¢s“®“G”
+	//æœªè¡Œå‹•æ•µæ•°
 	int mPendingEnemyCount;
 
-	//QÆ—pƒvƒŒƒCƒ„[
+	//å‚ç…§ç”¨ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
 	Player* mPlayer;
 
-	//ƒV[ƒ“§Œä
+	//ã‚·ãƒ¼ãƒ³åˆ¶å¾¡
 	bool isMap;
 };
 

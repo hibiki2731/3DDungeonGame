@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "SpriteComponent.h"
 
 class Anime2DComponent :

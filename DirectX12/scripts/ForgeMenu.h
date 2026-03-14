@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "TownManager.h"
 #include <vector>
 #include <string>

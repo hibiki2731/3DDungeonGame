@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "TownManager.h"
 
 class InnMenu : public Menu {

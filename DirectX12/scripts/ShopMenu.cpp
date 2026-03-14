@@ -1,4 +1,4 @@
-#include "ShopMenu.h"
+ï»¿#include "ShopMenu.h"
 #include "Game.h"
 #include "PlayerManager.h"
 #include "ItemManager.h"
@@ -23,18 +23,18 @@ void ShopMenu::prepareSaleItem()
 }
 
 void ShopMenu::buyItem(int index) {
-	//ƒŠƒ\[ƒX‚ðÁ”ï
+	//ãƒªã‚½ãƒ¼ã‚¹ã‚’æ¶ˆè²»
 	const auto& itemData = mItemManager->getItemData(mSaleItem[index]);
 	for (int i = 0; i < itemData.costResourceID.size(); i++) {
 		int possessedResource = mItemManager->getResourceNum(itemData.costResourceID[i]);
-		//Á”ïƒŠƒ\[ƒX•ªŽ‚Á‚Ä‚¢‚È‚©‚Á‚½‚ç”ƒ‚¦‚È‚¢
+		//æ¶ˆè²»ãƒªã‚½ãƒ¼ã‚¹åˆ†æŒã£ã¦ã„ãªã‹ã£ãŸã‚‰è²·ãˆãªã„
 		if (itemData.price[i] > possessedResource) return;
 
-		//ŠŽƒŠƒ\[ƒX‚ðÁ”ïƒŠƒ\[ƒX•ªŒ¸‚ç‚·
+		//æ‰€æŒãƒªã‚½ãƒ¼ã‚¹ã‚’æ¶ˆè²»ãƒªã‚½ãƒ¼ã‚¹åˆ†æ¸›ã‚‰ã™
 		mItemManager->subResource(itemData.costResourceID[i], itemData.price[i]);
 	}
 
-	//ƒCƒ“ƒxƒ“ƒgƒŠ‚ÉƒAƒCƒeƒ€‚ð’Ç‰Á
+	//ã‚¤ãƒ³ãƒ™ãƒ³ãƒˆãƒªã«ã‚¢ã‚¤ãƒ†ãƒ ã‚’è¿½åŠ 
 	mPlayerManager->addInventory(itemData.id);
 }
 
