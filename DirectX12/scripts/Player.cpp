@@ -67,10 +67,23 @@ Player::Player(Game* game, float x, float y) : Actor(game)
 	mCharacter = character.get();
 	addComponent(std::move(character));
 
+	//行動回数制限の取得
+	mActionLimit = data.actionLimit;
+
 	//マップマネージャーの取得
 	mMapManager = game->getMapManager();
-
+	//アイテムマネージャーの取得
 	mItemManager = game->getItemManager();
+
+	//探索道具の効果を取得
+	for (const std::string toolID : data.explorerInventory) {
+		auto toolData = mItemManager->getExplorerData(toolID);
+
+		std::string category = toolData.category;
+		if (category == "ACTION_LIMIT") {
+			mActionLimit += toolData.value;
+		}
+	}
 }
 
 Player::~Player()
@@ -182,6 +195,11 @@ int Player::getDefense()
 	return mCharacter->getDefense();
 }
 
+int Player::getActionLimit()
+{
+	return mActionLimit;
+}
+
 void Player::giveDamage(int damage)
 {
 	mPendingDamage += damage;
@@ -193,6 +211,8 @@ void Player::attack()
 	if (mMapManager->getTurnType() == TurnType::ENEMY) return;
 	//移動、回転中は実行不可
 	if (isMoving || isRotating) return;
+	//残り行動回数が0の場合実行不可
+	if (mActionLimit == 0)return;
 
 	//前方のエネミーを取得
 	EnemyComponent* target = nullptr;
@@ -224,7 +244,7 @@ void Player::attack()
 	calcDamageText(target->getPosition(), damage);
 
 	//ターン経過
-	mMapManager->moveToEnemyTurn();
+	turnEnd();
 }
 
 void Player::calcDamageText(const XMFLOAT3& targetPos, int val)
@@ -263,6 +283,8 @@ void Player::move(Direction direction)
 	if (mMapManager->getTurnType() == TurnType::ENEMY) return;
 	//移動、回転中は実行不可
 	if (isMoving || isRotating) return;
+	//行動回数が0の場合実行不可
+	if (mActionLimit == 0) return;
 
 	int targetIndexPos[2] = {mCharacter->getIndexPos()[0], mCharacter->getIndexPos()[1]};
 	//進行する差分のインデックスを取得
@@ -282,7 +304,7 @@ void Player::move(Direction direction)
 	mTargetPos = XMFLOAT3(static_cast<float>(targetIndexPos[0]) * MAPTIPSIZE, mPosition.y, static_cast<float>(targetIndexPos[1]) * MAPTIPSIZE);
 	
 	isMoving = true;
-	mMapManager->moveToEnemyTurn(); //ターン経過
+	turnEnd();
 
 }	
 
@@ -343,6 +365,8 @@ void Player::collect()
 	if (mMapManager->getTurnType() == TurnType::ENEMY) return;
 	//移動、回転中は実行不可
 	if (isMoving || isRotating) return;
+	//残り行動回数が0の場合実行不可
+	if (mActionLimit == 0) return;
 
 	int tileData = mMapManager->getMapDataAt(mCharacter->getIndexPosInt());
 
@@ -355,7 +379,7 @@ void Player::collect()
 	}
 
 	//ターン経過
-	mMapManager->moveToEnemyTurn();
+	turnEnd();
 }
 
 void Player::damageEffect()
@@ -382,6 +406,8 @@ void Player::useItem()
 	if (mMapManager->getTurnType() == TurnType::ENEMY) return;
 	//移動、回転中は実行不可
 	if (isMoving || isRotating) return;
+	//残り行動回数が0の場合実行不可
+	if (mActionLimit == 0) return;
 
 	//アイテムのIDを取得
 	const auto& itemID = mPlayerManager->getInventoryItem(mSelectItemIndex);
@@ -401,5 +427,13 @@ void Player::useItem()
 	mPlayerManager->removeInventory(mSelectItemIndex);
 
 	//ターン経過
+	turnEnd();
+}
+
+void Player::turnEnd()
+{
+	//ターンをエネミーターンに変更
 	mMapManager->moveToEnemyTurn();
+	//残り行動回数を減らす
+	mActionLimit--;
 }

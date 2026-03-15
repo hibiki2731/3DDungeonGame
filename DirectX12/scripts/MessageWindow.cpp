@@ -43,7 +43,7 @@ void MessageWindow::updateActor()
 	}
 	else if (mGame->getSceneManager()->getCurrentScene() == SceneType::MAP) {
 		message += L"HP: " + std::to_wstring(mGame->getMapManager()->getPlayer()->getHP()) + L" STR: " + std::to_wstring(mGame->getMapManager()->getPlayer()->getPower())
-			+ L" DEF: " + std::to_wstring(mGame->getMapManager()->getPlayer()->getDefense()) + L" ";
+			+ L" DEF: " + std::to_wstring(mGame->getMapManager()->getPlayer()->getDefense()) + L" ACTION_LIMIT" + std::to_wstring(mGame->getMapManager()->getPlayer()->getActionLimit()) + L"\n";
 	}
 
 	message += L"G:" + std::to_wstring(mGame->getItemManager()->getResourceNum("GRASS")) + L"\n";

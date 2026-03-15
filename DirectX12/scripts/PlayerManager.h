@@ -7,6 +7,7 @@ struct PlayerData {
 	int hp = 0;
 	int power = 0;
 	int defence = 0;
+	int actionLimit = 0;
 	float moveSpeed = 0.0f;
 	float rotSpeed = 0.0f;
 	float flushDuration = 0.0f;

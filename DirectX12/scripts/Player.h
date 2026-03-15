@@ -25,6 +25,7 @@ public:
 	int getHP();
 	int getPower();
 	int getDefense();
+	int getActionLimit();
 
 	//プレイヤーにダメージを与える
 	void giveDamage(int damage);
@@ -41,6 +42,7 @@ private:
 	void damageEffect();
 	void updateFlash();
 	void useItem();
+	void turnEnd();
 
 	float mMoveSpeed;
 	float mRotSpeed;
@@ -58,6 +60,9 @@ private:
 
 	//アイテム
 	int mSelectItemIndex;
+
+	//行動回数制限
+	int mActionLimit;
 
 	CameraComponent* mCamera;
 	CharacterComponent* mCharacter;

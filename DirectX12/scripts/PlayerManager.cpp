@@ -22,6 +22,7 @@ PlayerManager::PlayerManager()
 	mPlayerData.explorerInventory = std::move(json["explorer"].get<std::vector<std::string>>());
 	mPlayerData.equippedWeaponIndex = json["equippedWeaponIndex"].get<int>();
 	mPlayerData.equippedArmerIndex = json["equippedArmerIndex"].get<int>();
+	mPlayerData.actionLimit = json["actionLimit"].get<int>();
 }
 
 const PlayerData& PlayerManager::getPlayerData()

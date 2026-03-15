@@ -88,6 +88,8 @@ ItemManager::ItemManager()
 		explorer.name = explorerJson["name"];
 		explorer.costResourceID = explorerJson["costResourceID"];
 		explorer.price = explorerJson["price"].get<std::vector<int>>();
+		explorer.category = explorerJson["category"];
+		explorer.value = explorerJson["value"];
 		mExplorerData[explorerJson["id"]] = explorer;
 	}
 }

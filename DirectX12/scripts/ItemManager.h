@@ -33,6 +33,8 @@ struct ExplorerData {
 	std::string name;
 	std::vector<std::string> costResourceID;
 	std::vector<int> price;
+	std::string category;
+	int value;
 };
 
 class ItemManager

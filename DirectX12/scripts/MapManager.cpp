@@ -42,6 +42,12 @@ void MapManager::updateTurn()
 
 		//エネミーターン→プレイヤーターンへの移行時
 		if (mNextTurn == TurnType::PLAYER && mTurnType == TurnType::ENEMY) {
+			//プレイヤーの残り行動回数が0ならば街に帰らせる
+			if (mPlayer->getActionLimit() == 0) {
+				mSceneManager->transitToTown();
+			}
+
+
 			//敵のランダム湧き
 			int random = Random::dist(1, 100);
 			if (random <= 10) spawnEnemy();
