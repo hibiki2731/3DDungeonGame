@@ -24,6 +24,7 @@ public:
 	PlayerManager();
 
 	const PlayerData& getPlayerData();
+	const std::string& getInventoryItem(int index);
 
 	void setHP(int hp);
 	void setMaxHP(int maxhp);
@@ -38,6 +39,7 @@ public:
 	void addExplorer(std::string id);
 
 	void removeInventory(std::string id);
+	void removeInventory(int index);
 	void removeWeapon(std::string id);
 	void removeArmer(std::string id);
 	void removeExplorer(std::string id);

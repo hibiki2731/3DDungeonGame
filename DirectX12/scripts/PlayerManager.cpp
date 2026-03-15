@@ -29,6 +29,16 @@ const PlayerData& PlayerManager::getPlayerData()
 	return mPlayerData;
 }
 
+const std::string& PlayerManager::getInventoryItem(int index)
+{
+	int inventorySize = mPlayerData.inventory.size();
+	if (inventorySize == 0) return "NONE";
+
+	if (index < 0) index = 0;
+	else if (index >= inventorySize) index = inventorySize - 1;
+	return mPlayerData.inventory[index];
+}
+
 void PlayerManager::setHP(int hp)
 {
 	mPlayerData.hp = hp;
@@ -85,6 +95,14 @@ void PlayerManager::removeInventory(std::string id) {
 		std::iter_swap(iter, mPlayerData.inventory.end() - 1);
 		mPlayerData.inventory.pop_back();
 	}
+}
+
+void PlayerManager::removeInventory(int index)
+{
+	if (index < 0 || index >= mPlayerData.inventory.size()) return;
+
+	//順序を守って削除
+	mPlayerData.inventory.erase(mPlayerData.inventory.begin() + index);
 }
 
 void PlayerManager::removeWeapon(std::string id) {

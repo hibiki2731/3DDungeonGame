@@ -36,6 +36,8 @@ public:
 	void setIndexPos(int x, int y);
 	void setIndexPosInt(int indexPos);
 
+	void addHP(int hp);
+
 	void giveDamage(int damage);
 	void turnRight();
 	void turnLeft();

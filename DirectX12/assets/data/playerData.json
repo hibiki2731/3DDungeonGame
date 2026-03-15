@@ -12,15 +12,14 @@
         "CLOTHES"
     ],
     "defense": 3,
-    "equippedArmerIndex": 1,
-    "equippedWeaponIndex": 1,
+    "equippedArmerIndex": 0,
+    "equippedWeaponIndex": 0,
     "explorer": [
         "BOOTS"
     ],
     "flashDuration": 0.5,
-    "hp": 100,
+    "hp": 70,
     "inventory": [
-        "POSION",
         "POSION"
     ],
     "maxhp": 100,

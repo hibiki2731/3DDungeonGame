@@ -118,6 +118,12 @@ void CharacterComponent::setIndexPosInt(int indexPos)
 	mIndexPos[1] = indexPos / mMapManager->getMapSize();
 }
 
+void CharacterComponent::addHP(int hp)
+{
+	mHP += hp;
+	if (mHP > mMaxHP) mHP = mMaxHP;
+}
+
 void CharacterComponent::giveDamage(int damage)
 {
 	mHP -= damage;

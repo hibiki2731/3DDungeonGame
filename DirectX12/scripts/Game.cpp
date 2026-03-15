@@ -360,10 +360,14 @@ void Game::update()
 				deadActors.emplace_back(std::move(actor));
 			}
 		}
+
 		//元配列に残ったnullptrを削除
 		std::erase_if(mActors, [](const std::unique_ptr<Actor>& actor) {
 			return actor == nullptr;
 			});
+
+
+
 	}
 
 	//アクターの除去後に行う処理

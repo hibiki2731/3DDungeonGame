@@ -7,6 +7,8 @@
 class CameraComponent;
 class CharacterComponent;
 class MapManager;
+class PlayerManager;
+class ItemManager;
 
 class Player : public Actor
 {
@@ -38,6 +40,7 @@ private:
 	void collect();
 	void damageEffect();
 	void updateFlash();
+	void useItem();
 
 	float mMoveSpeed;
 	float mRotSpeed;
@@ -53,8 +56,13 @@ private:
 	float mFlashTimer;
 	float mFlashDuration;
 
+	//アイテム
+	int mSelectItemIndex;
+
 	CameraComponent* mCamera;
 	CharacterComponent* mCharacter;
 	MapManager* mMapManager;
+	ItemManager* mItemManager;
+	PlayerManager* mPlayerManager;
 };
 

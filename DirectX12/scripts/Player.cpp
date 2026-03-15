@@ -25,9 +25,11 @@ Player::Player(Game* game, float x, float y) : Actor(game)
 	isMoving = false;
 	isRotating = false;
 	mFlashTimer = 0.0f;
+	mSelectItemIndex = 0;
 
 	//プレイヤーデータの取得
-	const PlayerData& data = game->getPlayerManager()->getPlayerData();
+	mPlayerManager = game->getPlayerManager();
+	const PlayerData& data = mPlayerManager->getPlayerData();
 
 	//移動速度、回転速度、点滅時間の設定
 	mMoveSpeed = data.moveSpeed;
@@ -66,7 +68,9 @@ Player::Player(Game* game, float x, float y) : Actor(game)
 	addComponent(std::move(character));
 
 	//マップマネージャーの取得
-	mMapManager = mGame->getMapManager();
+	mMapManager = game->getMapManager();
+
+	mItemManager = game->getItemManager();
 }
 
 Player::~Player()
@@ -99,6 +103,9 @@ void Player::inputActor()
 	if (isKeyJustPressed(VK_RETURN)) {
 		attack();
 	    collect();
+	}
+	if (isKeyJustPressed('I')) {
+		useItem();
 	}
 	
 }
@@ -367,4 +374,32 @@ void Player::updateFlash()
 		float intensity = max(0.0f, mFlashTimer / mFlashDuration);
 		mGame->getGraphic()->updateDamageFlashIntensity(intensity);
 	}
+}
+
+void Player::useItem()
+{
+	//敵ターン時は実行不可
+	if (mMapManager->getTurnType() == TurnType::ENEMY) return;
+	//移動、回転中は実行不可
+	if (isMoving || isRotating) return;
+
+	//アイテムのIDを取得
+	const auto& itemID = mPlayerManager->getInventoryItem(mSelectItemIndex);
+	if (itemID == "NONE") {
+		return;
+	}
+	
+	//アイテムデータを取得
+	const ItemData& itemData = mItemManager->getItemData(itemID);
+
+	//アイテムのカテゴリーから効果を発揮
+	if (itemData.category == "HP_RECOVER") {
+		mCharacter->addHP(itemData.value);
+	}
+
+	//インベントリーから削除
+	mPlayerManager->removeInventory(mSelectItemIndex);
+
+	//ターン経過
+	mMapManager->moveToEnemyTurn();
 }

@@ -98,6 +98,9 @@ void TextComponent::draw()
 
 void TextComponent::endProccess()
 {
+	//テキストの描画処理が終わるのを待つ。
+	mGraphic->waitGPU();
+
 	mOwner->getGame()->removeText(this);
 }
 
