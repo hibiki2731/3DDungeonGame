@@ -33,11 +33,17 @@ public:
 	//終了処理
 	virtual void endProcess() {};
 
+	//死亡処理
+	void dead();
+	bool isDead() const { return mOwnerIsDead; }
+
 protected:
 	//所有アクター
 	Actor& mOwner;
 	//更新順序
 	int mUpdateOrder;
+
+	bool mOwnerIsDead;
 
 #ifdef _DEBUG
 	friend class GUIDebugger;

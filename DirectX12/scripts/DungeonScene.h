@@ -41,6 +41,7 @@ public:
 	void drawScene() override;
     void onEnter() override;
     void onExit() override;
+	void refreshVector() override;
     
     const std::string getName() const override {
         return "DUNGEON";

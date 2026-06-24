@@ -33,6 +33,8 @@ void Game::runLoop()
 		input();
 		update();
 		draw();
+
+		deleteDeadElements();
 	}
 }
 
@@ -135,8 +137,6 @@ void Game::update()
 	//シーンにアクターを追加
 	mSceneManager->joinSceneActors();
 
-	//死んだアクターの除去
-	mSceneManager->removeSceneActors();
 
 	//遅いシーン更新
 	mSceneManager->lateUpdateScene();
@@ -177,6 +177,15 @@ void Game::draw()
 	mGraphic->moveToNextFrame();
 
 
+}
+
+void Game::deleteDeadElements()
+{
+	//死んだ配列の要素を削除する
+	mSceneManager->refreshSceneVector();
+
+	//死んだアクターの除去(最後に行う)
+	mSceneManager->removeSceneActors();
 }
 
 #ifdef _DEBUG

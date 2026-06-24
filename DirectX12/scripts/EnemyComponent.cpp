@@ -76,7 +76,6 @@ void EnemyComponent::updateComponent()
 //コンポーネント除去時の処理
 void EnemyComponent::endProcess()
 {
-	mScene.removeEnemy(this);			//シーンのエネミー配列から除去
 	mScene.setCharacterDataAt(mIndexPos[0], mIndexPos[1], CharacterType::EMPTY); //自分のいるindex座標を空に
 }
 

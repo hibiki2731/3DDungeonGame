@@ -63,4 +63,7 @@ private:
 
     //メッシュのID
     std::string mMeshID;
+
+    //初期化されているか
+    bool isInitialized;
 };

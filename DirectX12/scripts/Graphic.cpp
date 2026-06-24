@@ -1013,12 +1013,12 @@ void Graphic::updateBase3DData()
 	static int preSpotLightIndex = 0;
 	//ライトの数が減った場合、減った分のライトを無効にする
 	if (prePointLightIndex > mPointLightIndex) {
-		for (int i = mPointLightIndex + 1; i <= prePointLightIndex; i++) {
+		for (int i = mPointLightIndex; i < prePointLightIndex; i++) {
 			Base3DData.pointLights[i].setValue.x = 0;	//ライトを無効にする
 		}
 	}
 	if (preSpotLightIndex > mSpotLightIndex) {
-		for (int i = mSpotLightIndex + 1; i <= preSpotLightIndex; i++) {
+		for (int i = mSpotLightIndex; i < preSpotLightIndex; i++) {
 			Base3DData.spotLights[i].setValue.x = 0;	//ライトを無効にする
 		}
 	}

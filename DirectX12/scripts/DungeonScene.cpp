@@ -17,7 +17,7 @@
 #include "FireParticleComponent.h"
 #include "DebugCamera.h"
 #include "Treasure.h"
-//#define EDIT
+#define EDIT
 
 DungeonScene::DungeonScene(Game& game)
 	:Scene(game)
@@ -54,7 +54,15 @@ void DungeonScene::drawScene()
 
 	//炎パーティクルの描画
 	mGame.getGraphic().setRenderType(Graphic::RENDER_FP);
-	for (auto p : mParticles) p->draw();
+	for (auto p : mParticles) {
+		if (p->isDead()) continue;
+		p->draw();
+	}
+
+	//死んだ炎パーティクルの削除
+	erase_if(mParticles, [](const FireParticleComponent* particle) {
+		return particle->isDead();
+		});
 
 }
 
@@ -105,6 +113,14 @@ void DungeonScene::onExit()
 #ifdef _DEBUG
 	mDebugFlag = false;
 #endif
+}
+
+void DungeonScene::refreshVector()
+{
+	//死んだエネミーの削除
+	erase_if(mEnemies, [](const EnemyComponent* enemy) {
+		return enemy->isDead();
+		});
 }
 
 void DungeonScene::createEnemy(const std::string& enemyID, float x, float y)

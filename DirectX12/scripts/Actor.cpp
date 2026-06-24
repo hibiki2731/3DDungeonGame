@@ -88,6 +88,13 @@ void Actor::endProcess()
 
 void Actor::setState(State state)
 {
+	//死亡状態に変更された場合、コンポーネントの死亡処理を呼び出す
+	if (state == Actor::State::Dead) {
+		for (auto& component : mComponents) {
+			component->dead();
+		}
+	}
+
 	mState = state;
 }
 

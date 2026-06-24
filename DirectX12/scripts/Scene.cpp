@@ -122,18 +122,35 @@ void Scene::lateUpdate()
 void Scene::draw3D()
 {
 	for (auto& mesh : mMeshes) {
+		if (mesh->isDead()) continue;
 		mesh->draw();
 	}
+
+	//死んだメッシュを削除
+	erase_if(mMeshes, [](const MeshComponent* mesh) {
+		return mesh->isDead();
+		});
 }
 
 void Scene::draw2D()
 {
 	for (auto& sprite : mSprites) {
+		if (sprite->isDead()) continue;
 		sprite->draw();
 	}
 	for (auto& text : mTexts) {
+		if (text->isDead()) continue;
 		text->draw();
 	}
+
+	//死んだスプライトを削除
+	erase_if(mSprites, [](const SpriteComponent* sprite) {
+		return sprite->isDead();
+		});
+	//死んだテキストを削除
+	erase_if(mTexts, [](const TextComponent* text) {
+		return text->isDead();
+		});
 }
 
 void Scene::input()

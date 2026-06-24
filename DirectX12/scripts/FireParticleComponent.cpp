@@ -58,8 +58,6 @@ void FireParticleComponent::loadFromJson(const nlohmann::json& json)
 void FireParticleComponent::endProcess()
 { 
     for (int i = 0; i < 2; i++) mVertexBuf[i]->Unmap(0, nullptr);
-    //パーティクル配列から除去
-    static_cast<DungeonScene&>(mOwner.getScene()).removeParticle(this);
 
     //メモリの解放
     mAssetManager.deleteHeap(mHeapIndex, mHeapSize);
