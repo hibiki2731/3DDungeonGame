@@ -32,9 +32,6 @@ public:
 	//シーン中のアクターの削除
 	void removeSceneActors();
 
-	//シーン内の配列内の死んだ要素を削除する
-	void refreshSceneVector();
-
 	//getter
 	const std::string& getCurrentSceneType();
 	class Scene& getCurrentScene();

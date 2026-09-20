@@ -86,5 +86,4 @@ private:
 	void input();
 	void update();
 	void draw();
-	void deleteDeadElements();
 };

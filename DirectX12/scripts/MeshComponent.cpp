@@ -15,7 +15,6 @@ MeshComponent::MeshComponent(Actor& owner, int updateOrder)
 	mOwner.getScene().addMesh(this);
 	CbvTbvSize = mGraphic.getCbvTbvIncSize();
 	mMeshID = "NONE";
-	isInitialized = false;
 }
 
 void MeshComponent::loadFromJson(const nlohmann::json& json)
@@ -27,6 +26,7 @@ void MeshComponent::loadFromJson(const nlohmann::json& json)
 void MeshComponent::endProcess()
 {
 	//Gameからメッシュを削除
+	mOwner.getScene().removeMesh(this);
 	mOwner.getScene().getGame().getAssetManager().deleteMemory(mCBIndex, mCBSize);
 	mOwner.getScene().getGame().getAssetManager().deleteHeap(mHeapIndex, mHeapSize * 2);
 }
@@ -98,14 +98,11 @@ void MeshComponent::create(const MeshData * meshData)
 
 	//スケールを設定
 	mOwner.setScale(meshData->Scale);
-	isInitialized = true;
 
 }
 
 void MeshComponent::draw()
 {
-	if (!isInitialized) return;
-
 	//ワールドマトリックス
 	XMMATRIX world = XMMatrixIdentity()
 		* XMMatrixScaling(mOwner.getScale().x, mOwner.getScale().y, mOwner.getScale().z)

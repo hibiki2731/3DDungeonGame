@@ -176,6 +176,7 @@ void TextComponent::draw()
 
 void TextComponent::endProcess()
 {
+	mOwner.getScene().removeText(this);
 	mOwner.getScene().getGame().getAssetManager().deleteMemory(mCBIndex, mCBSize);
 	mOwner.getScene().getGame().getAssetManager().deleteHeap(mHeapIndex, mHeapSize);
 

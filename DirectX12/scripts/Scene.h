@@ -70,9 +70,6 @@ public:
 	//アクターの全消去
 	void refreshActors();
 
-	//シーン独自の配列のリフレッシュ処理
-	virtual void refreshVector() {};;
-
 #ifdef _DEBUG
 	void drawDebugGUI();
 	void addDebugObject(class Object* object);

@@ -301,6 +301,7 @@
                 1.0
             ]
         },
+        "EmptyObject": null,
         "EndWindow": {
             "components": [
                 {
@@ -687,8 +688,7 @@
                 1.0,
                 1.0
             ]
-        },
-        "test": {}
+        }
     },
     "GAMEOVER": {},
     "TITLE": {

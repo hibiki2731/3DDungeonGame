@@ -82,13 +82,6 @@ void SceneManager::removeSceneActors()
 	}
 }
 
-void SceneManager::refreshSceneVector()
-{
-	if (mCurrentScene) {
-		mCurrentScene->refreshVector();
-	}
-}
-
 const std::string& SceneManager::getCurrentSceneType()
 {
 	return mCurrentSceneType;

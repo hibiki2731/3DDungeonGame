@@ -19,8 +19,8 @@
             "costResourceID": [
                 "GRASS"
             ],
-            "defence": 1,
-            "description": "防御力 1",
+            "defence": 2,
+            "description": "防御力 2",
             "id": "CLOTHES",
             "inPossession": false,
             "name": "布の服",
@@ -34,8 +34,8 @@
                 "GOLD",
                 "GRASS"
             ],
-            "defence": 4,
-            "description": "防御力 4",
+            "defence": 5,
+            "description": "防御力 5",
             "id": "LETHER_ARMER",
             "inPossession": false,
             "name" :"皮の鎧",

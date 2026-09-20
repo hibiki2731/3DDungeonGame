@@ -33,7 +33,6 @@ SpriteComponent::SpriteComponent(Actor& owner, float zDepth)
 	mHeapSize = 0;
 
 	mTextureFilePath = "";
-	isInitialized = false;
 }
 
 void SpriteComponent::loadFromJson(const nlohmann::json& json)
@@ -53,6 +52,7 @@ void SpriteComponent::loadFromJson(const nlohmann::json& json)
 void SpriteComponent::endProcess()
 {
 	//Gameからスプライトを削除
+	mOwner.getScene().removeSprite(this);
 	mOwner.getScene().getGame().getAssetManager().deleteMemory(mCBIndex, mCBSize);
 	mOwner.getScene().getGame().getAssetManager().deleteHeap(mHeapIndex, mHeapSize);
 }
@@ -92,8 +92,6 @@ void SpriteComponent::create(const std::string filename)
 	mGraphic.createShaderResourceView(mTextureBuf, heapIndex);
 
 	mTextureFilePath = filename;
-
-	isInitialized = true;
 }
 
 void SpriteComponent::loadFileAndCreate(const std::string& structName)
@@ -131,8 +129,6 @@ void SpriteComponent::loadFileAndCreate(const std::string& structName)
 
 void SpriteComponent::draw()
 {
-	if (!isInitialized) return;
-
 	//コンスタントバッファの更新
 	//ワールドマトリックス
 	XMMATRIX world = XMMatrixIdentity()

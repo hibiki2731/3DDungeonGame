@@ -1,9 +1,9 @@
 {
-    "actionLimit": 15,
+    "actionLimit": 20,
     "armers": [
         "NONE"
     ],
-    "defense": 2,
+    "defense": 1,
     "equippedArmerIndex": 0,
     "equippedWeaponIndex": 0,
     "explorer": [],

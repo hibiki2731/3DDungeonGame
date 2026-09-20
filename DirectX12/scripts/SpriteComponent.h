@@ -78,8 +78,6 @@ private:
     //テクスチャバッファ
     ID3D12Resource* mTextureBuf;
 
-	bool isInitialized;
-
     //デバッグ用
 #ifdef _DEBUG
 	friend class GUIDebugger;
