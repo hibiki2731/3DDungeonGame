@@ -304,6 +304,7 @@
     <ClCompile Include="scripts\MeshComponent.cpp" />
     <ClCompile Include="scripts\Random.cpp" />
     <ClCompile Include="scripts\Enemy.cpp" />
+    <ClCompile Include="scripts\ReturnToTownWindow.cpp" />
     <ClCompile Include="scripts\Scene.cpp" />
     <ClCompile Include="scripts\SceneManager.cpp" />
     <ClCompile Include="scripts\ShopMenu.cpp" />
@@ -381,6 +382,7 @@
     <ClInclude Include="scripts\MeshComponent.h" />
     <ClInclude Include="scripts\Random.h" />
     <ClInclude Include="scripts\Enemy.h" />
+    <ClInclude Include="scripts\ReturnToTownWindow.h" />
     <ClInclude Include="scripts\Scene.h" />
     <ClInclude Include="scripts\SceneManager.h" />
     <ClInclude Include="scripts\ShopMenu.h" />

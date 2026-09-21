@@ -26,6 +26,7 @@
 #include "TextComponent.h"
 #include "PlayerAttackComponent.h"
 #include "PlayerMoveComponent.h"
+#include "ReturnToTownWindow.h"
 
 Player::Player(DungeonScene& scene, float x, float y)
 	: Actor(scene),
@@ -97,7 +98,7 @@ Player::Player(DungeonScene& scene, float x, float y)
 void Player::inputActor()
 {
 	//敵ターン、HP0以下のときは入力を受け付けない
-	if (mScene.getTurnType() == TurnType::END || mCharacter->getHP() <= 0) return;
+	if (mScene.getTurnType() == TurnType::POSE || mCharacter->getHP() <= 0) return;
 
 	//---移動---
 	if (isKeyPressed('A')) {
@@ -121,10 +122,7 @@ void Player::inputActor()
 	}
 	//---アクション---
 	if (isKeyJustPressed(VK_RETURN) || isKeyJustPressed('K')) {
-		attack();			//目の前の敵を攻撃
-		collect();			//リソースを回収
-		getTreasure();		//宝箱からアイテムを入手
-		moveNextFloor();	//次の階へ移動
+		doAction();
 	}
 	//---アイテム使用---
 	if (isKeyJustPressed('I')) {
@@ -135,6 +133,11 @@ void Player::inputActor()
 	}
 	if (isKeyJustPressed('O')) {
 		selectNextItem();
+	}
+
+	//街へ帰還
+	if (isKeyJustPressed(VK_ESCAPE)) {
+		returnToTown();
 	}
 	
 }
@@ -253,20 +256,28 @@ void Player::moveToEnemyTurn()
 	mScene.moveToEnemyTurn();
 }
 
-void Player::attack()
+void Player::doAction()
+{
+	if(attack()) return;			//目の前の敵を攻撃
+	if(collect()) return;			//リソースを回収
+	if(getTreasure()) return;		//宝箱からアイテムを入手
+	if(moveNextFloor()) return;	//次の階へ移動
+}
+
+bool Player::attack()
 {
 	//敵ターン時は実行不可
-	if (mScene.getTurnType() == TurnType::ENEMY) return;
+	if (mScene.getTurnType() == TurnType::ENEMY) return false;
 	//移動、回転中は実行不可
-	if (isActing || isRotating) return;
+	if (isActing || isRotating) return false;
 	//残り行動回数が0の場合実行不可
-	if (mAP == 0)return;
+	if (mAP == 0)return false;
 
 	//攻撃タイプに対応する攻撃コンポーネントをマップから取得
 	auto attackComponentIter = mAttackComponents.find(mPlayerData.attackType);
-	if (attackComponentIter == mAttackComponents.end()) return;	//攻撃タイプに対応する攻撃コンポーネントが存在しない場合は処理を終了
+	if (attackComponentIter == mAttackComponents.end()) return false;	//攻撃タイプに対応する攻撃コンポーネントが存在しない場合は処理を終了
 
-	attackComponentIter->second->execute();	//攻撃コンポーネントの攻撃処理を実行
+	return attackComponentIter->second->execute();	//攻撃コンポーネントの攻撃処理を実行
 }
 
 void Player::move(Direction direction)
@@ -304,21 +315,21 @@ void Player::rotate(Direction direction)
 	mScene.updateMiniMapDirection();	//ミニマップのアイコンの向きを更新
 }
 
-void Player::collect()
+bool Player::collect()
 {
 	//プレイヤーターン時のみ実行
-	if (mScene.getTurnType() == TurnType::ENEMY) return;
+	if (mScene.getTurnType() == TurnType::ENEMY) return false;
 	//移動、回転中は実行不可
-	if (isActing || isRotating) return;
+	if (isActing || isRotating) return false;
 	//残り行動回数が0の場合実行不可
-	if (mAP == 0) return;
+	if (mAP == 0) return false;
 
 	//プレイヤーの位置に資源があるか判定
 	auto resource = mScene.getResource(mCharacter->getIndexPosInt());
 	//ある場合、Resourceクラスのポインタからリソースを回収する関数を実行
 	if (resource) resource->collect();
 	//ない場合は何もしない
-	else return;
+	else return false;
 
 	//SE
 	mScene.getGame().getAudioManager().playSE("PICKAXE");
@@ -330,6 +341,8 @@ void Player::collect()
 	//ターン経過
 	endAct();
 	moveToEnemyTurn();
+
+	return true;
 }
 
 void Player::damagedProcess()
@@ -414,14 +427,14 @@ void Player::useItem()
 	moveToEnemyTurn();
 }
 
-void Player::getTreasure()
+bool Player::getTreasure()
 {
 	//プレイヤーターン時のみ実行
-	if (mScene.getTurnType() == TurnType::ENEMY) return;
+	if (mScene.getTurnType() == TurnType::ENEMY) return false;
 	//移動、回転中は実行不可
-	if (isActing || isRotating) return;
+	if (isActing || isRotating) return false;
 	//残り行動回数が0の場合実行不可
-	if (mAP == 0) return;
+	if (mAP == 0) return false;
 
 	//前方に宝箱があるか判定
 	std::vector<int> searchPos = {mCharacter->getIndexPos()[0], mCharacter->getIndexPos()[1]};
@@ -444,22 +457,21 @@ void Player::getTreasure()
 	const int tileData = mScene.getTileDataAt(searchPos[0], searchPos[1]);
 
 	//前方に宝箱がない場合は何もしない
-	if (tileData != TileType::TREASURE) return;
+	if (tileData != TileType::TREASURE) return false;
 
 	//宝箱のポインタを取得
 	Treasure* treasure = mScene.getTreasureAt(searchPos[0], searchPos[1]);
 	//宝箱が設定されていなかったら何もしない
-	if (treasure == nullptr) return;
+	if (treasure == nullptr) return false;
 
 	//宝箱からアイテムを取得
 	treasure->open();
 
-	//取得処理
-
-
 	//終了処理
 	endAct();
 	moveToEnemyTurn();
+
+	return true;
 }
 
 void Player::endAct()
@@ -470,6 +482,11 @@ void Player::endAct()
 	mAP--;
 	//UIの更新
 	if(mAP >= 0) mScene.updateAPUI();
+}
+
+void Player::continueAct()
+{
+	isActing = false;
 }
 
 void Player::selectNextItem()
@@ -490,14 +507,14 @@ void Player::selectPreviousItem()
 	mScene.getGame().getAudioManager().playSE("UI_MOVE1");
 }
 
-void Player::moveNextFloor()
+bool Player::moveNextFloor()
 {
 	//敵ターン時は実行不可
-	if (mScene.getTurnType() == TurnType::ENEMY) return;
+	if (mScene.getTurnType() == TurnType::ENEMY) return false;
 	//移動、回転中は実行不可
-	if (isActing || isRotating) return;
+	if (isActing || isRotating) return false;
 	//残り行動回数が0の場合実行不可
-	if (mAP == 0)return;
+	if (mAP == 0)return false;
 
 	//目の前に階段があるか判定
 	bool isGoal = false;
@@ -516,7 +533,7 @@ void Player::moveNextFloor()
 		break;
 	}
 
-	if (!isGoal) return;
+	if (!isGoal) return false;
 
 	//階段があった場合の処理
 	//現在はクリアウィンドウを表示するだけだが、次の階のマップを生成して移動する処理などもここに書くことになる
@@ -526,14 +543,20 @@ void Player::moveNextFloor()
 	endAct();
 	moveToEnemyTurn();
 	mScene.getTurnObserver().stop();	//ターンオブザーバーを止める(敵の行動も止まる)
+
+	return true;
 }
 
-TreasureWindow::TreasureWindow(Scene& scene, const std::string& itemID)
-	: Object(scene, "TREASURE_WINDOW")
+void Player::returnToTown() 
 {
-}
+	//敵ターン時は実行不可
+	if (mScene.getTurnType() == TurnType::ENEMY) return;
+	//移動、回転中は実行不可
+	if (isActing || isRotating) return;
+	//残り行動回数が0の場合実行不可
+	if (mAP == 0)return;
 
-void TreasureWindow::inputActor()
-{
-	
+	isActing = true;
+	auto selectWindow = std::make_unique<ReturnToTownWindow>(mScene, *this);
+	mScene.addActor(std::move(selectWindow));
 }

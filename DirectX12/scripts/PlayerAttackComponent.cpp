@@ -82,10 +82,10 @@ PlayerSingleAttackComponent::PlayerSingleAttackComponent(DungeonScene& scene, Pl
 {
 }
 
-void PlayerSingleAttackComponent::execute()
+bool PlayerSingleAttackComponent::execute()
 {
 	EnemyComponent* target = searchTargetEnemy();
-	if (target == nullptr) return; //攻撃対象がいない場合は処理を終了
+	if (target == nullptr) return false; //攻撃対象がいない場合は処理を終了
 
 	mPlayer.startAct();					//プレイヤーの行動開始処理
 	int damage = calcDamage(target);	//ダメージの計算
@@ -94,7 +94,9 @@ void PlayerSingleAttackComponent::execute()
 	target->startFlash();				//敵を点滅させる
 	createDamageText(target, damage);	//ダメージ値を描画
 	mScene.getGame().getAudioManager().playSE("DAMAGE1");
-	moveNextTurn();	//ターン経過
+	moveNextTurn();
+
+	return true;
 }
 
 int PlayerSingleAttackComponent::calcDamage(EnemyComponent* target)
@@ -122,10 +124,10 @@ void PlayerDoubleAttackComponent::updateComponent()
 	}
 }
 
-void PlayerDoubleAttackComponent::execute()
+bool PlayerDoubleAttackComponent::execute()
 {
 	EnemyComponent* target = searchTargetEnemy();
-	if (target == nullptr) return; //攻撃対象がいない場合は処理を終了
+	if (target == nullptr) return false; //攻撃対象がいない場合は処理を終了
 
 	//プレイヤーの行動開始
 	mPlayer.startAct();
@@ -140,6 +142,7 @@ void PlayerDoubleAttackComponent::execute()
 
 	mIsFirstAttackExecuted = true;	//1撃目の攻撃が実行されたことを記録
 
+	return true;
 }
 
 int PlayerDoubleAttackComponent::calcDamage(EnemyComponent* target)

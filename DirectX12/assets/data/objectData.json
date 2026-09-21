@@ -34,7 +34,7 @@
                         10.0,
                         49.0
                     ],
-                    "text": "20/20\n"
+                    "text": "8/20\n"
                 },
                 {
                     "borderSize": 5.0,
@@ -47,7 +47,7 @@
                         49.0
                     ],
                     "rotation": 0.0,
-                    "width": 192.0
+                    "width": 76.80000305175781
                 },
                 {
                     "borderSize": 5.0,
@@ -94,7 +94,7 @@
                         30.0,
                         49.0
                     ],
-                    "text": "10/10\n"
+                    "text": "20/20\n"
                 },
                 {
                     "borderSize": 5.0,
@@ -227,7 +227,7 @@
                         140.0,
                         90.0
                     ],
-                    "text": "992 G\n"
+                    "text": "4 G\n"
                 },
                 {
                     "color": [
@@ -244,7 +244,7 @@
                         696.0,
                         90.0
                     ],
-                    "text": "移動:WASD 方向転換:JL アクション:K アイテムの使用:I アイテム選択:UO"
+                    "text": "移動:WASD 方向転換:JL アクション:K アイテムの使用:I アイテム選択:UO 街へ帰還:Escape"
                 }
             ],
             "label": {
@@ -381,6 +381,108 @@
                 "runOutText": {
                     "componentName": "TextComponent",
                     "id": 3
+                }
+            },
+            "position": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "ReturnToTownWindow": {
+            "components": [
+                {
+                    "borderSize": 15.067999839782715,
+                    "filePath": "assets\\picture\\UI2\\PNG\\Default\\panel_grey.png",
+                    "height": 218.33999633789063,
+                    "name": "SpriteComponent",
+                    "position": [
+                        415.5,
+                        266.5,
+                        98.0
+                    ],
+                    "rotation": 0.0,
+                    "width": 398.0799865722656
+                },
+                {
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "fontSize": 32.0,
+                    "lineSpace": 60.0,
+                    "name": "TextComponent",
+                    "position": [
+                        477.2879943847656,
+                        277.3330078125,
+                        97.0
+                    ],
+                    "text": "街へ帰還しますか？"
+                },
+                {
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "fontSize": 32.0,
+                    "lineSpace": 60.0,
+                    "name": "TextComponent",
+                    "position": [
+                        478.0,
+                        384.0,
+                        97.0
+                    ],
+                    "text": "はい"
+                },
+                {
+                    "color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "fontSize": 32.0,
+                    "lineSpace": 60.0,
+                    "name": "TextComponent",
+                    "position": [
+                        635.0,
+                        384.0,
+                        97.0
+                    ],
+                    "text": "いいえ"
+                },
+                {
+                    "borderSize": 0.0,
+                    "filePath": "assets\\picture\\UI2\\PNG\\Default\\minimap_arrow_a.png",
+                    "height": 30.0,
+                    "name": "SpriteComponent",
+                    "position": [
+                        550.0,
+                        406.0,
+                        97.0
+                    ],
+                    "rotation": -1.5700000524520874,
+                    "width": 30.0
+                }
+            ],
+            "label": {
+                "Arrow": {
+                    "componentName": "SpriteComponent",
+                    "id": 4
                 }
             },
             "position": [
@@ -911,7 +1013,7 @@
                     "position": [
                         0.0,
                         665.0,
-                        95.0
+                        99.0
                     ],
                     "rotation": 0.0,
                     "width": 786.0
@@ -1308,7 +1410,7 @@
                         210.0,
                         96.0
                     ],
-                    "text": "靴\nバックパック\n"
+                    "text": "ピッケル\n靴\n貯金箱\nバックパック\n"
                 },
                 {
                     "borderSize": 0.0,
@@ -1352,7 +1454,7 @@
                 {
                     "borderSize": 24.0,
                     "filePath": "assets/picture/UI2/PNG/Default/panel_brown.png",
-                    "height": 205.0,
+                    "height": 110.0,
                     "name": "SpriteComponent",
                     "position": [
                         606.0,
@@ -1377,16 +1479,16 @@
                         120.0,
                         96.5
                     ],
-                    "text": "所持リソース\nG : 990  草 : 1000  \n"
+                    "text": "所持リソース\n\n"
                 },
                 {
                     "borderSize": 24.0,
                     "filePath": "assets/picture/UI2/PNG/Default/panel_brown.png",
-                    "height": 360.0,
+                    "height": 455.0,
                     "name": "SpriteComponent",
                     "position": [
                         606.0,
-                        315.0,
+                        220.0,
                         97.0
                     ],
                     "rotation": 0.0,
@@ -1407,7 +1509,7 @@
                         325.0,
                         96.5
                     ],
-                    "text": "APの最大値が10増加\n"
+                    "text": "魔鉱石の収穫量が+2される\n"
                 },
                 {
                     "color": [
@@ -1421,10 +1523,10 @@
                     "name": "TextComponent",
                     "position": [
                         626.0,
-                        555.0,
+                        225.0,
                         96.5
                     ],
-                    "text": "消費リソース\n草 : 25\n"
+                    "text": "消費リソース\nG 15  魔鉱石 10  \n"
                 }
             ],
             "label": {
@@ -1529,7 +1631,7 @@
                         210.0,
                         79.0
                     ],
-                    "text": "服\n"
+                    "text": "皮の鎧\n布の服\n"
                 },
                 {
                     "borderSize": 0.0,
@@ -1573,7 +1675,7 @@
                 {
                     "borderSize": 24.0,
                     "filePath": "assets/picture/UI2/PNG/Default/panel_brown.png",
-                    "height": 205.0,
+                    "height": 110.0,
                     "name": "SpriteComponent",
                     "position": [
                         606.0,
@@ -1598,16 +1700,16 @@
                         120.0,
                         79.5
                     ],
-                    "text": "所持リソース\nG : 990  草 : 1000  \n"
+                    "text": "所持リソース\n\n"
                 },
                 {
                     "borderSize": 24.0,
                     "filePath": "assets/picture/UI2/PNG/Default/panel_brown.png",
-                    "height": 360.0,
+                    "height": 455.0,
                     "name": "SpriteComponent",
                     "position": [
                         606.0,
-                        315.0,
+                        220.0,
                         80.0
                     ],
                     "rotation": 0.0,
@@ -1628,7 +1730,7 @@
                         325.0,
                         79.5
                     ],
-                    "text": "防御力 2"
+                    "text": "防御力 4"
                 },
                 {
                     "color": [
@@ -1642,10 +1744,10 @@
                     "name": "TextComponent",
                     "position": [
                         626.0,
-                        555.0,
+                        225.0,
                         79.5
                     ],
-                    "text": "消費リソース\n草 : 20\n"
+                    "text": "消費リソース\nG 20  魔鉱石 20  \n"
                 }
             ],
             "label": {
@@ -1895,7 +1997,7 @@
                         200.0,
                         79.0
                     ],
-                    "text": "木の剣\n"
+                    "text": "鉄の剣\n木の剣\n"
                 },
                 {
                     "borderSize": 0.0,
@@ -1939,7 +2041,7 @@
                 {
                     "borderSize": 24.0,
                     "filePath": "assets/picture/UI2/PNG/Default/panel_brown.png",
-                    "height": 205.0,
+                    "height": 110.0,
                     "name": "SpriteComponent",
                     "position": [
                         606.0,
@@ -1964,17 +2066,17 @@
                         120.0,
                         79.5
                     ],
-                    "text": "所持リソース\nG : 990  草 : 1000  \n"
+                    "text": "所持リソース\n\n"
                 },
                 {
                     "borderSize": 24.0,
                     "filePath": "assets/picture/UI2/PNG/Default/panel_brown.png",
-                    "height": 360.0,
+                    "height": 455.0,
                     "name": "SpriteComponent",
                     "position": [
                         606.0,
-                        315.0,
-                        80.0
+                        220.0,
+                        95.0
                     ],
                     "rotation": 0.0,
                     "width": 500.0
@@ -1994,7 +2096,7 @@
                         325.0,
                         79.5
                     ],
-                    "text": "攻撃力 2\n"
+                    "text": "攻撃力 4"
                 },
                 {
                     "color": [
@@ -2008,10 +2110,10 @@
                     "name": "TextComponent",
                     "position": [
                         626.0,
-                        555.0,
+                        225.0,
                         79.5
                     ],
-                    "text": "消費リソース\n草 : 50\n"
+                    "text": "消費リソース\nG 20  魔鉱石 25  \n"
                 }
             ],
             "label": {
@@ -2502,7 +2604,7 @@
                 {
                     "borderSize": 24.0,
                     "filePath": "assets/picture/UI2/PNG/Default/panel_brown.png",
-                    "height": 205.0,
+                    "height": 105.0,
                     "name": "SpriteComponent",
                     "position": [
                         606.0,
@@ -2527,16 +2629,16 @@
                         120.0,
                         96.5
                     ],
-                    "text": "所持リソース\nG : 990  草 : 1000  \n"
+                    "text": "所持リソース\n\n"
                 },
                 {
                     "borderSize": 24.0,
                     "filePath": "assets/picture/UI2/PNG/Default/panel_brown.png",
-                    "height": 360.0,
+                    "height": 460.0,
                     "name": "SpriteComponent",
                     "position": [
                         606.0,
-                        315.0,
+                        215.0,
                         97.0
                     ],
                     "rotation": 0.0,
@@ -2571,10 +2673,10 @@
                     "name": "TextComponent",
                     "position": [
                         626.0,
-                        555.0,
+                        220.0,
                         96.5
                     ],
-                    "text": "消費リソース\nG : 10\n"
+                    "text": "消費リソース\nG 3  \n"
                 }
             ],
             "label": {

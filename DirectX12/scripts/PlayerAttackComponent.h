@@ -19,7 +19,7 @@ class PlayerAttackComponent : public Component
 public:
 	PlayerAttackComponent(DungeonScene& scene, Player& player);
 	
-	virtual void execute() = 0;
+	virtual bool execute() = 0;
 
 protected:
 	DungeonScene& mScene;
@@ -37,7 +37,8 @@ class PlayerSingleAttackComponent : public PlayerAttackComponent
 public:
 	PlayerSingleAttackComponent(DungeonScene& scene, Player& player);
 	DECLARE_COMPONENT_NAME(PlayerSingleAttackComponent)
-	void execute() override;
+
+	bool execute() override;
 private:
 	int calcDamage(EnemyComponent* target) override;
 };
@@ -48,8 +49,8 @@ public:
 	PlayerDoubleAttackComponent(DungeonScene& scene, Player& player);
 	DECLARE_COMPONENT_NAME(PlayerDoubleAttackComponent)
 	
-	void updateComponent() override;
-	void execute() override;
+	void updateComponent() override;
+	bool execute() override;
 private:
 	float mTimer;
 	bool mIsFirstAttackExecuted;

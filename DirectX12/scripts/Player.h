@@ -47,20 +47,25 @@ public:
 	void startAct();
 	void moveToEnemyTurn();
 	void endAct();
+	void continueAct();
 private:
 	//--ターン経過する行動--
-	void attack();
+	void doAction();
+	bool attack();
 	void move(Direction direction);
-	void collect();
+	bool collect();
 	void useItem();
-	void getTreasure();
+	bool getTreasure();
+
+	//一時停止する行動
+	void returnToTown();
 
 	void rotate(Direction direction);	//視点移動
 	void damagedProcess();				//ダメージを受けたときの処理
 	void updateFlash();					//点滅処理の更新	
 	void selectNextItem();				//アイテム選択
 	void selectPreviousItem();			//アイテム選択
-	void moveNextFloor();				//次の階へ移動
+	bool moveNextFloor();				//次の階へ移動
 
 	float	 mMoveSpeed;		//移動速度
 	float	 mRotSpeed;			//回転速度
@@ -88,13 +93,4 @@ private:
 	class PlayerMoveComponent* mMoveComponent;
 	//攻撃処理用コンポーネント
 	std::unordered_map<AttackType, class PlayerAttackComponent*> mAttackComponents;
-};
-
-class TreasureWindow : public Object
-{
-public:
-	TreasureWindow(Scene& scene, const std::string& itemID);
-	DECLARE_CLASS_NAME(TREASUREWINDOW)
-
-	void inputActor() override;			//入力処理
 };

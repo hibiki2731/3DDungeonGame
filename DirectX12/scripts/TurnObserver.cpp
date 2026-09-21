@@ -65,6 +65,8 @@ void TurnObserver::begin()
 {
 	mTurnType = TurnType::PLAYER;
 	mNextTurn = TurnType::PLAYER;
+
+	mIsActive = true;
 }
 
 TurnType TurnObserver::getTurnType() const
@@ -143,8 +145,8 @@ void TurnObserver::spawnEnemy()
 
 void TurnObserver::RunOutProcess()
 {
-	mTurnType = TurnType::END;
-	mNextTurn = TurnType::END;
+	mTurnType = TurnType::POSE;
+	mNextTurn = TurnType::POSE;
 
 	//エンドウィンドウの生成
 	auto endWindow = std::make_unique<EndWindow>(mScene, WindowType::RETURN);
