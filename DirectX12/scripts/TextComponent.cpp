@@ -100,17 +100,14 @@ void TextComponent::loadFromJson(const nlohmann::json& json)
 //要マルチスレッド化
 void TextComponent::applyTextTexture()  
 {  
-	//テクスチャの状態をshader resourceに遷移
-	D3D12_RESOURCE_BARRIER barrier;
-	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	barrier.Transition.pResource = mTexture.Get();
-	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-	mGraphic.getCommandList()->ResourceBarrier(1, &barrier);
+	//D3D11On12はReleaseで状態をOutState(PS)にするだけでInState(RT)へは戻さないため、
+	//Acquire前にアプリ側で即時にRTへ戻す
+	if (mIsShaderResourceState) {
+		mGraphic.transitShaderResourceToRenderTarget(mTexture.Get());
+		mIsShaderResourceState = false;
+	}
 
-	//テキストレイアウトの更新	
+	//テキストレイアウトの更新
 	HRESULT hr = mDWriteFactory->CreateTextLayout(
     mText.c_str(),								//描画する文字列
     (UINT32)mText.length(),						//文字列の長さ
@@ -146,6 +143,7 @@ void TextComponent::applyTextTexture()
 	mGraphic.getD3D11On12Device()->ReleaseWrappedResources(mWrappedTexture.GetAddressOf(), 1);
 
 	mGraphic.getD3D11DeviceContext()->Flush();
+	mIsShaderResourceState = true;
 
 	mGraphic.waitGPU();
 }

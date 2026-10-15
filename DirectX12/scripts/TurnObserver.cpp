@@ -53,6 +53,7 @@ void TurnObserver::updateTurn()
 		if (random <= 10) spawnEnemy();
 		random = Random::dist(1, 100);
 		if (random <= 10) mScene.spawnResource();
+
 		//ミニマップの更新
 		mScene.updateMiniMapPos();
 	}
@@ -89,11 +90,19 @@ void TurnObserver::startEnemyTurn()
 {
 	//敵配列をプレイヤーに近い順にソート
 	mScene.sortEnemiesByDistanceToPlayer();
-	mPendingEnemyCount = static_cast<int>(mScene.getEnemyCount());
+	
+	//生存している敵だけを行動待ちとして数える(死亡済みはstartActで行動せず、完了通知も来ないため)
+	mPendingEnemyCount = 0;
+	for (auto enemy : mScene.getEnemies()) {
+		if (enemy->getAlive()) mPendingEnemyCount++;
+	}
 
 	for (auto enemy : mScene.getEnemies()) {
 		enemy->startAct();
 	}
+
+	//行動する敵がいなければ、完了通知が来ないため即座にプレイヤーターンへ戻す
+	if (mPendingEnemyCount == 0) mNextTurn = TurnType::PLAYER;
 	mScene.updateMiniMapPos();
 }
 
@@ -124,7 +133,7 @@ void TurnObserver::spawnEnemy()
 
 
 		//障害物がある場合、もう一度乱数を振りなおす
-		if (mScene.getTileDataAt(x, y) == TileType::WALL ||
+		if (mScene.getTileDataAt(x, y) != TileType::FLOOR ||
 			mScene.getCharacterDataAt(x, y) != CharacterType::EMPTY) {
 			i++;
 			continue;

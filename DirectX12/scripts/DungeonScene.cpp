@@ -101,6 +101,10 @@ void DungeonScene::onExit()
 {
 	mMapGenerator->end();
 	mResources.clear();
+	mPlayer = nullptr;
+	mUI = nullptr;
+	mMiniMap = nullptr;
+	mTreasures.clear();
 
 #ifdef _DEBUG
 	mDebugFlag = false;
@@ -219,9 +223,9 @@ void DungeonScene::setTileDataAt(int index, int data)
 	mTileData[x][y] = data;
 }
 
-void DungeonScene::setTileData(const std::vector<std::vector<int>>& mapData)
+void DungeonScene::setTileData(std::vector<std::vector<int>> mapData)
 {
-	mTileData = mapData;
+	mTileData = std::move(mapData);
 }
 
 void DungeonScene::setCharacterDataAt(int x, int y, int data)
@@ -245,9 +249,9 @@ void DungeonScene::setCharacterDataAt(int index, int data)
 	mCharacterData[x][y] = data;
 }
 
-void DungeonScene::setCharacterData(const std::vector<std::vector<int>>& objectData)
+void DungeonScene::setCharacterData(std::vector<std::vector<int>> objectData)
 {
-	mCharacterData = objectData;
+	mCharacterData = std::move(objectData);
 }
 
 int DungeonScene::getTileDataAt(int x, int y)

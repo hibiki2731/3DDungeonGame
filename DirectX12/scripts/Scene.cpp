@@ -31,11 +31,14 @@ void Scene::removeActors()
 {
 	//配列からアクターを削除
 	std::erase_if(mActors, [](const std::unique_ptr<Actor>& actor) {
+		if(!actor) return true;
 		if (!actor || actor->getState() == Actor::State::Dead) {
 			//アクターの終了処理
 			actor->endProcess();
 			return true;
 		}
+
+		return false;
 		});
 }
 
@@ -94,6 +97,14 @@ void Scene::refreshActors()
 	for (auto& actor : mActors) {
 		actor->setState(Actor::State::Dead);
 	}
+
+	//待機アクターを削除
+	std::erase_if(mPendingActors, [](const std::unique_ptr<Actor> &actor)
+	{
+		//アクターの終了処理
+		actor->endProcess();
+		return true; 
+	});
 
 	//デバッグ時、編集用のオブジェクト配列を空にする
 #ifdef _DEBUG

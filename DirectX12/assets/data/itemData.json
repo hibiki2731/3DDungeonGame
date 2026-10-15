@@ -16,20 +16,6 @@
         },
         {
             "category": "CHEST",
-            "costResourceID": [
-                "GRASS"
-            ],
-            "defence": 1,
-            "description": "防御力 1",
-            "id": "CLOTHES",
-            "inPossession": false,
-            "name": "布の服",
-            "price": [
-                3
-            ]
-        },
-        {
-            "category": "CHEST",
             "costResourceID":[
                 "GOLD",
                 "GRASS"
@@ -42,6 +28,20 @@
             "price":[
                 20,
                 20
+            ]
+        },
+        {
+            "category": "CHEST",
+            "costResourceID": [
+                "GRASS"
+            ],
+            "defence": 1,
+            "description": "防御力 1",
+            "id": "CLOTHES",
+            "inPossession": false,
+            "name": "布の服",
+            "price": [
+                3
             ]
         },
         {
@@ -118,7 +118,7 @@
             ],
             "description": "所持アイテム数が1増加\n",
             "id": "BACKPACK",
-            "inPossession": false,
+            "inPossession": true,
             "name": "バックパック",
             "price": [
                 30,
@@ -179,19 +179,6 @@
             ]
         },
         {
-            "costResourceID": [
-                "GRASS"
-            ],
-            "description": "攻撃力 2\n",
-            "id": "WOODEN_SORD",
-            "inPossession": false,
-            "name": "木の剣",
-            "power": 2,
-            "price": [
-                5
-            ]
-        },
-        {
             "costResourceID":[
                 "GOLD",
                 "GRASS"
@@ -204,6 +191,19 @@
             "price":[
                 20,
                 25
+            ]
+        },
+        {
+            "costResourceID": [
+                "GRASS"
+            ],
+            "description": "攻撃力 2\n",
+            "id": "WOODEN_SORD",
+            "inPossession": false,
+            "name": "木の剣",
+            "power": 2,
+            "price": [
+                5
             ]
         },
         {

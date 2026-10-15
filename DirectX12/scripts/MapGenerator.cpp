@@ -67,17 +67,17 @@ void MapGenerator::loadMap(Stage stage)
 	nlohmann::json mapJson;
 	switch (stage) {
 	case Stage::MAP1:
-		mapJson = json["stage1"];
+		mapJson = json.at("stage1");
 		break;
 	}
 
 	//マップサイズの読み込み
-	const int mapSize = mapJson["mapSize"].get<int>();
+	const int mapSize = mapJson.at("mapSize").get<int>();
 
 	//タイルデータの読み込み
 	tileData.resize(mapSize);
 	for (int i = 0; i < mapSize; i++) tileData[i].resize(mapSize);
-	const nlohmann::json tileJson = mapJson["tileData"];
+	const nlohmann::json tileJson = mapJson.at("tileData");
 	//jsonのタイルデータは左上から右に向かって、下の行へと続いているため、読み込む際にy座標を逆転させる
 	int x = 0, y = mapSize - 1;
 	for (int num : tileJson)
@@ -93,7 +93,7 @@ void MapGenerator::loadMap(Stage stage)
 	//キャラクターデータの読み込み
 	characterData.resize(mapSize);
 	for (int i = 0; i < mapSize; i++) characterData[i].resize(mapSize);
-	const nlohmann::json characterJson = mapJson["characterData"];
+	const nlohmann::json characterJson = mapJson.at("characterData");
 	//キャラクターデータも同様にy座標を逆転させて読み込む
 	x = 0, y = mapSize - 1;
 	for (int num : characterJson)
@@ -107,19 +107,19 @@ void MapGenerator::loadMap(Stage stage)
 	}
 
 	//プレイヤーデータの読み込み
-	const XMFLOAT2 playerPos = mapJson["playerPos"].get<XMFLOAT2>();
+	const XMFLOAT2 playerPos = mapJson.at("playerPos").get<XMFLOAT2>();
 	mScene.createPlayer(static_cast<float>(MAPTIPSIZE * playerPos.x), static_cast<float>(MAPTIPSIZE * playerPos.y));
 
 	//宝箱データの読み込み
-	const nlohmann::json treasureJson = mapJson["treasureData"];
+	const nlohmann::json treasureJson = mapJson.at("treasureData");
 	std::vector<Treasure*> treasures(treasureJson.size());
 	int index = 0;
 	for (const auto& treasureData : treasureJson)
 	{
-		const std::vector<int> position = treasureData["position"].get<std::vector<int>>();
-		const std::string direction = treasureData["direction"].get<std::string>();
-		const std::string category = treasureData["category"].get<std::string>();
-		const std::string itemID = treasureData["id"].get<std::string>();
+		const std::vector<int> position = treasureData.at("position").get<std::vector<int>>();
+		const std::string direction = treasureData.at("direction").get<std::string>();
+		const std::string category = treasureData.at("category").get<std::string>();
+		const std::string itemID = treasureData.at("id").get<std::string>();
 		std::unique_ptr<Treasure> tresure = std::make_unique<Treasure>(mScene, position[0], position[1], direction, category, itemID);
 		treasures[index] = tresure.get();
 		mScene.addActor(std::move(tresure)); //所有権をGameへ渡す
@@ -141,9 +141,10 @@ void MapGenerator::loadMap(Stage stage)
 void MapGenerator::createTile()
 {
 	std::fstream file("assets/data/mapTipData.json");
+	assert(!file.fail());
 	nlohmann::json json;
 	file >> json;
-	auto tileJson = json["tile"];
+	auto tileJson = json.at("tile");
 	int mapSize = mScene.getMapSize();
 
 	for (int y = 0; y < mapSize; y++)
@@ -151,17 +152,17 @@ void MapGenerator::createTile()
 		for (int x = 0; x < mapSize; x++)
 		{
 			std::string tileID = std::to_string(mScene.getTileDataAt(x, y));
-			std::string category = tileJson[tileID]["category"].get<std::string>();
+			std::string category = tileJson.at(tileID).at("category").get<std::string>();
 
 			if (category == "WALL") continue; //壁の中
 			else if(category == "FLOOR") {
 				//床の生成
-				std::unique_ptr<Object> rockFloor = std::make_unique<Object>(mScene, "Tile", tileJson[tileID]["meshID"].get<std::string>(), static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
+				std::unique_ptr<Object> rockFloor = std::make_unique<Object>(mScene, "Tile", tileJson.at(tileID).at("meshID").get<std::string>(), static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
 				mScene.addActor(std::move(rockFloor)); //所有権をGameへ渡す
 			}
 			else if(category == "RESOURCE"){
 				//草の生成
-				mScene.createResource(tileJson[tileID]["meshID"].get<std::string>(), tileJson[tileID]["resourceID"].get<std::string>(), static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y), y * mScene.getMapSize() + x);
+				mScene.createResource(tileJson.at(tileID).at("meshID").get<std::string>(), tileJson.at(tileID).at("resourceID").get<std::string>(), static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y), y * mScene.getMapSize() + x);
 				//床の生成
 				std::unique_ptr<Object> rockFloor = std::make_unique<Object>(mScene, "Tile", "ROCK_FLOOR", static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
 				mScene.addActor(std::move(rockFloor)); //所有権をGameへ渡す
@@ -177,7 +178,7 @@ void MapGenerator::createTile()
 				mScene.addActor(std::move(rockFloor));
 
 				//旗の生成
-				std::unique_ptr<Object> flag = std::make_unique<Object>(mScene, "Flag", tileJson[tileID]["meshID"].get<std::string>(), static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
+				std::unique_ptr<Object> flag = std::make_unique<Object>(mScene, "Flag", tileJson.at(tileID).at("meshID").get<std::string>(), static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
 				mScene.addActor(std::move(flag));
 			}
 
@@ -232,9 +233,10 @@ void MapGenerator::createTile()
 void MapGenerator::createCharacter()
 {
 	std::fstream file("assets/data/mapTipData.json");
+	assert(!file.fail());
 	nlohmann::json json;
 	file >> json;
-	auto objectJson = json["object"];
+	auto objectJson = json.at("object");
 
 	std::string meshID = "";
 	std::string category = "";
@@ -242,12 +244,12 @@ void MapGenerator::createCharacter()
 	for (int y = 0; y < mapSize; y++){
 		for (int x = 0; x < mapSize; x++) {
 			meshID = std::to_string(mScene.getCharacterDataAt(x, y));
-			category = objectJson[meshID]["category"].get<std::string>();
+			category = objectJson.at(meshID).at("category").get<std::string>();
 
 			if (category == "EMPTY") continue;
 			else if (category == "ENEMY") {
 				//敵の生成
-				mScene.createEnemy(objectJson[meshID]["enemyID"].get<std::string>(), static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
+				mScene.createEnemy(objectJson.at(meshID).at("enemyID").get<std::string>(), static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
 			}
 
 		}
