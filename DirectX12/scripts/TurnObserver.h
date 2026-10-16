@@ -24,6 +24,7 @@ public:
 
 private:
 	void RunOutProcess();
+	void spawnProcess();
 
 	TurnType mNextTurn;
 	TurnType mTurnType;

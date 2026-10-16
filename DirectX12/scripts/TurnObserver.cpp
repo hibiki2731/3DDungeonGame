@@ -47,12 +47,8 @@ void TurnObserver::updateTurn()
 			if (player->getCurrentHP() > 0) RunOutProcess();
 		}
 
-
 		//敵のランダム湧き
-		int random = Random::dist(1, 100);
-		if (random <= 10) spawnEnemy();
-		random = Random::dist(1, 100);
-		if (random <= 10) mScene.spawnResource();
+		spawnProcess();
 
 		//ミニマップの更新
 		mScene.updateMiniMapPos();
@@ -101,8 +97,6 @@ void TurnObserver::startEnemyTurn()
 		enemy->startAct();
 	}
 
-	//行動する敵がいなければ、完了通知が来ないため即座にプレイヤーターンへ戻す
-	if (mPendingEnemyCount == 0) mNextTurn = TurnType::PLAYER;
 	mScene.updateMiniMapPos();
 }
 
@@ -162,3 +156,12 @@ void TurnObserver::RunOutProcess()
 	mScene.addActor(std::move(endWindow));
 }
 
+void TurnObserver::spawnProcess()
+{
+	int random = Random::dist(1, 100);
+	if (random <= 10)
+		spawnEnemy();
+	random = Random::dist(1, 100);
+	if (random <= 10)
+		mScene.spawnResource();
+}

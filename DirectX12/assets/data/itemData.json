@@ -118,7 +118,7 @@
             ],
             "description": "所持アイテム数が1増加\n",
             "id": "BACKPACK",
-            "inPossession": true,
+            "inPossession": false,
             "name": "バックパック",
             "price": [
                 30,

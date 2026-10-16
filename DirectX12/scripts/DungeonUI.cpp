@@ -158,7 +158,7 @@ void DungeonUI::updateItemFrame()
 {
 	//選択アイテムの枠を更新
 	int selectIndex = mPlayer.getSelectItemIndex();
-	mItemSelectFrame->setPosition(mFrameOriginPos + XMFLOAT3((mItemSelectFrame->getSpriteSize().x + 10.0f) * selectIndex, 0.0f, 0.0f));
+	mItemSelectFrame->setPosition(mFrameOriginPos + XMFLOAT3((mItemSelectFrame->getSpriteSize().x + 10.0f) * selectIndex, 0.0f, -1.0f));
 
 	//選択アイテムの名前を更新
 	std::wstring selectItemText = Utility::stringToWString(mItemManager.getItemData(mPlayer.getSelectItemID()).name) + L"\n";
