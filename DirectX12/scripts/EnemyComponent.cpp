@@ -83,6 +83,8 @@ void EnemyComponent::endProcess()
 //エネミーターン開始時の処理
 void EnemyComponent::startAct()
 {
+	//すでに死亡していたら行動しない
+	if(!isAlive) return;
 	//ターン経過するアクションを実行可能にする
 	isActive = true;
 
@@ -156,7 +158,7 @@ void EnemyComponent::move()
 
 	isMoving = true;
 
-	int targetIndexPos[2];
+	int targetIndexPos[2] = {mIndexPos[0], mIndexPos[1]};
 	//移動先のインデックス座標をもとめる
 	calcTargetIndex(targetIndexPos);
 
@@ -231,6 +233,7 @@ void EnemyComponent::attack()
 
 void EnemyComponent::finishAct()
 {
+	if(!isActive) return;
 	//プレイヤーターンへ移行する
 	//シーン中の全エネミーがmoveToPlayerTurnを実行するとプレイヤーターンに移行
 	mScene.moveToPlayerTurn();

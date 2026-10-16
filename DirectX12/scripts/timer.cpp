@@ -13,6 +13,7 @@ void initDeltaTime() {
 void setDeltaTime() {
 	unsigned int curTime = timeGetTime();
 	DeltaTime = (curTime - PreTime) / 1000.0f;
+	DeltaTime = min(DeltaTime, 0.1f); //フレーム間の時間の最大値を0.1sに制御
 	PreTime = curTime;
 	
 }

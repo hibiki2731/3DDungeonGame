@@ -47,12 +47,9 @@ void TurnObserver::updateTurn()
 			if (player->getCurrentHP() > 0) RunOutProcess();
 		}
 
-
 		//敵のランダム湧き
-		int random = Random::dist(1, 100);
-		if (random <= 10) spawnEnemy();
-		random = Random::dist(1, 100);
-		if (random <= 10) mScene.spawnResource();
+		spawnProcess();
+
 		//ミニマップの更新
 		mScene.updateMiniMapPos();
 	}
@@ -89,11 +86,17 @@ void TurnObserver::startEnemyTurn()
 {
 	//敵配列をプレイヤーに近い順にソート
 	mScene.sortEnemiesByDistanceToPlayer();
-	mPendingEnemyCount = static_cast<int>(mScene.getEnemyCount());
+	
+	//生存している敵だけを行動待ちとして数える(死亡済みはstartActで行動せず、完了通知も来ないため)
+	mPendingEnemyCount = 0;
+	for (auto enemy : mScene.getEnemies()) {
+		if (enemy->getAlive()) mPendingEnemyCount++;
+	}
 
 	for (auto enemy : mScene.getEnemies()) {
 		enemy->startAct();
 	}
+
 	mScene.updateMiniMapPos();
 }
 
@@ -124,7 +127,7 @@ void TurnObserver::spawnEnemy()
 
 
 		//障害物がある場合、もう一度乱数を振りなおす
-		if (mScene.getTileDataAt(x, y) == TileType::WALL ||
+		if (mScene.getTileDataAt(x, y) != TileType::FLOOR ||
 			mScene.getCharacterDataAt(x, y) != CharacterType::EMPTY) {
 			i++;
 			continue;
@@ -153,3 +156,12 @@ void TurnObserver::RunOutProcess()
 	mScene.addActor(std::move(endWindow));
 }
 
+void TurnObserver::spawnProcess()
+{
+	int random = Random::dist(1, 100);
+	if (random <= 10)
+		spawnEnemy();
+	random = Random::dist(1, 100);
+	if (random <= 10)
+		mScene.spawnResource();
+}

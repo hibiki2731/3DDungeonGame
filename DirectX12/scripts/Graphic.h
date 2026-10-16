@@ -99,6 +99,7 @@ public:
 	int msg_wparam();									//ウィンドウメッセージのwparamを取得
 	void closeEventHandle();							//ウィンドウの×ボタンが押されたときの処理
 	void waitGPU();										//GPUの処理が終わるまで待機する
+	void transitShaderResourceToRenderTarget(ID3D12Resource* resource);	//PIXEL_SHADER_RESOURCE -> RENDER_TARGETへ即時遷移させる(完了まで待機)
 	void delayRelease(ComPtr<IUnknown>& resource);		//リソースの開放を遅らせる。GPUがリソースを使用している可能性がある場合に、すぐに開放せず、次のフレームで開放する。
 	static UINT alignedSize(UINT size);					//引数のサイズを256バイトアライメントにする
 
@@ -246,6 +247,8 @@ private:
 	//光源のindexカウンター Base3DDataの配列のどこに光源のデータを入れるかを管理する。
 	int mPointLightIndex = 0;
 	int mSpotLightIndex = 0;
+	int mPrePointLightIndex = 0;
+	int mPreSpotLightIndex = 0;
 
 	//参照
 	Game& mGame;

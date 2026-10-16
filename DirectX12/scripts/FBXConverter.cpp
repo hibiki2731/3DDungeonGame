@@ -119,7 +119,7 @@ void FBXConverter::LoadMaterial(FbxSurfaceMaterial* material) {
 		double shininess;
 		prop = material->FindProperty(FbxSurfaceMaterial::sShininess);
 		if (prop.IsValid()) {
-			shininess = std::max(prop.Get<FbxDouble>(), 25.0);
+			shininess = (std::max)(prop.Get<FbxDouble>(), 25.0);
 			
 		}
 		else {

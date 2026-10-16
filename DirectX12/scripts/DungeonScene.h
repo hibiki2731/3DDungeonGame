@@ -88,12 +88,12 @@ public:
     //マップ情報
 	void setTileDataAt(int x, int y, int data);
 	void setTileDataAt(int index, int data);
-	void setTileData(const std::vector<std::vector<int>>& mapData);
+	void setTileData(std::vector<std::vector<int>> mapData);
 	void setCharacterDataAt(int x, int y, int data);
 	void setCharacterDataAt(int index, int data);
-	void setCharacterData(const std::vector<std::vector<int>>& objectData);
+	void setCharacterData(std::vector<std::vector<int>> objectData);
 	void setMapSize(int size) { mMapSize = size; }
-	void setTreasures(const std::vector<Treasure*>& treasures) { mTreasures = treasures; }
+	void setTreasures(std::vector<Treasure*> treasures) { mTreasures = std::move(treasures); }
 
     //getter
     //マップ情報

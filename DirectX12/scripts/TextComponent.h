@@ -67,6 +67,7 @@ private:
 	FLOAT			mFontSize;
 	const WCHAR*	mFontName;
 	bool			isLineSpaceDefault;
+	bool			mIsShaderResourceState = false;	//テクスチャがPIXEL_SHADER_RESOURCE状態か(D2D描画後はtrue)
 	float			mLineSpace;				//行の高さ
 	float			mBaseLineSpace;			//行の上端からベースラインまでの距離
 	float			mTextWidth;				//テキストの幅

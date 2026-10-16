@@ -77,6 +77,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>pch.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -105,7 +108,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>pch.h</ForcedIncludeFiles>
       <AdditionalIncludeDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.7\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp23</LanguageStandard>
@@ -252,6 +257,10 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="scripts\pch.cpp">
+      <PrecompiledHeader Condition="'$(Platform)'=='x64'">Create</PrecompiledHeader>
+      <ForcedIncludeFiles Condition="'$(Platform)'=='x64'"></ForcedIncludeFiles>
+    </ClCompile>
     <ClCompile Include="scripts\Actor.cpp" />
     <ClCompile Include="scripts\AssetManager.cpp" />
     <ClCompile Include="scripts\PlayerAttackComponent.cpp" />
@@ -270,14 +279,38 @@
     <ClCompile Include="scripts\GUIDebugger.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui.cpp" />
-    <ClCompile Include="scripts\Imgui\imgui_demo.cpp" />
-    <ClCompile Include="scripts\Imgui\imgui_draw.cpp" />
-    <ClCompile Include="scripts\Imgui\imgui_impl_dx12.cpp" />
-    <ClCompile Include="scripts\Imgui\imgui_impl_win32.cpp" />
-    <ClCompile Include="scripts\Imgui\imgui_stdlib.cpp" />
-    <ClCompile Include="scripts\Imgui\imgui_tables.cpp" />
-    <ClCompile Include="scripts\Imgui\imgui_widgets.cpp" />
+    <ClCompile Include="scripts\Imgui\imgui.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="scripts\Imgui\imgui_demo.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="scripts\Imgui\imgui_draw.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="scripts\Imgui\imgui_impl_dx12.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="scripts\Imgui\imgui_impl_win32.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="scripts\Imgui\imgui_stdlib.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="scripts\Imgui\imgui_tables.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="scripts\Imgui\imgui_widgets.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+    </ClCompile>
     <ClCompile Include="scripts\myJson.cpp" />
     <ClCompile Include="scripts\PlayerMoveComponent.cpp" />
     <ClCompile Include="scripts\Resource.cpp" />
@@ -320,9 +353,13 @@
     <ClCompile Include="scripts\TownScene.cpp" />
     <ClCompile Include="scripts\Treasure.cpp" />
     <ClCompile Include="scripts\TurnObserver.cpp" />
-    <ClCompile Include="scripts\WinMain.cpp" />
+    <ClCompile Include="scripts\WinMain.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles></ForcedIncludeFiles>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="scripts\pch.h" />
     <ClInclude Include="scripts\Actor.h" />
     <ClInclude Include="scripts\AssetManager.h" />
     <ClInclude Include="scripts\AttackType.h" />

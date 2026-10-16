@@ -267,7 +267,7 @@ void ArmerMenu::refreshText()
 	std::wstring armerText = L"";
 	int showArmerNum = min(mArmers.size(), MaxShowArmerNum);
 	for (int i = mScrollOffset; i < mScrollOffset + showArmerNum; i++) {
-		const auto& armerData = mItemManager.getWeaponData(mArmers[i]);
+		const auto& armerData = mItemManager.getArmerData(mArmers[i]);
 		armerText += Utility::stringToWString(armerData.name) + L"\n";
 	}
 	if (armerText.size() == 0) armerText = L"なし\n";

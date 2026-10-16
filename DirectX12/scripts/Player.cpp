@@ -417,6 +417,8 @@ void Player::useItem()
 
 	//使用したアイテムをインベントリーから削除
 	mPlayerManager.removeInventory(mSelectItemIndex);
+	//選択中アイテムを左端に初期化
+	mSelectItemIndex = 0;
 
 	//UIの更新
 	mScene.updateItemUI();

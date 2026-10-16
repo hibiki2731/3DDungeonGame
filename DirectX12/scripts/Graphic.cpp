@@ -254,7 +254,7 @@ HRESULT Graphic::createWindow() {
 }
 
 HRESULT Graphic::createSwapChain() {
-	//スワップチェイン作製用のDXGIファクトリーの生成
+	// スワップチェイン作製用のDXGIファクトリーの生成
 	ComPtr<IDXGIFactory4> dxgiFactory;
 	HRESULT hr = CreateDXGIFactory2(0, IID_PPV_ARGS(dxgiFactory.GetAddressOf()));
 	assert(SUCCEEDED(hr));
@@ -1008,17 +1008,14 @@ void Graphic::initBilbordBuffer()
 
 void Graphic::updateBase3DData()
 {
-	//前フレームのライトの数を保存
-	static int prePointLightIndex = 0;
-	static int preSpotLightIndex = 0;
 	//ライトの数が減った場合、減った分のライトを無効にする
-	if (prePointLightIndex > mPointLightIndex) {
-		for (int i = mPointLightIndex + 1; i <= prePointLightIndex; i++) {
+	if (mPrePointLightIndex > mPointLightIndex) {
+		for (int i = mPointLightIndex; i < mPrePointLightIndex; i++) {
 			Base3DData.pointLights[i].setValue.x = 0;	//ライトを無効にする
 		}
 	}
-	if (preSpotLightIndex > mSpotLightIndex) {
-		for (int i = mSpotLightIndex + 1; i <= preSpotLightIndex; i++) {
+	if (mPreSpotLightIndex > mSpotLightIndex) {
+		for (int i = mSpotLightIndex; i < mPreSpotLightIndex; i++) {
 			Base3DData.spotLights[i].setValue.x = 0;	//ライトを無効にする
 		}
 	}
@@ -1028,8 +1025,8 @@ void Graphic::updateBase3DData()
 
 
 	//前フレームのライトの数を保存
-	prePointLightIndex = mPointLightIndex;
-	preSpotLightIndex = mSpotLightIndex;
+	mPrePointLightIndex = mPointLightIndex;
+	mPreSpotLightIndex = mSpotLightIndex;
 
 	//インデックスをリセット
 	mPointLightIndex = 0;
@@ -1625,6 +1622,27 @@ void Graphic::waitGPU()
 		//イベントが発生するまで待つ
 		WaitForSingleObject(mFenceEvent, INFINITE);
 	}
+}
+
+void Graphic::transitShaderResourceToRenderTarget(ID3D12Resource* resource)
+{
+	//描画用コマンドリストとは別のリストで即座に実行する(D3D11On12のFlushと実行順序を揃えるため)
+	D3D12_RESOURCE_BARRIER barrier = {};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = resource;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	mLoadList->ResourceBarrier(1, &barrier);
+	mLoadList->Close();
+
+	ID3D12CommandList* commandLists[] = { mLoadList.Get() };
+	mCommandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
+	waitGPU();
+
+	mLoadAllocator->Reset();
+	mLoadList->Reset(mLoadAllocator.Get(), nullptr);
 }
 
 void Graphic::delayRelease(ComPtr<IUnknown>& resource)
