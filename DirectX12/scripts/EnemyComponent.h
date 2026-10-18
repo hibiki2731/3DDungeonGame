@@ -40,6 +40,7 @@ public:
 	XMFLOAT3 getPosition();	//位置の取得
 	int getDist();			//プレイヤーとの距離を取得
 	const std::string& getName() { return mName; } //エネミーの名前を取得
+	bool isActing() {return isActive;}
 
 private:
 	//A*アルゴリズム用構造体

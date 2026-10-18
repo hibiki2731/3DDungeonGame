@@ -159,6 +159,9 @@
     <ClCompile Include="scripts\TurnObserver.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="scripts\TurnState.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
     <ClCompile Include="scripts\GUIDebugger.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -187,9 +190,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\TownUI.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="scripts\EndWindow.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\FireParticleComponent.cpp">
@@ -374,6 +374,9 @@
     <ClInclude Include="scripts\TurnObserver.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="scripts\TurnState.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
     <ClInclude Include="scripts\GUIDebugger.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -405,9 +408,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\TownUI.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="scripts\EndWindow.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\FireParticleComponent.h">

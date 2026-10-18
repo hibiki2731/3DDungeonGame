@@ -44,10 +44,14 @@ public:
 	void giveDamage(int damage);
 
 	//ターン経過処理
-	void startAct();
-	void moveToEnemyTurn();
-	void endAct();
-	void continueAct();
+	void activateAction();	//ターン経過する行動を実行可能にする
+	void startAction();
+	void endAction();
+	bool canAction() { return canStartAction; }	//ターン経過する行動を実行可能か判定
+	bool isActioning() { return isActing; }		//ターン経過する行動を実行中か判定
+	bool isReachedGoal() const { return mIsReachedGoal; }	//ゴールに到達したか判定
+	bool isRequestingReturn() const { return mIsRequestingReturn; }	//街への帰還を要求しているか判定
+	void damagedProcess();				//ダメージを受けたときの処理
 private:
 	//--ターン経過する行動--
 	void doAction();
@@ -61,7 +65,6 @@ private:
 	void returnToTown();
 
 	void rotate(Direction direction);	//視点移動
-	void damagedProcess();				//ダメージを受けたときの処理
 	void updateFlash();					//点滅処理の更新	
 	void selectNextItem();				//アイテム選択
 	void selectPreviousItem();			//アイテム選択
@@ -71,6 +74,9 @@ private:
 	float	 mRotSpeed;			//回転速度
 	XMFLOAT3 mTargetPos;		//移動先の座標
 	XMFLOAT3 mTargetRot;		//視点移動先の回転角
+	bool	 canStartAction;	//true : ターン経過する行動を実行可能, false : 行動できない
+	bool	 mIsReachedGoal;	//true : ゴールに到達した
+	bool	 mIsRequestingReturn;	//true : 街への帰還を要求している
 	bool	 isActing;			//true : ターン経過する行動を実行中, false : 何も行動していない
 	bool	 isRotating;		//true : 視点移動中, false : 視点移動していない
 	int		 mPendingDamage;	//次の更新でHPから引かれるダメージ量

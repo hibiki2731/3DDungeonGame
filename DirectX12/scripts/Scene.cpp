@@ -19,7 +19,7 @@ void Scene::addActor(std::unique_ptr<Actor> actor)
 	mPendingActors.emplace_back(std::move(actor));
 }
 
-void Scene::joinActors()
+void Scene::joinActors() 
 {
 	for (auto& pending : mPendingActors) {
 		mActors.emplace_back(std::move(pending));
