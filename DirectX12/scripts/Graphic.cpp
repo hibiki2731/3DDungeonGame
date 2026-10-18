@@ -425,9 +425,9 @@ HRESULT Graphic::createPipeline()
 		
 		
 		//シェーダの読み込み
-		BIN_FILE12 vs("assets\\VertexShader.cso");
+		BIN_FILE12 vs("assets\\shader\\cso\\VertexShader.cso");
 		assert(vs.succeeded());
-		BIN_FILE12 ps("assets\\PixelShader.cso");
+		BIN_FILE12 ps("assets\\shader\\cso\\PixelShader.cso");
 		assert(ps.succeeded());
 
 		//各種記述
@@ -552,9 +552,9 @@ HRESULT Graphic::createPipeline()
 
 		{
 			//シェーダの読み込み
-			BIN_FILE12 vs2D("assets\\2DVertexShader.cso");
+			BIN_FILE12 vs2D("assets\\shader\\cso\\2DVertexShader.cso");
 			assert(vs2D.succeeded());
-			BIN_FILE12 ps2D("assets\\2DPixelShader.cso");
+			BIN_FILE12 ps2D("assets\\shader\\cso\\2DPixelShader.cso");
 			assert(ps2D.succeeded());
 
 			//各種記述
@@ -674,15 +674,15 @@ HRESULT Graphic::createPipeline()
 
 		{
 			//シェーダの読み込み
-			BIN_FILE12 vsDT("assets\\DTVertexShader.cso");
+			BIN_FILE12 vsDT("assets\\shader\\cso\\DTVertexShader.cso");
 			assert(vsDT.succeeded());
-			BIN_FILE12 gsDT("assets\\DTGeometryShader.cso");
+			BIN_FILE12 gsDT("assets\\shader\\cso\\DTGeometryShader.cso");
 			assert(gsDT.succeeded());
-			BIN_FILE12 psDT("assets\\DTPixelShader.cso");
+			BIN_FILE12 psDT("assets\\shader\\cso\\DTPixelShader.cso");
 			assert(psDT.succeeded());
-			BIN_FILE12 psFire("assets\\FPPixelShader.cso");
+			BIN_FILE12 psFire("assets\\shader\\cso\\FPPixelShader.cso");
 			assert(psFire.succeeded());
-			BIN_FILE12 gsFire("assets\\FPGeometryShader.cso");
+			BIN_FILE12 gsFire("assets\\shader\\cso\\FPGeometryShader.cso");
 			assert(gsFire.succeeded());
 
 			//各種記述
@@ -789,9 +789,9 @@ HRESULT Graphic::createPipeline()
 
 		{
 			//シェーダの読み込み
-			BIN_FILE12 vsFade("assets\\FadeVertexShader.cso");
+			BIN_FILE12 vsFade("assets\\shader\\cso\\FadeVertexShader.cso");
 			assert(vsFade.succeeded());
-			BIN_FILE12 psFade("assets\\FadePixelShader.cso");
+			BIN_FILE12 psFade("assets\\shader\\cso\\FadePixelShader.cso");
 			assert(psFade.succeeded());
 
 			//各種記述

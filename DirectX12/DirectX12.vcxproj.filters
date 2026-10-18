@@ -466,48 +466,48 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="scripts\PixelShader.hlsl">
+    <FxCompile Include="assets\shader\hlsl\PixelShader.hlsl">
       <Filter>hlsl</Filter>
     </FxCompile>
-    <FxCompile Include="scripts\VertexShader.hlsl">
+    <FxCompile Include="assets\shader\hlsl\VertexShader.hlsl">
       <Filter>hlsl</Filter>
     </FxCompile>
-    <FxCompile Include="scripts\2DPixelShader.hlsl">
+    <FxCompile Include="assets\shader\hlsl\2DPixelShader.hlsl">
       <Filter>hlsl</Filter>
     </FxCompile>
-    <FxCompile Include="scripts\2DVertexShader.hlsl">
+    <FxCompile Include="assets\shader\hlsl\2DVertexShader.hlsl">
       <Filter>hlsl</Filter>
     </FxCompile>
-    <FxCompile Include="scripts\DTVertexShader.hlsl">
+    <FxCompile Include="assets\shader\hlsl\DTVertexShader.hlsl">
       <Filter>hlsl</Filter>
     </FxCompile>
-    <FxCompile Include="scripts\DTPixelShader.hlsl">
+    <FxCompile Include="assets\shader\hlsl\DTPixelShader.hlsl">
       <Filter>hlsl</Filter>
     </FxCompile>
-    <FxCompile Include="scripts\DTGeometryShader.hlsl">
+    <FxCompile Include="assets\shader\hlsl\DTGeometryShader.hlsl">
       <Filter>hlsl</Filter>
     </FxCompile>
-    <FxCompile Include="scripts\FadePixelShader.hlsl">
+    <FxCompile Include="assets\shader\hlsl\FadePixelShader.hlsl">
       <Filter>hlsl</Filter>
     </FxCompile>
-    <FxCompile Include="scripts\FadeVertexShader.hlsl">
+    <FxCompile Include="assets\shader\hlsl\FadeVertexShader.hlsl">
       <Filter>hlsl</Filter>
     </FxCompile>
-    <FxCompile Include="scripts\FPPixelShader.hlsl">
+    <FxCompile Include="assets\shader\hlsl\FPPixelShader.hlsl">
       <Filter>hlsl</Filter>
     </FxCompile>
-    <FxCompile Include="scripts\FPGeometryShader.hlsl">
+    <FxCompile Include="assets\shader\hlsl\FPGeometryShader.hlsl">
       <Filter>hlsl</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="scripts\Header.hlsli">
+    <None Include="assets\shader\hlsl\Header.hlsli">
       <Filter>hlsl</Filter>
     </None>
-    <None Include="scripts\DTHeader.hlsli">
+    <None Include="assets\shader\hlsl\DTHeader.hlsli">
       <Filter>hlsl</Filter>
     </None>
-    <None Include="scripts\FadeHeader.hlsli">
+    <None Include="assets\shader\hlsl\FadeHeader.hlsli">
       <Filter>hlsl</Filter>
     </None>
   </ItemGroup>
