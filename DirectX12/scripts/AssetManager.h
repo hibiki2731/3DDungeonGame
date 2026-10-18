@@ -26,15 +26,6 @@ struct SpriteData {
 	D3D12_INDEX_BUFFER_VIEW IndexBufView;
 };
 
-enum class MeshName {
-	ROCK_WALL,
-	ROCK_FLOOR,
-	GRASS,
-	SLIME,
-	NURIKABE,
-	COUNT,
-};
-
 class AssetManager
 {
 public:

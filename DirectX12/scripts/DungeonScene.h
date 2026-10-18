@@ -80,10 +80,6 @@ public:
 	void pushMessage(const std::string& message);
 	void updateGold();
 
-	//ターンの制御
-	void moveToPlayerTurn();
-	void moveToEnemyTurn();
-
     //setter
     //マップ情報
 	void setTileDataAt(int x, int y, int data);
@@ -115,13 +111,11 @@ public:
     //リソース
     class Resource* getResource(int index);
     class Resource* getResource(int x, int y);
-	//ターン情報
-	enum struct TurnType getTurnType() const;
 	//ダメージテキスト
 	float getDamageTextNum() const;
 	void createDamageText(const XMFLOAT3& pos, int digit);
 	//ターンオブザーバー
-	class TurnObserver& getTurnObserver();
+	class TurnStateMachine& getTurnStateMachine();
 
 private:
 	//マップ情報
@@ -147,7 +141,7 @@ private:
 	
 	//管理クラス
 	std::unique_ptr<class MapGenerator> mMapGenerator;	//マップ生成
-	std::unique_ptr<class TurnObserver > mTurnObserver;	//ターン管理
+	std::unique_ptr<class TurnStateMachine > mTurnStateMachine;	//ターン管理
 	std::unique_ptr<class DamageTextGenerator> mDamageTextManaager;	//ダメージテキスト管理
 };
 

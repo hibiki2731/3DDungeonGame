@@ -1,7 +1,7 @@
 ﻿#include "Definition.h"
 #include "DungeonScene.h"
 #include "MapGenerator.h"
-#include "TurnObserver.h"
+#include "TurnStateMachine.h"
 #include "Game.h"
 #include "SceneManager.h"
 #include "Enemy.h"
@@ -23,7 +23,7 @@ DungeonScene::DungeonScene(Game& game)
 	:Scene(game)
 {
 	mMapGenerator = std::make_unique<MapGenerator>(*this);
-	mTurnObserver = std::make_unique<TurnObserver>(*this);
+	mTurnStateMachine = std::make_unique<TurnStateMachine>(*this);
 	mDamageTextManaager = std::make_unique<DamageTextGenerator>(game);
 	mPlayer = nullptr;
 	mMapSize = 0;
@@ -32,7 +32,7 @@ DungeonScene::DungeonScene(Game& game)
 }
 
 void DungeonScene::fastUpdateScene() {
-	mTurnObserver->updateTurn();
+	mTurnStateMachine->updateTurn();
 }
 
 void DungeonScene::updateScene()
@@ -61,7 +61,7 @@ void DungeonScene::drawScene()
 void DungeonScene::onEnter()
 {
 	mMapGenerator->begin();
-	mTurnObserver->begin();
+	mTurnStateMachine->begin();
 
 	mGame.getGraphic().startFadeIn(1.0f); 
 	mGame.getAudioManager().playBGM("BGM_DUNGEON");
@@ -173,11 +173,11 @@ void DungeonScene::spawnResource()
 
 		switch (mStage) {
 		case Stage::MAP1:
-			resourceID = "GRASS";
+			resourceID = "MAGIC_IRON";
 			meshID = "GRASS";
 			break;
 		default:
-			resourceID = "GRASS";
+			resourceID = "MAGIC_IRON";
 			meshID = "GRASS";
 			break;
 		}
@@ -374,16 +374,6 @@ void DungeonScene::updateGold()
 	mUI->updateGold();
 }
 
-void DungeonScene::moveToEnemyTurn()
-{
-	mTurnObserver->moveToEnemyTurn();
-}
-
-void DungeonScene::moveToPlayerTurn()
-{
-	mTurnObserver->moveToPlayerTurn();
-}
-
 EnemyComponent* DungeonScene::getEnemyFromIndexPos(int index)
 {
 	int x = index % mMapSize;
@@ -430,11 +420,6 @@ class Resource* DungeonScene::getResource(int x, int y)
 	return getResource(index);
 }
 
-TurnType DungeonScene::getTurnType() const
-{
-	return mTurnObserver->getTurnType();
-}
-
 float DungeonScene::getDamageTextNum() const
 {
 	return mDamageTextManaager->getSize();
@@ -445,8 +430,8 @@ void DungeonScene::createDamageText(const XMFLOAT3& pos, int digit)
 	mDamageTextManaager->createDamageText(pos, digit);
 }
 
-TurnObserver& DungeonScene::getTurnObserver()
+TurnStateMachine& DungeonScene::getTurnStateMachine()
 {
-	return *mTurnObserver.get();
+	return *mTurnStateMachine.get();
 }
 

@@ -71,12 +71,6 @@ void PlayerAttackComponent::createDamageText(EnemyComponent* target, int damageV
 	}
 }
 
-void PlayerAttackComponent::moveNextTurn()
-{
-	mPlayer.endAct();	//プレイヤーの行動終了処理
-	mScene.moveToEnemyTurn();	//敵ターンに移行
-}
-
 PlayerSingleAttackComponent::PlayerSingleAttackComponent(DungeonScene& scene, Player& player)
 	: PlayerAttackComponent(scene, player)
 {
@@ -87,14 +81,13 @@ bool PlayerSingleAttackComponent::execute()
 	EnemyComponent* target = searchTargetEnemy();
 	if (target == nullptr) return false; //攻撃対象がいない場合は処理を終了
 
-	mPlayer.startAct();					//プレイヤーの行動開始処理
 	int damage = calcDamage(target);	//ダメージの計算
 	target->giveDamage(damage);			//ダメージを与える
 	//ダメージエフェクト
 	target->startFlash();				//敵を点滅させる
 	createDamageText(target, damage);	//ダメージ値を描画
 	mScene.getGame().getAudioManager().playSE("DAMAGE1");
-	moveNextTurn();
+	mPlayer.endAction();					//プレイヤーの行動終了処理(敵ターンへの移行も通知される)
 
 	return true;
 }
@@ -129,9 +122,6 @@ bool PlayerDoubleAttackComponent::execute()
 	EnemyComponent* target = searchTargetEnemy();
 	if (target == nullptr) return false; //攻撃対象がいない場合は処理を終了
 
-	//プレイヤーの行動開始
-	mPlayer.startAct();
-
 	//1撃目のダメージの計算
 	int damage = calcDamage(target);
 	target->giveDamage(damage); //ダメージを与える
@@ -158,7 +148,7 @@ void PlayerDoubleAttackComponent::executeSecondAttack()
 	if (target == nullptr) {
 		mTimer = 0.0f;
 		mIsFirstAttackExecuted = false;	//2撃目の攻撃が実行されたのでフラグをリセット
-		moveNextTurn();	//攻撃対象がいない場合はターン経過
+		mPlayer.endAction();	//攻撃対象がいない場合はターン経過
 		return;
 	}
 	//2撃目のダメージの計算
@@ -171,5 +161,5 @@ void PlayerDoubleAttackComponent::executeSecondAttack()
 
 	mTimer = 0.0f;
 	mIsFirstAttackExecuted = false;	//2撃目の攻撃が実行されたのでフラグをリセット
-	moveNextTurn();	//ターン経過
+	mPlayer.endAction();	//ターン経過
 }

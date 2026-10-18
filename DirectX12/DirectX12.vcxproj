@@ -137,6 +137,9 @@
       <LanguageStandard>stdcpp23</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>pch.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -259,7 +262,8 @@
   <ItemGroup>
     <ClCompile Include="scripts\pch.cpp">
       <PrecompiledHeader Condition="'$(Platform)'=='x64'">Create</PrecompiledHeader>
-      <ForcedIncludeFiles Condition="'$(Platform)'=='x64'"></ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Platform)'=='x64'">
+      </ForcedIncludeFiles>
     </ClCompile>
     <ClCompile Include="scripts\Actor.cpp" />
     <ClCompile Include="scripts\AssetManager.cpp" />
@@ -270,7 +274,6 @@
     <ClCompile Include="scripts\DebugCamera.cpp" />
     <ClCompile Include="scripts\DungeonScene.cpp" />
     <ClCompile Include="scripts\DungeonUI.cpp" />
-    <ClCompile Include="scripts\EndWindow.cpp" />
     <ClCompile Include="scripts\EnemyComponent.cpp" />
     <ClCompile Include="scripts\ExplorerMenu.cpp" />
     <ClCompile Include="scripts\FireParticleComponent.cpp" />
@@ -281,35 +284,43 @@
     </ClCompile>
     <ClCompile Include="scripts\Imgui\imgui.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
     </ClCompile>
     <ClCompile Include="scripts\Imgui\imgui_demo.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
     </ClCompile>
     <ClCompile Include="scripts\Imgui\imgui_draw.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
     </ClCompile>
     <ClCompile Include="scripts\Imgui\imgui_impl_dx12.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
     </ClCompile>
     <ClCompile Include="scripts\Imgui\imgui_impl_win32.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
     </ClCompile>
     <ClCompile Include="scripts\Imgui\imgui_stdlib.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
     </ClCompile>
     <ClCompile Include="scripts\Imgui\imgui_tables.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
     </ClCompile>
     <ClCompile Include="scripts\Imgui\imgui_widgets.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
     </ClCompile>
     <ClCompile Include="scripts\myJson.cpp" />
     <ClCompile Include="scripts\PlayerMoveComponent.cpp" />
@@ -337,7 +348,6 @@
     <ClCompile Include="scripts\MeshComponent.cpp" />
     <ClCompile Include="scripts\Random.cpp" />
     <ClCompile Include="scripts\Enemy.cpp" />
-    <ClCompile Include="scripts\ReturnToTownWindow.cpp" />
     <ClCompile Include="scripts\Scene.cpp" />
     <ClCompile Include="scripts\SceneManager.cpp" />
     <ClCompile Include="scripts\ShopMenu.cpp" />
@@ -352,10 +362,16 @@
     <ClCompile Include="scripts\TitleScene.cpp" />
     <ClCompile Include="scripts\TownScene.cpp" />
     <ClCompile Include="scripts\Treasure.cpp" />
-    <ClCompile Include="scripts\TurnObserver.cpp" />
+    <ClCompile Include="scripts\TurnStateMachine.cpp" />
+    <ClCompile Include="scripts\TurnState.cpp" />
+    <ClCompile Include="scripts\PlayerInteractComponent.cpp" />
+    <ClCompile Include="scripts\PlayerItemComponent.cpp" />
+    <ClCompile Include="scripts\PlayerRotateComponent.cpp" />
+    <ClCompile Include="scripts\PlayerState.cpp" />
     <ClCompile Include="scripts\WinMain.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <ForcedIncludeFiles></ForcedIncludeFiles>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -371,7 +387,6 @@
     <ClInclude Include="scripts\Definition.h" />
     <ClInclude Include="scripts\DungeonScene.h" />
     <ClInclude Include="scripts\DungeonUI.h" />
-    <ClInclude Include="scripts\EndWindow.h" />
     <ClInclude Include="scripts\EnemyComponent.h" />
     <ClInclude Include="scripts\ExplorerMenu.h" />
     <ClInclude Include="scripts\FireParticleComponent.h" />
@@ -419,7 +434,6 @@
     <ClInclude Include="scripts\MeshComponent.h" />
     <ClInclude Include="scripts\Random.h" />
     <ClInclude Include="scripts\Enemy.h" />
-    <ClInclude Include="scripts\ReturnToTownWindow.h" />
     <ClInclude Include="scripts\Scene.h" />
     <ClInclude Include="scripts\SceneManager.h" />
     <ClInclude Include="scripts\ShopMenu.h" />
@@ -435,7 +449,12 @@
     <ClInclude Include="scripts\TitleScene.h" />
     <ClInclude Include="scripts\TownScene.h" />
     <ClInclude Include="scripts\Treasure.h" />
-    <ClInclude Include="scripts\TurnObserver.h" />
+    <ClInclude Include="scripts\TurnStateMachine.h" />
+    <ClInclude Include="scripts\TurnState.h" />
+    <ClInclude Include="scripts\PlayerInteractComponent.h" />
+    <ClInclude Include="scripts\PlayerItemComponent.h" />
+    <ClInclude Include="scripts\PlayerRotateComponent.h" />
+    <ClInclude Include="scripts\PlayerState.h" />
     <ClInclude Include="scripts\WinMain.h" />
   </ItemGroup>
   <ItemGroup>

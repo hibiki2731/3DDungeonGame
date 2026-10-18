@@ -29,7 +29,7 @@ void PlayerMoveComponent::updateComponent()
 
 		//目的地に接近したらピッタリ合わせる
 		mPlayer.setPosition(mTargetPos);
-		mPlayer.endAct();	//行動終了	
+		mPlayer.endAction();	//行動終了	
 		isMoving = false;
 	}
 }
@@ -58,8 +58,7 @@ void PlayerMoveComponent::move(Direction direction)
 	
 	mScene.getGame().getAudioManager().playSE("DUNGEON_FOOTSTEP");
 
-	mPlayer.startAct();		   //行動開始
-	mPlayer.moveToEnemyTurn(); //敵ターンに移行
+	mPlayer.startAction();	//行動開始
 	isMoving = true;
 }
 

@@ -28,7 +28,6 @@ protected:
 	EnemyComponent* searchTargetEnemy();
 	virtual int calcDamage(EnemyComponent* target) = 0;
 	void createDamageText(EnemyComponent* target, int damageValue);
-	void moveNextTurn();
 
 };
 

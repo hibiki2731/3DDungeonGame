@@ -34,6 +34,13 @@ public:
 	void addComponentLabel(const std::string& labelName, const std::string& componentName);
 	//派生先のクラスでラベル付けしたコンポーネントを参照するメンバー変数を設定する
 	virtual void applyComponentLabel() {};
+	//ラベル名からコンポーネントを取得する(存在しない場合はnullptr)
+	template<class T>
+	T* getLabeledComponent(const std::string& labelName) {
+		auto iter = mComponentLabels.find(labelName);
+		if (iter == mComponentLabels.end()) return nullptr;
+		return static_cast<T*>(iter->second.pComponent);
+	}
 
 protected:
 	//ラベル付けしたコンポーネントのポインタと型名をラベル名から取得するためのmap

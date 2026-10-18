@@ -1,32 +1,21 @@
 ﻿#include "Player.h"
-#include "TurnObserver.h"
 #include "CameraComponent.h"
-#include "PointLightComponent.h"
 #include "SpotLightComponent.h"
-#include "json.hpp"
-#include "Math.h"
 #include "timer.h"
 #include "CharacterComponent.h"
-#include "DamageText.h"
-#include "EnemyComponent.h"
 #include <windows.h>
 #include <algorithm>
 #include "Game.h"
 #include "Graphic.h"
 #include "ItemManager.h"
-#include "input.h"
 #include "PlayerManager.h"
 #include "AudioManager.h"
-#include "MiniMap.h"
 #include "DungeonScene.h"
-#include "Resource.h"
-#include "EndWindow.h"
-#include "Treasure.h"
-#include "SpriteComponent.h"
-#include "TextComponent.h"
 #include "PlayerAttackComponent.h"
 #include "PlayerMoveComponent.h"
-#include "ReturnToTownWindow.h"
+#include "PlayerRotateComponent.h"
+#include "PlayerItemComponent.h"
+#include "PlayerInteractComponent.h"
 
 Player::Player(DungeonScene& scene, float x, float y)
 	: Actor(scene),
@@ -38,11 +27,8 @@ Player::Player(DungeonScene& scene, float x, float y)
 	//初期化
 	mPosition		 = { x, 0.8f, y };
 	mTargetPos	     = mPosition;
-	mTargetRot		 = mRotation;
-	isActing		 = false;
-	isRotating		 = false;
+	mPendingDamage	 = 0;
 	mFlashTimer		 = 0.0f;
-	mSelectItemIndex = 0;
 
 	//カメラコンポーネントの生成：プレイヤーの視点を制御
 	std::unique_ptr camera = std::make_unique<CameraComponent>(*this);
@@ -66,7 +52,6 @@ Player::Player(DungeonScene& scene, float x, float y)
 	mPlayerManager.applyToolParamater();
 
 	mMoveSpeed		= mPlayerData.moveSpeed;		//移動速度
-	mRotSpeed		= mPlayerData.rotSpeed;			//回転速度
 	mFlashDuration  = mPlayerData.flushDuration;	//ダメージを受けたときの点滅時間
 	mAP = mPlayerData.actionLimit;					//APの初期値
 
@@ -76,97 +61,70 @@ Player::Player(DungeonScene& scene, float x, float y)
 	character->setIndexPos(static_cast<int>(std::round(x / MAPTIPSIZE)), static_cast<int>(std::round(y / MAPTIPSIZE)));
 	character->setMaxHP(mPlayerData.maxHp);
 	character->setHP(mPlayerData.hp);
-	character->setPower(mPlayerData.power);	
+	character->setPower(mPlayerData.power);
 	character->setDefense(mPlayerData.defence);
 	mCharacter = character.get();
 	addComponent(std::move(character));
 
-	//移動用コンポーネントの生成
+	//---行動用コンポーネントの生成---
+	//移動
 	auto moveComponent = std::make_unique<PlayerMoveComponent>(scene, *this);
-	mMoveComponent = moveComponent.get();
+	PlayerMoveComponent& move = *moveComponent;
 	addComponent(std::move(moveComponent));
 
-	//攻撃用コンポーネントの生成
+	//攻撃 攻撃タイプに対応する攻撃コンポーネントを入力待ち状態に渡す
 	auto singleAttack = std::make_unique<PlayerSingleAttackComponent>(scene, *this);
 	auto doubleAttack = std::make_unique<PlayerDoubleAttackComponent>(scene, *this);
-	mAttackComponents[AttackType::SINGLE] = singleAttack.get();	//攻撃タイプに対応する攻撃コンポーネントをマップに格納
-	mAttackComponents[AttackType::DOUBLE] = doubleAttack.get();
+	PlayerAttackComponent* attack = nullptr;
+	switch (mPlayerData.attackType) {
+	case AttackType::SINGLE:
+		attack = singleAttack.get();
+		break;
+	case AttackType::DOUBLE:
+		attack = doubleAttack.get();
+		break;
+	}
 	addComponent(std::move(singleAttack));
 	addComponent(std::move(doubleAttack));
+
+	//視点移動
+	auto rotateComponent = std::make_unique<PlayerRotateComponent>(scene, *this, *mCharacter, mPlayerData.rotSpeed);
+	PlayerRotateComponent& rotate = *rotateComponent;
+	addComponent(std::move(rotateComponent));
+
+	//アイテム
+	auto itemComponent = std::make_unique<PlayerItemComponent>(scene, *this, *mCharacter);
+	mItemComponent = itemComponent.get();
+	addComponent(std::move(itemComponent));
+
+	//フィールド上の物への行動(資源、宝箱、階段)
+	auto interactComponent = std::make_unique<PlayerInteractComponent>(scene, *this, *mCharacter);
+	PlayerInteractComponent& interact = *interactComponent;
+	addComponent(std::move(interactComponent));
+
+	//---状態の生成---
+	mStates[PlayerStateType::REQUEST_ACTION] = std::make_unique<PlayerRequestActionState>(*this, move, attack, rotate, *mItemComponent, interact);
+	mStates[PlayerStateType::ACTING]		 = std::make_unique<PlayerActingState>(*this);
+	mStates[PlayerStateType::WAIT]			 = std::make_unique<PlayerWaitState>(*this);
+	mStates[PlayerStateType::GOAL]			 = std::make_unique<PlayerGoalState>(*this);
+	mStates[PlayerStateType::RETURN_REQUEST] = std::make_unique<PlayerReturnRequestState>(*this);
+
+	//TurnStateMachineからbeginTurnが呼ばれるまで待機する
+	mCurrentState = mStates[PlayerStateType::WAIT].get();
+	mCurrentState->enter();
 }
 
 void Player::inputActor()
 {
-	//敵ターン、HP0以下のときは入力を受け付けない
-	if (mScene.getTurnType() == TurnType::POSE || mCharacter->getHP() <= 0) return;
-
-	//---移動---
-	if (isKeyPressed('A')) {
-		move(Direction::LEFT);
-	}
-	if (isKeyPressed('D')) {
-		move(Direction::RIGHT);
-	}
-	if (isKeyPressed('W')) {
-		move(Direction::UP);
-	}
-	if (isKeyPressed('S')) {
-		move(Direction::DOWN);
-	}
-	//---視点移動---
-	if (isKeyPressed(VK_RIGHT) || isKeyPressed('L')) {
-		rotate(Direction::RIGHT);
-	}
-	if (isKeyPressed(VK_LEFT) || isKeyPressed('J')) {
-		rotate(Direction::LEFT);
-	}
-	//---アクション---
-	if (isKeyJustPressed(VK_RETURN) || isKeyJustPressed('K')) {
-		doAction();
-	}
-	//---アイテム使用---
-	if (isKeyJustPressed('I')) {
-		useItem();
-	}
-	if (isKeyJustPressed('U')) {
-		selectPreviousItem();
-	}
-	if (isKeyJustPressed('O')) {
-		selectNextItem();
-	}
-
-	//街へ帰還
-	if (isKeyJustPressed(VK_ESCAPE)) {
-		returnToTown();
-	}
-	
+	mCurrentState->input();
 }
 
 //毎フレームの更新処理
 void Player::updateActor()
 {
-	//カメラ回転時の処理
-	if (isRotating) {
-		XMFLOAT3 diffRot = mTargetRot - mRotation;
-		float rotLength = deltaTime * mRotSpeed;
+	mCurrentState->update();
 
-		////回転の更新 diffRot(現在の回転角と目的の回転角の差分)よりrotLength(回転量)が大きくなるまで現在の回転にrotLengthを加算
-		if (fabsf(diffRot.x) > rotLength || fabsf(diffRot.y) > rotLength || fabsf(diffRot.z) > rotLength) {
-
-			mRotation = mRotation + Math::normalize(diffRot) * rotLength;
-		}
-		//終了時の処理
-		else {
-			//目的の回転角にピッタリ合わせる
-			mRotation = mTargetRot;
-			isRotating = false;
-		}
-	}
-
-	//ダメージを受けたときの処理
-	if (!isActing) damagedProcess();
-
-	//ダメージを受けたときの点滅処理
+	//ダメージを受けたときの点滅処理(全状態共通)
 	updateFlash();
 }
 
@@ -220,17 +178,17 @@ int Player::getDefence()
 
 int Player::getSelectItemIndex()
 {
-	return mSelectItemIndex;
-}
-
-bool Player::getIsActing()
-{
-	return isActing;
+	return mItemComponent->getSelectItemIndex();
 }
 
 const std::string& Player::getSelectItemID()
 {
-	return mPlayerManager.getInventoryItem(mSelectItemIndex);
+	return mItemComponent->getSelectItemID();
+}
+
+PlayerStateType Player::getStateType() const
+{
+	return mCurrentState->getType();
 }
 
 void Player::setIndexPos(int x, int y)
@@ -246,108 +204,9 @@ void Player::giveDamage(int damage)
 	mPendingDamage += damage;
 }
 
-void Player::startAct()
-{
-	isActing = true;
-}
-
-void Player::moveToEnemyTurn()
-{
-	mScene.moveToEnemyTurn();
-}
-
-void Player::doAction()
-{
-	if(attack()) return;			//目の前の敵を攻撃
-	if(collect()) return;			//リソースを回収
-	if(getTreasure()) return;		//宝箱からアイテムを入手
-	if(moveNextFloor()) return;	//次の階へ移動
-}
-
-bool Player::attack()
-{
-	//敵ターン時は実行不可
-	if (mScene.getTurnType() == TurnType::ENEMY) return false;
-	//移動、回転中は実行不可
-	if (isActing || isRotating) return false;
-	//残り行動回数が0の場合実行不可
-	if (mAP == 0)return false;
-
-	//攻撃タイプに対応する攻撃コンポーネントをマップから取得
-	auto attackComponentIter = mAttackComponents.find(mPlayerData.attackType);
-	if (attackComponentIter == mAttackComponents.end()) return false;	//攻撃タイプに対応する攻撃コンポーネントが存在しない場合は処理を終了
-
-	return attackComponentIter->second->execute();	//攻撃コンポーネントの攻撃処理を実行
-}
-
-void Player::move(Direction direction)
-{
-	//プレイヤーターン時のみ実行
-	if (mScene.getTurnType() == TurnType::ENEMY) return;
-	//移動、回転中は実行不可
-	if (isActing || isRotating) return;
-	//行動回数が0の場合実行不可
-	if (mAP == 0) return;
-
-	mMoveComponent->move(direction);	//移動用コンポーネントの移動処理を実行
-}	
-
-void Player::rotate(Direction direction)
-{
-	//プレイヤーターン時のみ実行
-	if (mScene.getTurnType() == TurnType::ENEMY) return;
-	//移動、回転中は実行不可
-	if (isActing || isRotating) return;
-
-	switch (direction) {
-	case Direction::RIGHT:
-		mTargetRot = mRotation + XMFLOAT3(0, XM_PIDIV2, 0);
-		mCharacter->turnRight(); //向きの更新
-
-		break;
-	case Direction::LEFT:
-		mTargetRot = mRotation - XMFLOAT3(0, XM_PIDIV2, 0);
-		mCharacter->turnLeft(); //向きの更新
-		break;
-	}
-
-	isRotating = true;
-	mScene.updateMiniMapDirection();	//ミニマップのアイコンの向きを更新
-}
-
-bool Player::collect()
-{
-	//プレイヤーターン時のみ実行
-	if (mScene.getTurnType() == TurnType::ENEMY) return false;
-	//移動、回転中は実行不可
-	if (isActing || isRotating) return false;
-	//残り行動回数が0の場合実行不可
-	if (mAP == 0) return false;
-
-	//プレイヤーの位置に資源があるか判定
-	auto resource = mScene.getResource(mCharacter->getIndexPosInt());
-	//ある場合、Resourceクラスのポインタからリソースを回収する関数を実行
-	if (resource) resource->collect();
-	//ない場合は何もしない
-	else return false;
-
-	//SE
-	mScene.getGame().getAudioManager().playSE("PICKAXE");
-	//メッセージを追加 resourceをx取得した！(現在の総数)
-	std::string message = resource->getResourceName() + "を" + std::to_string(resource->getAmount()) + "取得した! (総数"
-						 + std::to_string(mItemManager.getResourceNum(resource->getResourceID())) + ")\n";
-	mScene.pushMessage(message);
-
-	//ターン経過
-	endAct();
-	moveToEnemyTurn();
-
-	return true;
-}
-
 void Player::damagedProcess()
 {
-	//ダメージの反映 
+	//ダメージの反映
 	if (mPendingDamage <= 0) return;
 	int hp = mCharacter->getHP() - mPendingDamage;
 	mCharacter->setHP(hp);
@@ -356,20 +215,17 @@ void Player::damagedProcess()
 	//UIの更新
 	mScene.updateHPUI();
 
-	//死亡処理
-	if (hp <= 0) {
-		//死亡ウィンドウを表示
-		auto endWindow = std::make_unique<EndWindow>(mScene, WindowType::DEAD);
-		mScene.addActor(std::move(endWindow));
-		return;
-	}
-
 	//被ダメージ時の演出
 	mFlashTimer = mFlashDuration;	//画面を点滅
 	mCamera->startShake();			//カメラを揺らす
 	mScene.getGame().getAudioManager().playSE("DAMAGE2");
+}
 
-	
+void Player::recoverAP(int value)
+{
+	mAP += value;
+	//アイテム使用でAPが1消費されるため、上限+1までにする
+	if (mAP > mPlayerData.actionLimit) mAP = mPlayerData.actionLimit + 1;
 }
 
 void Player::updateFlash()
@@ -382,183 +238,38 @@ void Player::updateFlash()
 	}
 }
 
-void Player::useItem()
+//---状態遷移---
+void Player::beginTurn()
 {
-	//敵ターン時は実行不可
-	if (mScene.getTurnType() == TurnType::ENEMY) return;
-	//移動、回転中は実行不可
-	if (isActing || isRotating) return;
-	//残り行動回数が0の場合実行不可
-	if (mAP == 0) return;
+	const PlayerStateType type = getStateType();
+	if (type != PlayerStateType::WAIT && type != PlayerStateType::RETURN_REQUEST) return;
 
-	//選択中のIndexからアイテムのIDを取得
-	const auto& itemID = mPlayerManager.getInventoryItem(mSelectItemIndex);
-	if (itemID == "") {
-		//アイテムがない場合は何もしない
-		return;
-	}
-	
-	//アイテムのIDからアイテムデータを取得
-	const ItemData& itemData = mItemManager.getItemData(itemID);
-
-	//アイテムのカテゴリーから効果を発揮
-	//HP回復
-	if (itemData.category == "HP_RECOVER") {
-		mCharacter->addHP(itemData.value);
-		mScene.updateHPUI();
-		mScene.getGame().getAudioManager().playSE("RECOVER1");
-	}
-	//AP回復
-	else if (itemData.category == "AP_RECOVER") {
-		mAP += itemData.value;
-		if (mAP > mPlayerData.actionLimit) mAP = mPlayerData.actionLimit + 1;
-		mScene.getGame().getAudioManager().playSE("RECOVER1");
-	}
-
-	//使用したアイテムをインベントリーから削除
-	mPlayerManager.removeInventory(mSelectItemIndex);
-	//選択中アイテムを左端に初期化
-	mSelectItemIndex = 0;
-
-	//UIの更新
-	mScene.updateItemUI();
-	mScene.updateItemFrame();
-
-	//ターン経過
-	endAct();
-	moveToEnemyTurn();
+	changeState(PlayerStateType::REQUEST_ACTION);
 }
 
-bool Player::getTreasure()
+void Player::startAction()
 {
-	//プレイヤーターン時のみ実行
-	if (mScene.getTurnType() == TurnType::ENEMY) return false;
-	//移動、回転中は実行不可
-	if (isActing || isRotating) return false;
-	//残り行動回数が0の場合実行不可
-	if (mAP == 0) return false;
+	if (getStateType() != PlayerStateType::REQUEST_ACTION) return;
 
-	//前方に宝箱があるか判定
-	std::vector<int> searchPos = {mCharacter->getIndexPos()[0], mCharacter->getIndexPos()[1]};
-
-	switch (mCharacter->getDirection()) {
-	case Direction::UP:
-		searchPos[1] += 1;
-		break;
-	case Direction::DOWN:
-		searchPos[1] -= 1;
-		break;
-	case Direction::RIGHT:
-		searchPos[0] += 1;
-		break;
-	case Direction::LEFT:
-		searchPos[0] -= 1;
-		break;
-	}
-
-	const int tileData = mScene.getTileDataAt(searchPos[0], searchPos[1]);
-
-	//前方に宝箱がない場合は何もしない
-	if (tileData != TileType::TREASURE) return false;
-
-	//宝箱のポインタを取得
-	Treasure* treasure = mScene.getTreasureAt(searchPos[0], searchPos[1]);
-	//宝箱が設定されていなかったら何もしない
-	if (treasure == nullptr) return false;
-
-	//宝箱からアイテムを取得
-	treasure->open();
-
-	//終了処理
-	endAct();
-	moveToEnemyTurn();
-
-	return true;
+	changeState(PlayerStateType::ACTING);
 }
 
-void Player::endAct()
+void Player::endAction()
 {
-	isActing = false;
+	const PlayerStateType type = getStateType();
+	if (type != PlayerStateType::REQUEST_ACTION && type != PlayerStateType::ACTING) return;
 
 	//残り行動回数を減らす
 	mAP--;
 	//UIの更新
 	if(mAP >= 0) mScene.updateAPUI();
+
+	changeState(PlayerStateType::WAIT);
 }
 
-void Player::continueAct()
+void Player::changeState(PlayerStateType next)
 {
-	isActing = false;
-}
-
-void Player::selectNextItem()
-{
-	//アイテムカーソルを右に移動
-	if (mSelectItemIndex >= mPlayerData.storageSize - 1) return;
-	mSelectItemIndex++;
-	mScene.updateItemFrame();
-	mScene.getGame().getAudioManager().playSE("UI_MOVE1");
-}
-
-void Player::selectPreviousItem()
-{
-	//アイテムカーソルを左に移動
-	if (mSelectItemIndex <= 0) return;
-	mSelectItemIndex--;
-	mScene.updateItemFrame();
-	mScene.getGame().getAudioManager().playSE("UI_MOVE1");
-}
-
-bool Player::moveNextFloor()
-{
-	//敵ターン時は実行不可
-	if (mScene.getTurnType() == TurnType::ENEMY) return false;
-	//移動、回転中は実行不可
-	if (isActing || isRotating) return false;
-	//残り行動回数が0の場合実行不可
-	if (mAP == 0)return false;
-
-	//目の前に階段があるか判定
-	bool isGoal = false;
-	switch (mCharacter->getDirection()) {
-	case Direction::UP:
-		isGoal = mScene.getTileDataAt(mCharacter->getIndexPos()[0], mCharacter->getIndexPos()[1] + 1) == TileType::GOAL;
-		break;
-	case Direction::DOWN:
-		isGoal = mScene.getTileDataAt(mCharacter->getIndexPos()[0], mCharacter->getIndexPos()[1] - 1) == TileType::GOAL;
-		break;
-	case Direction::RIGHT:
-		isGoal = mScene.getTileDataAt(mCharacter->getIndexPos()[0] + 1, mCharacter->getIndexPos()[1]) == TileType::GOAL;
-		break;
-	case Direction::LEFT:
-		isGoal = mScene.getTileDataAt(mCharacter->getIndexPos()[0] - 1, mCharacter->getIndexPos()[1]) == TileType::GOAL;
-		break;
-	}
-
-	if (!isGoal) return false;
-
-	//階段があった場合の処理
-	//現在はクリアウィンドウを表示するだけだが、次の階のマップを生成して移動する処理などもここに書くことになる
-	auto goalWindow = std::make_unique<EndWindow>(mScene, WindowType::GOAL);
-	mScene.addActor(std::move(goalWindow));
-
-	endAct();
-	moveToEnemyTurn();
-	mScene.getTurnObserver().stop();	//ターンオブザーバーを止める(敵の行動も止まる)
-
-	return true;
-}
-
-void Player::returnToTown() 
-{
-	//敵ターン時は実行不可
-	if (mScene.getTurnType() == TurnType::ENEMY) return;
-	//移動、回転中は実行不可
-	if (isActing || isRotating) return;
-	//残り行動回数が0の場合実行不可
-	if (mAP == 0)return;
-
-	isActing = true;
-	auto selectWindow = std::make_unique<ReturnToTownWindow>(mScene, *this);
-	mScene.addActor(std::move(selectWindow));
+	mCurrentState->exit();
+	mCurrentState = mStates.at(next).get();
+	mCurrentState->enter();
 }

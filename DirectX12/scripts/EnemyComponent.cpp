@@ -5,6 +5,7 @@
 #include "Random.h"
 #include "Math.h"
 #include "DungeonScene.h"
+#include "TurnStateMachine.h"
 #include "ItemManager.h"
 #include "Enemy.h"
 #include "PlayerManager.h"
@@ -41,36 +42,35 @@ void EnemyComponent::updateComponent()
 	//点滅処理の更新
 	updateFlash();
 
-	//エネミーターンにのみ処理
-	if(mScene.getTurnType() == TurnType::ENEMY){
-		//移動処理
-		//移動先(mTargetPos)はmove関数内で決定
-		if (isMoving) {
-			//移動する差分の計算
-			XMFLOAT3 diffPos = mTargetPos - mOwner.getPosition();
-			float moveLength = deltaTime * mMoveSpeed;
+	// 移動処理
+	// 移動先(mTargetPos)はmove関数内で決定
+	if (isMoving)
+	{
+		// 移動する差分の計算
+		XMFLOAT3 diffPos = mTargetPos - mOwner.getPosition();
+		float moveLength = deltaTime * mMoveSpeed;
 
-			//位置の更新  diffPos(現在地と目的地の差分)よりmoveLength(移動距離)が大きくなるまで現在地にmoveLengthを加算
-			if (fabsf(diffPos.x) > moveLength || fabsf(diffPos.y) > moveLength || fabsf(diffPos.z) > moveLength) {
-				mOwner.setPosition(mOwner.getPosition() + Math::normalize(diffPos) * moveLength);
-			}
-			else
-			{
-				//目的地にピッタリ合わせる
-				mOwner.setPosition(mTargetPos);
+		// 位置の更新  diffPos(現在地と目的地の差分)よりmoveLength(移動距離)が大きくなるまで現在地にmoveLengthを加算
+		if (fabsf(diffPos.x) > moveLength || fabsf(diffPos.y) > moveLength || fabsf(diffPos.z) > moveLength)
+		{
+			mOwner.setPosition(mOwner.getPosition() + Math::normalize(diffPos) * moveLength);
+		}
+		else
+		{
+			// 目的地にピッタリ合わせる
+			mOwner.setPosition(mTargetPos);
 
-				//ターン経過処理
-				isMoving = false;
-				finishAct();
-			}
+			// ターン経過処理
+			isMoving = false;
+			finishAct();
 		}
 	}
-
-	//死亡したらActor配列から除去
-	if (!isAlive) {
+	
+	// 死亡したらActor配列から除去
+	if (!isAlive)
+	{
 		deadProcess();
 	}
-
 }	
 
 //コンポーネント除去時の処理
@@ -234,9 +234,7 @@ void EnemyComponent::attack()
 void EnemyComponent::finishAct()
 {
 	if(!isActive) return;
-	//プレイヤーターンへ移行する
-	//シーン中の全エネミーがmoveToPlayerTurnを実行するとプレイヤーターンに移行
-	mScene.moveToPlayerTurn();
+	//行動フラグをfalseに（ターン制御クラスがフラグを見て敵ターンの終了を検知）
 	isActive = false;
 }
 
