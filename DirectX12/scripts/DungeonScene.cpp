@@ -173,11 +173,11 @@ void DungeonScene::spawnResource()
 
 		switch (mStage) {
 		case Stage::MAP1:
-			resourceID = "GRASS";
+			resourceID = "MAGIC_IRON";
 			meshID = "GRASS";
 			break;
 		default:
-			resourceID = "GRASS";
+			resourceID = "MAGIC_IRON";
 			meshID = "GRASS";
 			break;
 		}

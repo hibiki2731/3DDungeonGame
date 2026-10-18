@@ -81,7 +81,6 @@ bool PlayerSingleAttackComponent::execute()
 	EnemyComponent* target = searchTargetEnemy();
 	if (target == nullptr) return false; //攻撃対象がいない場合は処理を終了
 
-	mPlayer.startAction();					//プレイヤーの行動開始処理
 	int damage = calcDamage(target);	//ダメージの計算
 	target->giveDamage(damage);			//ダメージを与える
 	//ダメージエフェクト
@@ -122,9 +121,6 @@ bool PlayerDoubleAttackComponent::execute()
 {
 	EnemyComponent* target = searchTargetEnemy();
 	if (target == nullptr) return false; //攻撃対象がいない場合は処理を終了
-
-	//プレイヤーの行動開始
-	mPlayer.startAction();
 
 	//1撃目のダメージの計算
 	int damage = calcDamage(target);

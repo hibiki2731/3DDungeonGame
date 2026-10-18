@@ -137,6 +137,9 @@
       <LanguageStandard>stdcpp23</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>pch.h</ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -361,6 +364,10 @@
     <ClCompile Include="scripts\Treasure.cpp" />
     <ClCompile Include="scripts\TurnStateMachine.cpp" />
     <ClCompile Include="scripts\TurnState.cpp" />
+    <ClCompile Include="scripts\PlayerInteractComponent.cpp" />
+    <ClCompile Include="scripts\PlayerItemComponent.cpp" />
+    <ClCompile Include="scripts\PlayerRotateComponent.cpp" />
+    <ClCompile Include="scripts\PlayerState.cpp" />
     <ClCompile Include="scripts\WinMain.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ForcedIncludeFiles>
@@ -444,6 +451,10 @@
     <ClInclude Include="scripts\Treasure.h" />
     <ClInclude Include="scripts\TurnStateMachine.h" />
     <ClInclude Include="scripts\TurnState.h" />
+    <ClInclude Include="scripts\PlayerInteractComponent.h" />
+    <ClInclude Include="scripts\PlayerItemComponent.h" />
+    <ClInclude Include="scripts\PlayerRotateComponent.h" />
+    <ClInclude Include="scripts\PlayerState.h" />
     <ClInclude Include="scripts\WinMain.h" />
   </ItemGroup>
   <ItemGroup>

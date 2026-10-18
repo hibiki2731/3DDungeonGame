@@ -15,7 +15,7 @@ public:
 	void begin();
 
 	//各状態の取得(状態遷移先の指定に使用)
-	TurnState* getPlayerActionState() const { return mPlayerActionState.get(); }
+	TurnState* getPlayerTurnState() const { return mPlayerTurnState.get(); }
 	TurnState* getEnemyActionState() const { return mEnemyActionState.get(); }
 	TurnState* getTurnEndState() const { return mTurnEndState.get(); }
 	TurnState* getGoalState() const { return mGoalState.get(); }
@@ -35,7 +35,7 @@ private:
 	bool mIsActive;
 
 	//状態
-	std::unique_ptr<TurnState> mPlayerActionState;
+	std::unique_ptr<TurnState> mPlayerTurnState;
 	std::unique_ptr<TurnState> mEnemyActionState;
 	std::unique_ptr<TurnState> mTurnEndState;
 	std::unique_ptr<TurnState> mReturnConfirmState;

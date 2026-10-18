@@ -13,29 +13,27 @@
 #include "SpriteComponent.h"
 
 //---プレイヤー入力待ち---
-void PlayerActionState::enter()
+void PlayerTurnState::enter()
 {
-	//プレイヤーの行動を開始可能にする
-	mPlayer.activateAction();
+	//プレイヤーを入力待ち状態にする
+	mPlayer.beginTurn();
 }
 
-TurnState* PlayerActionState::update()
+TurnState* PlayerTurnState::update()
 {
-	//ゴールに到達したらゴール状態へ
-	if (mPlayer.isReachedGoal()) {
+	//プレイヤーの状態に応じて遷移する
+	switch (mPlayer.getStateType()) {
+	case PlayerStateType::GOAL:				//ゴールに到達した
 		return mOwner.getGoalState();
-	}
-
-	//街への帰還が要求されたら帰還確認状態へ
-	if (mPlayer.isRequestingReturn()) {
+	case PlayerStateType::RETURN_REQUEST:	//街への帰還を要求した
 		return mOwner.getReturnConfirmState();
-	}
-
-	//行動開始、もしくは即時完了する行動(アイテム使用など)が実行されたらプレイヤー行動へ
-	if (!mPlayer.canAction()) {
+	case PlayerStateType::ACTING:			//行動を実行した
 		return mOwner.getEnemyActionState();
+	case PlayerStateType::WAIT:				//行動が終了した
+		return mOwner.getEnemyActionState();
+	default:								//入力待ち・行動中
+		return nullptr;
 	}
-	return nullptr;
 }
 
 //---敵行動中---
@@ -56,14 +54,17 @@ TurnState* EnemyActionState::update()
 	for (auto enemy : mDungeonScene.getEnemies()) {
 		if (enemy->isActing()) return nullptr;	//まだ動いている敵がいる
 	}
+	
+	//すべての敵が行動終了したら、ミニマップの表示を更新する。	
+	mDungeonScene.updateMiniMapPos();
 	return mOwner.getTurnEndState(); 
 }
 
 //---ターン終了---
 TurnState* TurnEndState::update()
 {
-	//プレイヤーが行動終了するまで待機
-	if (mPlayer.isActioning()) return nullptr;
+	//プレイヤーが待機状態になるまで待つ
+	if (mPlayer.getStateType() != PlayerStateType::WAIT) return nullptr;
 
 	//プレイヤーへのダメージ処理を開始
 	mPlayer.damagedProcess();
@@ -78,11 +79,10 @@ TurnState* TurnEndState::update()
 		return mOwner.getRunOutState();
 	}
 
-	//ターンを継続する場合のみ、敵のランダム湧きとミニマップの更新を行う
+	//ターンを継続する場合のみ、敵のランダム湧きを行う
 	spawnEnemyAndResource();
-	mDungeonScene.updateMiniMapPos();
 
-	return mOwner.getPlayerActionState();
+	return mOwner.getPlayerTurnState();
 }
 
 void TurnEndState::spawnEnemyAndResource()
@@ -156,7 +156,7 @@ TurnState* ReturnConfirmState::update()
 {
 	//ウィンドウを閉じた次のフレームでプレイヤー入力待ちへ戻る
 	if (isClosing) {
-		return mOwner.getPlayerActionState();
+		return mOwner.getPlayerTurnState();
 	}
 
 	//カーソル移動

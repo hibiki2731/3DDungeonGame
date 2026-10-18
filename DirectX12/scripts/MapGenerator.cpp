@@ -162,7 +162,7 @@ void MapGenerator::createTile()
 			}
 			else if(category == "RESOURCE"){
 				//草の生成
-				mScene.createResource(tileJson.at(tileID).at("meshID").get<std::string>(), tileJson.at(tileID).at("resourceID").get<std::string>(), static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y), y * mScene.getMapSize() + x);
+				mScene.createResource(tileJson.at(tileID).at("resourceID").get<std::string>(), tileJson.at(tileID).at("meshID").get<std::string>(), static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y), y * mScene.getMapSize() + x);
 				//床の生成
 				std::unique_ptr<Object> rockFloor = std::make_unique<Object>(mScene, "Tile", "ROCK_FLOOR", static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
 				mScene.addActor(std::move(rockFloor)); //所有権をGameへ渡す

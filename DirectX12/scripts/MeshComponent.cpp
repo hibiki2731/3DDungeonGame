@@ -27,6 +27,8 @@ void MeshComponent::endProcess()
 {
 	//Gameからメッシュを削除
 	mOwner.getScene().removeMesh(this);
+	//メッシュの生成に失敗している場合、メモリは確保されていないので解放しない
+	if (mCBIndex < 0 || mHeapIndex < 0) return;
 	mOwner.getScene().getGame().getAssetManager().deleteMemory(mCBIndex, mCBSize);
 	mOwner.getScene().getGame().getAssetManager().deleteHeap(mHeapIndex, mHeapSize * 2);
 }

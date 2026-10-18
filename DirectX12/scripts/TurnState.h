@@ -26,11 +26,11 @@ protected:
 
 };
 
-//プレイヤーの入力待ち状態
-//プレイヤーが行動を開始したらプレイヤー行動状態へ遷移
-class PlayerActionState : public TurnState {
+//プレイヤーのターン
+//プレイヤーを入力待ち状態にし、プレイヤーの状態に応じて敵の行動・ゴール・帰還確認へ遷移
+class PlayerTurnState : public TurnState {
 public:
-	explicit PlayerActionState(TurnStateMachine& owner, Player& player) : TurnState(owner), mPlayer(player) {}
+	explicit PlayerTurnState(TurnStateMachine& owner, Player& player) : TurnState(owner), mPlayer(player) {}
 
 	void enter() override;
 	TurnState* update() override;

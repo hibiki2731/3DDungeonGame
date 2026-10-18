@@ -14,7 +14,7 @@
 TurnStateMachine::TurnStateMachine(DungeonScene& scene)
 	: mScene(scene)
 {
-	mPlayerActionState = nullptr;
+	mPlayerTurnState = nullptr;
 	mEnemyActionState = nullptr;
 	mTurnEndState = nullptr;
 	mGoalState = nullptr;
@@ -22,7 +22,7 @@ TurnStateMachine::TurnStateMachine(DungeonScene& scene)
 	mRunOutState = nullptr;
 	mReturnConfirmState = nullptr;
 	mReturnState = nullptr;
-	mCurrentState = mPlayerActionState.get();
+	mCurrentState = mPlayerTurnState.get();
 
 	mIsActive = true;
 }
@@ -42,9 +42,9 @@ void TurnStateMachine::begin()
 	mIsActive = true;
 
 	//既存の状態を破棄
-	if(mPlayerActionState || mEnemyActionState || mTurnEndState)
+	if(mPlayerTurnState || mEnemyActionState || mTurnEndState)
 	{
-		mPlayerActionState.reset();
+		mPlayerTurnState.reset();
 		mEnemyActionState.reset();
 		mTurnEndState.reset();
 		mGoalState.reset();
@@ -55,7 +55,7 @@ void TurnStateMachine::begin()
 	}
 
 	//各状態の生成
-	mPlayerActionState = std::make_unique<PlayerActionState>(*this, *mScene.getPlayer());
+	mPlayerTurnState = std::make_unique<PlayerTurnState>(*this, *mScene.getPlayer());
 	mEnemyActionState = std::make_unique<EnemyActionState>(*this, mScene);
 	mTurnEndState = std::make_unique<TurnEndState>(*this, mScene, *mScene.getPlayer());
 	mGoalState = std::make_unique<GoalState>(*this, mScene);
@@ -64,7 +64,7 @@ void TurnStateMachine::begin()
 	mReturnConfirmState = std::make_unique<ReturnConfirmState>(*this, mScene);
 	mReturnState = std::make_unique<ReturnState>(*this, mScene);
 
-	mCurrentState = mPlayerActionState.get();
+	mCurrentState = mPlayerTurnState.get();
 	mCurrentState->enter();
 }
 

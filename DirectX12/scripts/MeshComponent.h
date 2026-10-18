@@ -56,10 +56,10 @@ private:
     const UINT NumDescriptors = 4;//ひとつのパーツで使用するディスクリプタの数
 
     //使用するディスクリプタヒープおよびコンスタントバッファのインデックス
-    int mHeapIndex;
-    int mHeapSize;
-    int mCBIndex;
-    int mCBSize;
+    int mHeapIndex = -1;
+    int mHeapSize = -1;
+    int mCBIndex = -1;
+    int mCBSize = -1;
 
     //メッシュのID
     std::string mMeshID;

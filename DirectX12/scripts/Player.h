@@ -3,8 +3,11 @@
 #include "Object.h"
 #include "Definition.h"
 #include "AttackType.h"
+#include "PlayerState.h"
 #include "json_fwd.hpp"
 #include <vector>
+#include <memory>
+#include <unordered_map>
 
 //前方宣言
 class CameraComponent;
@@ -14,7 +17,8 @@ class PlayerManager;
 class ItemManager;
 class DungeonScene;
 
-//PlayerManagerがプレイヤーデータを管理し、Playerクラスはダンジョンシーン中のプレイヤーの位置やHPなどのステータス、行動処理を管理する
+//PlayerManagerがプレイヤーデータを管理し、Playerクラスはダンジョンシーン中のプレイヤーの位置やHPなどのステータスを管理する
+//行動は各状態(PlayerState)から各コンポーネントに委託し、Playerクラスは状態の管理と全状態共通の処理を行う
 class Player : public Actor
 {
 public:
@@ -34,69 +38,50 @@ public:
 	int getPower();
 	int getDefence();
 	int getSelectItemIndex();
-	bool getIsActing();
 	const std::string& getSelectItemID();
+	PlayerStateType getStateType() const;	//現在の状態の種類を取得
 
 	//setter
 	void setIndexPos(int x, int y);
 
 	//プレイヤーにダメージを与える
 	void giveDamage(int damage);
-
-	//ターン経過処理
-	void activateAction();	//ターン経過する行動を実行可能にする
-	void startAction();
-	void endAction();
-	bool canAction() { return canStartAction; }	//ターン経過する行動を実行可能か判定
-	bool isActioning() { return isActing; }		//ターン経過する行動を実行中か判定
-	bool isReachedGoal() const { return mIsReachedGoal; }	//ゴールに到達したか判定
-	bool isRequestingReturn() const { return mIsRequestingReturn; }	//街への帰還を要求しているか判定
 	void damagedProcess();				//ダメージを受けたときの処理
+	//APを回復する
+	void recoverAP(int value);
+
+	//---外部から状態遷移を要求する窓口---
+	//現在の状態が遷移元として正しい場合のみ遷移し、それ以外は無視する
+	void beginTurn();	//待機・帰還要求 → 入力待ち (TurnStateから呼び出す)
+	void startAction();	//入力待ち → 行動中 (コンポーネントから呼び出す)
+	void endAction();	//入力待ち(即時に終わる行動)・行動中 → 待機 (コンポーネントから呼び出す)、APを消費する
+
 private:
-	//--ターン経過する行動--
-	void doAction();
-	bool attack();
-	void move(Direction direction);
-	bool collect();
-	void useItem();
-	bool getTreasure();
+	//状態クラスのみがchangeStateで任意の状態へ遷移できる
+	friend class PlayerState;
+	void changeState(PlayerStateType next);
 
-	//一時停止する行動
-	void returnToTown();
-
-	void rotate(Direction direction);	//視点移動
-	void updateFlash();					//点滅処理の更新	
-	void selectNextItem();				//アイテム選択
-	void selectPreviousItem();			//アイテム選択
-	bool moveNextFloor();				//次の階へ移動
+	void updateFlash();					//点滅処理の更新
 
 	float	 mMoveSpeed;		//移動速度
-	float	 mRotSpeed;			//回転速度
 	XMFLOAT3 mTargetPos;		//移動先の座標
-	XMFLOAT3 mTargetRot;		//視点移動先の回転角
-	bool	 canStartAction;	//true : ターン経過する行動を実行可能, false : 行動できない
-	bool	 mIsReachedGoal;	//true : ゴールに到達した
-	bool	 mIsRequestingReturn;	//true : 街への帰還を要求している
-	bool	 isActing;			//true : ターン経過する行動を実行中, false : 何も行動していない
-	bool	 isRotating;		//true : 視点移動中, false : 視点移動していない
 	int		 mPendingDamage;	//次の更新でHPから引かれるダメージ量
 	float	 mFlashTimer;		//ダメージを受けたときの点滅用タイマー
 	float	 mFlashDuration;	//ダメージを受けたときの点滅時間
-	int		 mSelectItemIndex;	//現在選択しているアイテムのインデックス
 	int		 mAP;				//現在のAP
+
+	//状態
+	std::unordered_map<PlayerStateType, std::unique_ptr<PlayerState>> mStates;
+	PlayerState* mCurrentState;
 
 	//コンポーネント
 	CameraComponent* mCamera;
 	CharacterComponent* mCharacter;
+	class PlayerItemComponent* mItemComponent;
 
 	//データ管理クラスやシーンへの参照
 	ItemManager& mItemManager;
 	PlayerManager& mPlayerManager;
 	DungeonScene& mScene;
 	const struct PlayerData& mPlayerData;	//プレイヤーデータの参照
-
-	//移動用コンポーネント
-	class PlayerMoveComponent* mMoveComponent;
-	//攻撃処理用コンポーネント
-	std::unordered_map<AttackType, class PlayerAttackComponent*> mAttackComponents;
 };
