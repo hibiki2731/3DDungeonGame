@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Component.h"
-#include "Definition.h"
+#include "CharacterComponent.h"
 
 class DungeonScene;
 class CharacterComponent;

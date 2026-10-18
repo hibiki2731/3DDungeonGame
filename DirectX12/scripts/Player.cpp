@@ -16,6 +16,7 @@
 #include "PlayerRotateComponent.h"
 #include "PlayerItemComponent.h"
 #include "PlayerInteractComponent.h"
+#include "MapGenerator.h"
 
 Player::Player(DungeonScene& scene, float x, float y)
 	: Actor(scene),

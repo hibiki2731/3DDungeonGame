@@ -13,7 +13,7 @@
 #include <dwrite.h>
 #include <wrl/client.h>
 #include <vector>
-#include "Definition.h"
+#include "BufferStruct.h"
 #include "BIN_FILE12.h"
 #include <winuser.h>
 

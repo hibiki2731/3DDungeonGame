@@ -358,7 +358,6 @@
     <ClCompile Include="scripts\SpriteComponent.cpp" />
     <ClCompile Include="scripts\StatusMenu.cpp" />
     <ClCompile Include="scripts\TextureLoader.cpp" />
-    <ClCompile Include="scripts\ThreadPool.cpp" />
     <ClCompile Include="scripts\TownUI.cpp" />
     <ClCompile Include="scripts\TextComponent.cpp" />
     <ClCompile Include="scripts\timer.cpp" />
@@ -387,7 +386,7 @@
     <ClInclude Include="scripts\CharacterComponent.h" />
     <ClInclude Include="scripts\DamageText.h" />
     <ClInclude Include="scripts\DebugCamera.h" />
-    <ClInclude Include="scripts\Definition.h" />
+    <ClInclude Include="scripts\BufferStruct.h" />
     <ClInclude Include="scripts\DungeonScene.h" />
     <ClInclude Include="scripts\DungeonUI.h" />
     <ClInclude Include="scripts\EnemyComponent.h" />
@@ -444,7 +443,6 @@
     <ClInclude Include="scripts\SpriteComponent.h" />
     <ClInclude Include="scripts\StatusMenu.h" />
     <ClInclude Include="scripts\TextureLoader.h" />
-    <ClInclude Include="scripts\ThreadPool.h" />
     <ClInclude Include="scripts\TownUI.h" />
     <ClInclude Include="scripts\external\stb\stb_image.h" />
     <ClInclude Include="scripts\TextComponent.h" />

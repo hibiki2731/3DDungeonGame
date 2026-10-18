@@ -10,6 +10,7 @@
 #include "Enemy.h"
 #include "PlayerManager.h"
 #include "MyMath.h"
+#include "MapGenerator.h"
 
 EnemyComponent::EnemyComponent(Actor& owner, DungeonScene& scene) 
 	: CharacterComponent(owner, scene),

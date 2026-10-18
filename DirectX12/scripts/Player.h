@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Actor.h"
 #include "Object.h"
-#include "Definition.h"
 #include "AttackType.h"
 #include "PlayerState.h"
 #include "json_fwd.hpp"

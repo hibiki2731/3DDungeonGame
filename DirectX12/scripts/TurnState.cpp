@@ -1,6 +1,6 @@
 ﻿#include "TurnState.h"
 #include "TurnStateMachine.h"
-#include "Definition.h"
+#include "MapGenerator.h"
 #include "DungeonScene.h"
 #include "EnemyComponent.h"
 #include "Player.h"

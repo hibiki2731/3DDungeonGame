@@ -1,5 +1,6 @@
 ﻿#include "Treasure.h"
-#include "Definition.h"
+#include "CharacterComponent.h"
+#include "MapGenerator.h"
 #include "MeshComponent.h"
 #include "Scene.h"
 #include "Game.h"

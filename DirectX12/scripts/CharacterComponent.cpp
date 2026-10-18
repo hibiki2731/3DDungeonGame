@@ -2,6 +2,7 @@
 #include "Actor.h"
 #include "Game.h"
 #include "DungeonScene.h"
+#include "MapGenerator.h"
 
 CharacterComponent::CharacterComponent(Actor& owner, DungeonScene& scene) 
 	: Component(owner),

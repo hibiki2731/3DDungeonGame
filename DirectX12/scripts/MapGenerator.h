@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include "Random.h"
 
+constexpr float MAPTIPSIZE = 2;
+
 class Game;
 class Player;
 class SceneManager;

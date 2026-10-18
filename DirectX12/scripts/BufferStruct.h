@@ -3,21 +3,6 @@
 using namespace DirectX;
 
 constexpr int MAX_LIGHT_NUM = 16;
-constexpr float MAPTIPSIZE = 2;
-constexpr float EPSILON = 0.0001f;
-
-//左上右下
-enum Direction {
-	DOWN = 1,
-	RIGHT = 2,
-	UP = 4,
-	LEFT = 8,
-};
-
-enum LightStat {
-    INACTIVE = 0,
-    ACTIVE = 1,
-};
 
 struct PointLightData {
 	XMFLOAT4 position; //xyz:位置、w:有効無効

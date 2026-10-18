@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Definition.h"
+#include "CharacterComponent.h"
 
 class Player;
 class PlayerMoveComponent;

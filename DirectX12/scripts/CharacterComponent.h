@@ -6,6 +6,14 @@ using namespace DirectX;
 
 class DungeonScene;
 
+//左上右下
+enum Direction {
+	DOWN = 1,
+	RIGHT = 2,
+	UP = 4,
+	LEFT = 8,
+};
+
 class CharacterComponent : public Component
 {
 public:

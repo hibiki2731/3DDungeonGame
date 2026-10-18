@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include <DirectXMath.h>
 #include "Component.h"
-#include "Definition.h"
 using namespace DirectX;
 
 class PointLightComponent : public Component

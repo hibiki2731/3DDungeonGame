@@ -1,7 +1,6 @@
 ﻿#include "TurnStateMachine.h"
 #include "DungeonScene.h"
 #include "Random.h"
-#include "Definition.h"
 #include "EnemyComponent.h"
 #include "Player.h"
 #include "SpriteComponent.h"

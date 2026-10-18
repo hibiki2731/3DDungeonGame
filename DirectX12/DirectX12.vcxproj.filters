@@ -216,9 +216,6 @@
     <ClCompile Include="scripts\TextureLoader.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\ThreadPool.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="scripts\Treasure.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -245,7 +242,7 @@
     <ClInclude Include="scripts\Actor.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Definition.h">
+    <ClInclude Include="scripts\BufferStruct.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\Game.h">
@@ -447,9 +444,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\TextureLoader.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="scripts\ThreadPool.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\Treasure.h">
