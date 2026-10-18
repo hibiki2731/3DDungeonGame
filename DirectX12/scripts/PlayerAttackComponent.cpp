@@ -2,7 +2,7 @@
 #include "Player.h"
 #include "DungeonScene.h"
 #include "EnemyComponent.h"
-#include "Math.h"
+#include "MyMath.h"
 #include "DamageText.h"
 #include "Game.h"
 #include "AudioManager.h"

@@ -3,7 +3,7 @@
 #include "SpotLightComponent.h"
 #include "input.h"
 #include "timer.h"
-#include "Math.h"
+#include "MyMath.h"
 #include <Windows.h>
 
 DebugCamera::DebugCamera(Scene& scene)

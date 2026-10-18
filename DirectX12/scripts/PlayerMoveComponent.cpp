@@ -3,7 +3,7 @@
 #include "DungeonScene.h"
 #include "Game.h"
 #include "AudioManager.h"
-#include "Math.h"
+#include "MyMath.h"
 
 const float PlayerMoveComponent::MoveSpeed = 5.0f;
 PlayerMoveComponent::PlayerMoveComponent(DungeonScene& scene, Player& player)

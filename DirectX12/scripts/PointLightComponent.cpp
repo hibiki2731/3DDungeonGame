@@ -1,5 +1,5 @@
 ﻿#include <windows.h>
-#include "Math.h"
+#include "MyMath.h"
 #include "timer.h"
 #include "PointLightComponent.h"
 #include "Actor.h"

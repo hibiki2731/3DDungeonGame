@@ -2,7 +2,7 @@
 #include "Actor.h"
 #include "CharacterComponent.h"
 #include "DungeonScene.h"
-#include "Math.h"
+#include "MyMath.h"
 #include "timer.h"
 
 PlayerRotateComponent::PlayerRotateComponent(DungeonScene& scene, Actor& owner, CharacterComponent& character, float rotSpeed)

@@ -1,6 +1,6 @@
 ﻿#include "SpotLightComponent.h"
 #include "Actor.h"
-#include "Math.h"
+#include "MyMath.h"
 #include "Scene.h"
 #include "Game.h"
 #include "Graphic.h"

@@ -2,7 +2,7 @@
 #include "Actor.h"
 #include "Game.h"
 #include "Scene.h"
-#include "Math.h"
+#include "MyMath.h"
 #include "DamageText.h"
 #include "DungeonScene.h"
 #include "PerlinNoise1D.h"

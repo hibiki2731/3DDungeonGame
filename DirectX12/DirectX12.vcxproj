@@ -344,7 +344,7 @@
     <ClCompile Include="scripts\MessageWindow.cpp" />
     <ClCompile Include="scripts\PlayerManager.cpp" />
     <ClCompile Include="scripts\PointLightComponent.cpp" />
-    <ClCompile Include="scripts\Math.cpp" />
+    <ClCompile Include="scripts\MyMath.cpp" />
     <ClCompile Include="scripts\MeshComponent.cpp" />
     <ClCompile Include="scripts\Random.cpp" />
     <ClCompile Include="scripts\Enemy.cpp" />
@@ -430,7 +430,7 @@
     <ClInclude Include="scripts\MessageWindow.h" />
     <ClInclude Include="scripts\PlayerManager.h" />
     <ClInclude Include="scripts\PointLightComponent.h" />
-    <ClInclude Include="scripts\Math.h" />
+    <ClInclude Include="scripts\MyMath.h" />
     <ClInclude Include="scripts\MeshComponent.h" />
     <ClInclude Include="scripts\Random.h" />
     <ClInclude Include="scripts\Enemy.h" />

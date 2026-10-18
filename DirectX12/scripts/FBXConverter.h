@@ -3,7 +3,7 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
-#include "Math.h"
+#include "MyMath.h"
 
 struct PARTS {
 	std::vector<float> Positions;

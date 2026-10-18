@@ -3,13 +3,13 @@
 #include "Game.h"
 #include "Player.h"
 #include "Random.h"
-#include "Math.h"
+#include "MyMath.h"
 #include "DungeonScene.h"
 #include "TurnStateMachine.h"
 #include "ItemManager.h"
 #include "Enemy.h"
 #include "PlayerManager.h"
-#include "Math.h"
+#include "MyMath.h"
 
 EnemyComponent::EnemyComponent(Actor& owner, DungeonScene& scene) 
 	: CharacterComponent(owner, scene),

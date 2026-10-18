@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Component.h"
-#include "Math.h"
+#include "MyMath.h"
 #include "Graphic.h"
 using namespace DirectX;
 

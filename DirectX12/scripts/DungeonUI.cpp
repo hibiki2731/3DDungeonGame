@@ -12,7 +12,7 @@
 #include "AudioManager.h"
 #include <fstream>
 #include <string>
-#include "Math.h"
+#include "MyMath.h"
 
 DungeonUI::DungeonUI(DungeonScene& scene)
 	:Object(scene, "DungeonUI"),
