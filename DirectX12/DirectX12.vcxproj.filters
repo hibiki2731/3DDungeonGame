@@ -177,28 +177,28 @@
     <ClCompile Include="scripts\GUIDebugger.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui.cpp">
+    <ClCompile Include="scripts\external\Imgui\imgui.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui_demo.cpp">
+    <ClCompile Include="scripts\external\Imgui\imgui_demo.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui_draw.cpp">
+    <ClCompile Include="scripts\external\Imgui\imgui_draw.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui_impl_dx12.cpp">
+    <ClCompile Include="scripts\external\Imgui\imgui_impl_dx12.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui_impl_win32.cpp">
+    <ClCompile Include="scripts\external\Imgui\imgui_impl_win32.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui_widgets.cpp">
+    <ClCompile Include="scripts\external\Imgui\imgui_widgets.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui_tables.cpp">
+    <ClCompile Include="scripts\external\Imgui\imgui_tables.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui_stdlib.cpp">
+    <ClCompile Include="scripts\external\Imgui\imgui_stdlib.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\TownUI.cpp">
@@ -236,7 +236,7 @@
     <ClInclude Include="scripts\WinMain.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\stb_image.h">
+    <ClInclude Include="scripts\external\stb\stb_image.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\FBXConverter.h">
@@ -308,13 +308,13 @@
     <ClInclude Include="scripts\Random.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\json.hpp">
+    <ClInclude Include="scripts\external\json\json.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\Enemy.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\magic_enum.hpp">
+    <ClInclude Include="scripts\external\magic_enum\magic_enum.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\SceneManager.h">
@@ -404,31 +404,31 @@
     <ClInclude Include="scripts\GUIDebugger.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Imgui\imconfig.h">
+    <ClInclude Include="scripts\external\Imgui\imconfig.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Imgui\imgui.h">
+    <ClInclude Include="scripts\external\Imgui\imgui.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Imgui\imgui_impl_dx12.h">
+    <ClInclude Include="scripts\external\Imgui\imgui_impl_dx12.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Imgui\imgui_impl_win32.h">
+    <ClInclude Include="scripts\external\Imgui\imgui_impl_win32.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Imgui\imgui_internal.h">
+    <ClInclude Include="scripts\external\Imgui\imgui_internal.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Imgui\imstb_rectpack.h">
+    <ClInclude Include="scripts\external\Imgui\imstb_rectpack.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Imgui\imstb_textedit.h">
+    <ClInclude Include="scripts\external\Imgui\imstb_textedit.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Imgui\imstb_truetype.h">
+    <ClInclude Include="scripts\external\Imgui\imstb_truetype.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Imgui\imgui_stdlib.h">
+    <ClInclude Include="scripts\external\Imgui\imgui_stdlib.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\TownUI.h">
@@ -443,7 +443,7 @@
     <ClInclude Include="scripts\DebugCamera.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\json_fwd.hpp">
+    <ClInclude Include="scripts\external\json\json_fwd.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\TextureLoader.h">

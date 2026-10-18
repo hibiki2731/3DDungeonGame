@@ -2,17 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup>
-    <ScriptsDir>$(MSBuildThisFileDirectory)scripts\</ScriptsDir>
-    <!-- scripts直下は移行完了までの暫定。最終フェーズで削除する -->
-    <ExternalIncludeDirs>$(ScriptsDir)external;$(ScriptsDir)external\Imgui;$(ScriptsDir)external\json;$(ScriptsDir)external\magic_enum;$(ScriptsDir)external\minimp3;$(ScriptsDir)external\stb</ExternalIncludeDirs>
-    <EngineIncludeDirs>$(ScriptsDir)engine\core\include;$(ScriptsDir)engine\graphics\include;$(ScriptsDir)engine\audio\include;$(ScriptsDir)engine\input\include;$(ScriptsDir)engine\asset\include;$(ScriptsDir)engine\utility\include;$(ScriptsDir)engine\debug\include</EngineIncludeDirs>
-    <GameIncludeDirs>$(ScriptsDir)game\title\include;$(ScriptsDir)game\gameover\include;$(ScriptsDir)game\town\scene\include;$(ScriptsDir)game\town\menu\include;$(ScriptsDir)game\dungeon\scene\include;$(ScriptsDir)game\dungeon\player\include;$(ScriptsDir)game\dungeon\enemy\include;$(ScriptsDir)game\dungeon\character\include;$(ScriptsDir)game\dungeon\turn\include;$(ScriptsDir)game\dungeon\map\include;$(ScriptsDir)game\dungeon\object\include;$(ScriptsDir)game\common\player\include;$(ScriptsDir)game\common\item\include;$(ScriptsDir)game\common\ui\include</GameIncludeDirs>
-    <ProjectIncludeDirs>$(ScriptsDir)pch;$(ScriptsDir);$(ExternalIncludeDirs);$(EngineIncludeDirs);$(GameIncludeDirs)</ProjectIncludeDirs>
-  </PropertyGroup>
+  <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectIncludeDirs);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>

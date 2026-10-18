@@ -70,6 +70,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="CommonRutimeSettings.props" />
   </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="ProjectIncludeDirs.props" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -282,42 +285,42 @@
     <ClCompile Include="scripts\GUIDebugger.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui.cpp">
+    <ClCompile Include="scripts\external\Imgui\imgui.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui_demo.cpp">
+    <ClCompile Include="scripts\external\Imgui\imgui_demo.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui_draw.cpp">
+    <ClCompile Include="scripts\external\Imgui\imgui_draw.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui_impl_dx12.cpp">
+    <ClCompile Include="scripts\external\Imgui\imgui_impl_dx12.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui_impl_win32.cpp">
+    <ClCompile Include="scripts\external\Imgui\imgui_impl_win32.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui_stdlib.cpp">
+    <ClCompile Include="scripts\external\Imgui\imgui_stdlib.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui_tables.cpp">
+    <ClCompile Include="scripts\external\Imgui\imgui_tables.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
     </ClCompile>
-    <ClCompile Include="scripts\Imgui\imgui_widgets.cpp">
+    <ClCompile Include="scripts\external\Imgui\imgui_widgets.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
@@ -395,23 +398,23 @@
     <ClInclude Include="scripts\GUIDebugger.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="scripts\Imgui\imconfig.h" />
-    <ClInclude Include="scripts\Imgui\imgui.h" />
-    <ClInclude Include="scripts\Imgui\imgui_impl_dx12.h" />
-    <ClInclude Include="scripts\Imgui\imgui_impl_win32.h" />
-    <ClInclude Include="scripts\Imgui\imgui_internal.h" />
-    <ClInclude Include="scripts\Imgui\imgui_stdlib.h" />
-    <ClInclude Include="scripts\Imgui\imstb_rectpack.h" />
-    <ClInclude Include="scripts\Imgui\imstb_textedit.h" />
-    <ClInclude Include="scripts\Imgui\imstb_truetype.h" />
-    <ClInclude Include="scripts\json_fwd.hpp" />
+    <ClInclude Include="scripts\external\Imgui\imconfig.h" />
+    <ClInclude Include="scripts\external\Imgui\imgui.h" />
+    <ClInclude Include="scripts\external\Imgui\imgui_impl_dx12.h" />
+    <ClInclude Include="scripts\external\Imgui\imgui_impl_win32.h" />
+    <ClInclude Include="scripts\external\Imgui\imgui_internal.h" />
+    <ClInclude Include="scripts\external\Imgui\imgui_stdlib.h" />
+    <ClInclude Include="scripts\external\Imgui\imstb_rectpack.h" />
+    <ClInclude Include="scripts\external\Imgui\imstb_textedit.h" />
+    <ClInclude Include="scripts\external\Imgui\imstb_truetype.h" />
+    <ClInclude Include="scripts\external\json\json_fwd.hpp" />
     <ClInclude Include="scripts\myJson.h" />
     <ClInclude Include="scripts\PerlinNoise1D.h" />
     <ClInclude Include="scripts\PlayerMoveComponent.h" />
     <ClInclude Include="scripts\Resource.h" />
     <ClInclude Include="scripts\ItemManager.h" />
-    <ClInclude Include="scripts\json.hpp" />
-    <ClInclude Include="scripts\magic_enum.hpp" />
+    <ClInclude Include="scripts\external\json\json.hpp" />
+    <ClInclude Include="scripts\external\magic_enum\magic_enum.hpp" />
     <ClInclude Include="scripts\MainMenu.h" />
     <ClInclude Include="scripts\Menu.h" />
     <ClInclude Include="scripts\MiniMap.h" />
@@ -443,7 +446,7 @@
     <ClInclude Include="scripts\TextureLoader.h" />
     <ClInclude Include="scripts\ThreadPool.h" />
     <ClInclude Include="scripts\TownUI.h" />
-    <ClInclude Include="scripts\stb_image.h" />
+    <ClInclude Include="scripts\external\stb\stb_image.h" />
     <ClInclude Include="scripts\TextComponent.h" />
     <ClInclude Include="scripts\timer.h" />
     <ClInclude Include="scripts\TitleScene.h" />
