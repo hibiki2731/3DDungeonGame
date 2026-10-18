@@ -42,7 +42,7 @@
     <ClCompile Include="scripts\engine\utility\src\timer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Player.cpp">
+    <ClCompile Include="scripts\game\dungeon\player\src\Player.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\engine\core\src\Component.cpp">
@@ -69,28 +69,28 @@
     <ClCompile Include="scripts\engine\graphics\src\TextComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\MessageWindow.cpp">
+    <ClCompile Include="scripts\game\common\ui\src\MessageWindow.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\CharacterComponent.cpp">
+    <ClCompile Include="scripts\game\dungeon\character\src\CharacterComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\EnemyComponent.cpp">
+    <ClCompile Include="scripts\game\dungeon\enemy\src\EnemyComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\DamageText.cpp">
+    <ClCompile Include="scripts\game\common\ui\src\DamageText.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\engine\asset\src\AssetManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\ItemManager.cpp">
+    <ClCompile Include="scripts\game\common\item\src\ItemManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\engine\utility\src\Random.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Enemy.cpp">
+    <ClCompile Include="scripts\game\dungeon\enemy\src\Enemy.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\engine\core\src\SceneManager.cpp">
@@ -102,76 +102,76 @@
     <ClCompile Include="scripts\engine\utility\src\MyUtility.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\PlayerManager.cpp">
+    <ClCompile Include="scripts\game\common\player\src\PlayerManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\InnMenu.cpp">
+    <ClCompile Include="scripts\game\town\menu\src\InnMenu.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\ShopMenu.cpp">
+    <ClCompile Include="scripts\game\town\menu\src\ShopMenu.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\ForgeMenu.cpp">
+    <ClCompile Include="scripts\game\town\menu\src\ForgeMenu.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\ExplorerMenu.cpp">
+    <ClCompile Include="scripts\game\town\menu\src\ExplorerMenu.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\StatusMenu.cpp">
+    <ClCompile Include="scripts\game\town\menu\src\StatusMenu.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\engine\audio\src\AudioManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\DungeonScene.cpp">
+    <ClCompile Include="scripts\game\dungeon\scene\src\DungeonScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\DungeonUI.cpp">
+    <ClCompile Include="scripts\game\dungeon\scene\src\DungeonUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\GameOverScene.cpp">
+    <ClCompile Include="scripts\game\gameover\src\GameOverScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Resource.cpp">
+    <ClCompile Include="scripts\game\dungeon\object\src\Resource.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\MainMenu.cpp">
+    <ClCompile Include="scripts\game\town\menu\src\MainMenu.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Menu.cpp">
+    <ClCompile Include="scripts\game\common\ui\src\Menu.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\MiniMap.cpp">
+    <ClCompile Include="scripts\game\dungeon\map\src\MiniMap.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\MapGenerator.cpp">
+    <ClCompile Include="scripts\game\dungeon\map\src\MapGenerator.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\engine\core\src\Scene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\TitleScene.cpp">
+    <ClCompile Include="scripts\game\title\src\TitleScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\TownScene.cpp">
+    <ClCompile Include="scripts\game\town\scene\src\TownScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\TurnObserver.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\TurnState.cpp">
+    <ClCompile Include="scripts\game\dungeon\turn\src\TurnState.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\PlayerInteractComponent.cpp">
+    <ClCompile Include="scripts\game\dungeon\player\src\PlayerInteractComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\PlayerItemComponent.cpp">
+    <ClCompile Include="scripts\game\dungeon\player\src\PlayerItemComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\PlayerRotateComponent.cpp">
+    <ClCompile Include="scripts\game\dungeon\player\src\PlayerRotateComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\PlayerState.cpp">
+    <ClCompile Include="scripts\game\dungeon\player\src\PlayerState.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\engine\debug\src\GUIDebugger.cpp">
@@ -201,7 +201,7 @@
     <ClCompile Include="scripts\external\Imgui\imgui_stdlib.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\TownUI.cpp">
+    <ClCompile Include="scripts\game\town\scene\src\TownUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\engine\graphics\src\FireParticleComponent.cpp">
@@ -216,13 +216,13 @@
     <ClCompile Include="scripts\engine\graphics\src\TextureLoader.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Treasure.cpp">
+    <ClCompile Include="scripts\game\dungeon\object\src\Treasure.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\PlayerAttackComponent.cpp">
+    <ClCompile Include="scripts\game\dungeon\player\src\PlayerAttackComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\PlayerMoveComponent.cpp">
+    <ClCompile Include="scripts\game\dungeon\player\src\PlayerMoveComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -257,7 +257,7 @@
     <ClInclude Include="scripts\engine\utility\include\timer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Player.h">
+    <ClInclude Include="scripts\game\dungeon\player\include\Player.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\engine\core\include\Component.h">
@@ -284,22 +284,22 @@
     <ClInclude Include="scripts\engine\graphics\include\TextComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\MessageWindow.h">
+    <ClInclude Include="scripts\game\common\ui\include\MessageWindow.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\CharacterComponent.h">
+    <ClInclude Include="scripts\game\dungeon\character\include\CharacterComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\EnemyComponent.h">
+    <ClInclude Include="scripts\game\dungeon\enemy\include\EnemyComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\DamageText.h">
+    <ClInclude Include="scripts\game\common\ui\include\DamageText.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\engine\asset\include\AssetManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\ItemManager.h">
+    <ClInclude Include="scripts\game\common\item\include\ItemManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\engine\utility\include\Random.h">
@@ -308,7 +308,7 @@
     <ClInclude Include="scripts\external\json\json.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Enemy.h">
+    <ClInclude Include="scripts\game\dungeon\enemy\include\Enemy.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\external\magic_enum\magic_enum.hpp">
@@ -323,79 +323,79 @@
     <ClInclude Include="scripts\engine\utility\include\MyUtility.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\PlayerManager.h">
+    <ClInclude Include="scripts\game\common\player\include\PlayerManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\InnMenu.h">
+    <ClInclude Include="scripts\game\town\menu\include\InnMenu.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\ShopMenu.h">
+    <ClInclude Include="scripts\game\town\menu\include\ShopMenu.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\ForgeMenu.h">
+    <ClInclude Include="scripts\game\town\menu\include\ForgeMenu.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\ExplorerMenu.h">
+    <ClInclude Include="scripts\game\town\menu\include\ExplorerMenu.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\StatusMenu.h">
+    <ClInclude Include="scripts\game\town\menu\include\StatusMenu.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\engine\audio\include\AudioManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\DungeonScene.h">
+    <ClInclude Include="scripts\game\dungeon\scene\include\DungeonScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\DungeonUI.h">
+    <ClInclude Include="scripts\game\dungeon\scene\include\DungeonUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\GameOverScene.h">
+    <ClInclude Include="scripts\game\gameover\include\GameOverScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\engine\utility\include\PerlinNoise1D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Resource.h">
+    <ClInclude Include="scripts\game\dungeon\object\include\Resource.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\MainMenu.h">
+    <ClInclude Include="scripts\game\town\menu\include\MainMenu.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Menu.h">
+    <ClInclude Include="scripts\game\common\ui\include\Menu.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\MiniMap.h">
+    <ClInclude Include="scripts\game\dungeon\map\include\MiniMap.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\MapGenerator.h">
+    <ClInclude Include="scripts\game\dungeon\map\include\MapGenerator.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\engine\core\include\Scene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\TitleScene.h">
+    <ClInclude Include="scripts\game\title\include\TitleScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\TownScene.h">
+    <ClInclude Include="scripts\game\town\scene\include\TownScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\TurnObserver.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\TurnState.h">
+    <ClInclude Include="scripts\game\dungeon\turn\include\TurnState.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\PlayerInteractComponent.h">
+    <ClInclude Include="scripts\game\dungeon\player\include\PlayerInteractComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\PlayerItemComponent.h">
+    <ClInclude Include="scripts\game\dungeon\player\include\PlayerItemComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\PlayerRotateComponent.h">
+    <ClInclude Include="scripts\game\dungeon\player\include\PlayerRotateComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\PlayerState.h">
+    <ClInclude Include="scripts\game\dungeon\player\include\PlayerState.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\engine\debug\include\GUIDebugger.h">
@@ -428,7 +428,7 @@
     <ClInclude Include="scripts\external\Imgui\imgui_stdlib.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\TownUI.h">
+    <ClInclude Include="scripts\game\town\scene\include\TownUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\engine\graphics\include\FireParticleComponent.h">
@@ -446,16 +446,16 @@
     <ClInclude Include="scripts\engine\graphics\include\TextureLoader.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Treasure.h">
+    <ClInclude Include="scripts\game\dungeon\object\include\Treasure.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\PlayerAttackComponent.h">
+    <ClInclude Include="scripts\game\dungeon\player\include\PlayerAttackComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\PlayerMoveComponent.h">
+    <ClInclude Include="scripts\game\dungeon\player\include\PlayerMoveComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\AttackType.h">
+    <ClInclude Include="scripts\game\dungeon\character\include\AttackType.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
