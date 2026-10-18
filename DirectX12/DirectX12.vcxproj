@@ -263,7 +263,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="scripts\pch.cpp">
+    <ClCompile Include="scripts\pch\pch.cpp">
       <PrecompiledHeader Condition="'$(Platform)'=='x64'">Create</PrecompiledHeader>
       <ForcedIncludeFiles Condition="'$(Platform)'=='x64'">
       </ForcedIncludeFiles>
@@ -378,7 +378,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="scripts\pch.h" />
+    <ClInclude Include="scripts\pch\pch.h" />
     <ClInclude Include="scripts\Actor.h" />
     <ClInclude Include="scripts\AssetManager.h" />
     <ClInclude Include="scripts\AttackType.h" />
