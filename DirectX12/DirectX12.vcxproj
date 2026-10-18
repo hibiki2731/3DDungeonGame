@@ -268,21 +268,21 @@
       <ForcedIncludeFiles Condition="'$(Platform)'=='x64'">
       </ForcedIncludeFiles>
     </ClCompile>
-    <ClCompile Include="scripts\Actor.cpp" />
-    <ClCompile Include="scripts\AssetManager.cpp" />
+    <ClCompile Include="scripts\engine\core\src\Actor.cpp" />
+    <ClCompile Include="scripts\engine\asset\src\AssetManager.cpp" />
     <ClCompile Include="scripts\PlayerAttackComponent.cpp" />
-    <ClCompile Include="scripts\AudioManager.cpp" />
+    <ClCompile Include="scripts\engine\audio\src\AudioManager.cpp" />
     <ClCompile Include="scripts\CharacterComponent.cpp" />
     <ClCompile Include="scripts\DamageText.cpp" />
-    <ClCompile Include="scripts\DebugCamera.cpp" />
+    <ClCompile Include="scripts\engine\debug\src\DebugCamera.cpp" />
     <ClCompile Include="scripts\DungeonScene.cpp" />
     <ClCompile Include="scripts\DungeonUI.cpp" />
     <ClCompile Include="scripts\EnemyComponent.cpp" />
     <ClCompile Include="scripts\ExplorerMenu.cpp" />
-    <ClCompile Include="scripts\FireParticleComponent.cpp" />
+    <ClCompile Include="scripts\engine\graphics\src\FireParticleComponent.cpp" />
     <ClCompile Include="scripts\ForgeMenu.cpp" />
     <ClCompile Include="scripts\GameOverScene.cpp" />
-    <ClCompile Include="scripts\GUIDebugger.cpp">
+    <ClCompile Include="scripts\engine\debug\src\GUIDebugger.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="scripts\external\Imgui\imgui.cpp">
@@ -325,42 +325,42 @@
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
     </ClCompile>
-    <ClCompile Include="scripts\myJson.cpp" />
+    <ClCompile Include="scripts\engine\asset\src\myJson.cpp" />
     <ClCompile Include="scripts\PlayerMoveComponent.cpp" />
     <ClCompile Include="scripts\Resource.cpp" />
     <ClCompile Include="scripts\ItemManager.cpp" />
     <ClCompile Include="scripts\MainMenu.cpp" />
     <ClCompile Include="scripts\Menu.cpp" />
     <ClCompile Include="scripts\MiniMap.cpp" />
-    <ClCompile Include="scripts\MyUtility.cpp" />
+    <ClCompile Include="scripts\engine\utility\src\MyUtility.cpp" />
     <ClCompile Include="scripts\InnMenu.cpp" />
-    <ClCompile Include="scripts\Object.cpp" />
+    <ClCompile Include="scripts\engine\core\src\Object.cpp" />
     <ClCompile Include="scripts\Player.cpp" />
-    <ClCompile Include="scripts\CameraComponent.cpp" />
-    <ClCompile Include="scripts\Component.cpp" />
-    <ClCompile Include="scripts\FBXConverter.cpp" />
-    <ClCompile Include="scripts\BIN_FILE12.cpp" />
-    <ClCompile Include="scripts\Game.cpp" />
-    <ClCompile Include="scripts\Graphic.cpp" />
-    <ClCompile Include="scripts\input.cpp" />
+    <ClCompile Include="scripts\engine\graphics\src\CameraComponent.cpp" />
+    <ClCompile Include="scripts\engine\core\src\Component.cpp" />
+    <ClCompile Include="scripts\engine\graphics\src\FBXConverter.cpp" />
+    <ClCompile Include="scripts\engine\graphics\src\BIN_FILE12.cpp" />
+    <ClCompile Include="scripts\engine\core\src\Game.cpp" />
+    <ClCompile Include="scripts\engine\graphics\src\Graphic.cpp" />
+    <ClCompile Include="scripts\engine\input\src\input.cpp" />
     <ClCompile Include="scripts\MapGenerator.cpp" />
     <ClCompile Include="scripts\MessageWindow.cpp" />
     <ClCompile Include="scripts\PlayerManager.cpp" />
-    <ClCompile Include="scripts\PointLightComponent.cpp" />
-    <ClCompile Include="scripts\MyMath.cpp" />
-    <ClCompile Include="scripts\MeshComponent.cpp" />
-    <ClCompile Include="scripts\Random.cpp" />
+    <ClCompile Include="scripts\engine\graphics\src\PointLightComponent.cpp" />
+    <ClCompile Include="scripts\engine\utility\src\MyMath.cpp" />
+    <ClCompile Include="scripts\engine\graphics\src\MeshComponent.cpp" />
+    <ClCompile Include="scripts\engine\utility\src\Random.cpp" />
     <ClCompile Include="scripts\Enemy.cpp" />
-    <ClCompile Include="scripts\Scene.cpp" />
-    <ClCompile Include="scripts\SceneManager.cpp" />
+    <ClCompile Include="scripts\engine\core\src\Scene.cpp" />
+    <ClCompile Include="scripts\engine\core\src\SceneManager.cpp" />
     <ClCompile Include="scripts\ShopMenu.cpp" />
-    <ClCompile Include="scripts\SpotLightComponent.cpp" />
-    <ClCompile Include="scripts\SpriteComponent.cpp" />
+    <ClCompile Include="scripts\engine\graphics\src\SpotLightComponent.cpp" />
+    <ClCompile Include="scripts\engine\graphics\src\SpriteComponent.cpp" />
     <ClCompile Include="scripts\StatusMenu.cpp" />
-    <ClCompile Include="scripts\TextureLoader.cpp" />
+    <ClCompile Include="scripts\engine\graphics\src\TextureLoader.cpp" />
     <ClCompile Include="scripts\TownUI.cpp" />
-    <ClCompile Include="scripts\TextComponent.cpp" />
-    <ClCompile Include="scripts\timer.cpp" />
+    <ClCompile Include="scripts\engine\graphics\src\TextComponent.cpp" />
+    <ClCompile Include="scripts\engine\utility\src\timer.cpp" />
     <ClCompile Include="scripts\TitleScene.cpp" />
     <ClCompile Include="scripts\TownScene.cpp" />
     <ClCompile Include="scripts\Treasure.cpp" />
@@ -370,7 +370,7 @@
     <ClCompile Include="scripts\PlayerItemComponent.cpp" />
     <ClCompile Include="scripts\PlayerRotateComponent.cpp" />
     <ClCompile Include="scripts\PlayerState.cpp" />
-    <ClCompile Include="scripts\WinMain.cpp">
+    <ClCompile Include="scripts\engine\core\src\WinMain.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
@@ -378,23 +378,23 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scripts\pch\pch.h" />
-    <ClInclude Include="scripts\Actor.h" />
-    <ClInclude Include="scripts\AssetManager.h" />
+    <ClInclude Include="scripts\engine\core\include\Actor.h" />
+    <ClInclude Include="scripts\engine\asset\include\AssetManager.h" />
     <ClInclude Include="scripts\AttackType.h" />
     <ClInclude Include="scripts\PlayerAttackComponent.h" />
-    <ClInclude Include="scripts\AudioManager.h" />
+    <ClInclude Include="scripts\engine\audio\include\AudioManager.h" />
     <ClInclude Include="scripts\CharacterComponent.h" />
     <ClInclude Include="scripts\DamageText.h" />
-    <ClInclude Include="scripts\DebugCamera.h" />
-    <ClInclude Include="scripts\BufferStruct.h" />
+    <ClInclude Include="scripts\engine\debug\include\DebugCamera.h" />
+    <ClInclude Include="scripts\engine\graphics\include\BufferStruct.h" />
     <ClInclude Include="scripts\DungeonScene.h" />
     <ClInclude Include="scripts\DungeonUI.h" />
     <ClInclude Include="scripts\EnemyComponent.h" />
     <ClInclude Include="scripts\ExplorerMenu.h" />
-    <ClInclude Include="scripts\FireParticleComponent.h" />
+    <ClInclude Include="scripts\engine\graphics\include\FireParticleComponent.h" />
     <ClInclude Include="scripts\ForgeMenu.h" />
     <ClInclude Include="scripts\GameOverScene.h" />
-    <ClInclude Include="scripts\GUIDebugger.h">
+    <ClInclude Include="scripts\engine\debug\include\GUIDebugger.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="scripts\external\Imgui\imconfig.h" />
@@ -407,8 +407,8 @@
     <ClInclude Include="scripts\external\Imgui\imstb_textedit.h" />
     <ClInclude Include="scripts\external\Imgui\imstb_truetype.h" />
     <ClInclude Include="scripts\external\json\json_fwd.hpp" />
-    <ClInclude Include="scripts\myJson.h" />
-    <ClInclude Include="scripts\PerlinNoise1D.h" />
+    <ClInclude Include="scripts\engine\asset\include\myJson.h" />
+    <ClInclude Include="scripts\engine\utility\include\PerlinNoise1D.h" />
     <ClInclude Include="scripts\PlayerMoveComponent.h" />
     <ClInclude Include="scripts\Resource.h" />
     <ClInclude Include="scripts\ItemManager.h" />
@@ -417,36 +417,36 @@
     <ClInclude Include="scripts\MainMenu.h" />
     <ClInclude Include="scripts\Menu.h" />
     <ClInclude Include="scripts\MiniMap.h" />
-    <ClInclude Include="scripts\MyUtility.h" />
+    <ClInclude Include="scripts\engine\utility\include\MyUtility.h" />
     <ClInclude Include="scripts\InnMenu.h" />
-    <ClInclude Include="scripts\Object.h" />
+    <ClInclude Include="scripts\engine\core\include\Object.h" />
     <ClInclude Include="scripts\Player.h" />
-    <ClInclude Include="scripts\CameraComponent.h" />
-    <ClInclude Include="scripts\Component.h" />
-    <ClInclude Include="scripts\FBXConverter.h" />
-    <ClInclude Include="scripts\BIN_FILE12.h" />
-    <ClInclude Include="scripts\Game.h" />
-    <ClInclude Include="scripts\Graphic.h" />
-    <ClInclude Include="scripts\input.h" />
+    <ClInclude Include="scripts\engine\graphics\include\CameraComponent.h" />
+    <ClInclude Include="scripts\engine\core\include\Component.h" />
+    <ClInclude Include="scripts\engine\graphics\include\FBXConverter.h" />
+    <ClInclude Include="scripts\engine\graphics\include\BIN_FILE12.h" />
+    <ClInclude Include="scripts\engine\core\include\Game.h" />
+    <ClInclude Include="scripts\engine\graphics\include\Graphic.h" />
+    <ClInclude Include="scripts\engine\input\include\input.h" />
     <ClInclude Include="scripts\MapGenerator.h" />
     <ClInclude Include="scripts\MessageWindow.h" />
     <ClInclude Include="scripts\PlayerManager.h" />
-    <ClInclude Include="scripts\PointLightComponent.h" />
-    <ClInclude Include="scripts\MyMath.h" />
-    <ClInclude Include="scripts\MeshComponent.h" />
-    <ClInclude Include="scripts\Random.h" />
+    <ClInclude Include="scripts\engine\graphics\include\PointLightComponent.h" />
+    <ClInclude Include="scripts\engine\utility\include\MyMath.h" />
+    <ClInclude Include="scripts\engine\graphics\include\MeshComponent.h" />
+    <ClInclude Include="scripts\engine\utility\include\Random.h" />
     <ClInclude Include="scripts\Enemy.h" />
-    <ClInclude Include="scripts\Scene.h" />
-    <ClInclude Include="scripts\SceneManager.h" />
+    <ClInclude Include="scripts\engine\core\include\Scene.h" />
+    <ClInclude Include="scripts\engine\core\include\SceneManager.h" />
     <ClInclude Include="scripts\ShopMenu.h" />
-    <ClInclude Include="scripts\SpotLightComponent.h" />
-    <ClInclude Include="scripts\SpriteComponent.h" />
+    <ClInclude Include="scripts\engine\graphics\include\SpotLightComponent.h" />
+    <ClInclude Include="scripts\engine\graphics\include\SpriteComponent.h" />
     <ClInclude Include="scripts\StatusMenu.h" />
-    <ClInclude Include="scripts\TextureLoader.h" />
+    <ClInclude Include="scripts\engine\graphics\include\TextureLoader.h" />
     <ClInclude Include="scripts\TownUI.h" />
     <ClInclude Include="scripts\external\stb\stb_image.h" />
-    <ClInclude Include="scripts\TextComponent.h" />
-    <ClInclude Include="scripts\timer.h" />
+    <ClInclude Include="scripts\engine\graphics\include\TextComponent.h" />
+    <ClInclude Include="scripts\engine\utility\include\timer.h" />
     <ClInclude Include="scripts\TitleScene.h" />
     <ClInclude Include="scripts\TownScene.h" />
     <ClInclude Include="scripts\Treasure.h" />
@@ -456,7 +456,7 @@
     <ClInclude Include="scripts\PlayerItemComponent.h" />
     <ClInclude Include="scripts\PlayerRotateComponent.h" />
     <ClInclude Include="scripts\PlayerState.h" />
-    <ClInclude Include="scripts\WinMain.h" />
+    <ClInclude Include="scripts\engine\core\include\WinMain.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shader\hlsl\DTHeader.hlsli" />

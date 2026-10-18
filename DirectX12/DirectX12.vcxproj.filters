@@ -18,55 +18,55 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="scripts\WinMain.cpp">
+    <ClCompile Include="scripts\engine\core\src\WinMain.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\BIN_FILE12.cpp">
+    <ClCompile Include="scripts\engine\graphics\src\BIN_FILE12.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\FBXConverter.cpp">
+    <ClCompile Include="scripts\engine\graphics\src\FBXConverter.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Graphic.cpp">
+    <ClCompile Include="scripts\engine\graphics\src\Graphic.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Actor.cpp">
+    <ClCompile Include="scripts\engine\core\src\Actor.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Game.cpp">
+    <ClCompile Include="scripts\engine\core\src\Game.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\input.cpp">
+    <ClCompile Include="scripts\engine\input\src\input.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\timer.cpp">
+    <ClCompile Include="scripts\engine\utility\src\timer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\Player.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Component.cpp">
+    <ClCompile Include="scripts\engine\core\src\Component.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\MeshComponent.cpp">
+    <ClCompile Include="scripts\engine\graphics\src\MeshComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\MyMath.cpp">
+    <ClCompile Include="scripts\engine\utility\src\MyMath.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\CameraComponent.cpp">
+    <ClCompile Include="scripts\engine\graphics\src\CameraComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\SpriteComponent.cpp">
+    <ClCompile Include="scripts\engine\graphics\src\SpriteComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\PointLightComponent.cpp">
+    <ClCompile Include="scripts\engine\graphics\src\PointLightComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\SpotLightComponent.cpp">
+    <ClCompile Include="scripts\engine\graphics\src\SpotLightComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\TextComponent.cpp">
+    <ClCompile Include="scripts\engine\graphics\src\TextComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\MessageWindow.cpp">
@@ -81,25 +81,25 @@
     <ClCompile Include="scripts\DamageText.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\AssetManager.cpp">
+    <ClCompile Include="scripts\engine\asset\src\AssetManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\ItemManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Random.cpp">
+    <ClCompile Include="scripts\engine\utility\src\Random.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\Enemy.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\SceneManager.cpp">
+    <ClCompile Include="scripts\engine\core\src\SceneManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Object.cpp">
+    <ClCompile Include="scripts\engine\core\src\Object.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\MyUtility.cpp">
+    <ClCompile Include="scripts\engine\utility\src\MyUtility.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\PlayerManager.cpp">
@@ -120,7 +120,7 @@
     <ClCompile Include="scripts\StatusMenu.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\AudioManager.cpp">
+    <ClCompile Include="scripts\engine\audio\src\AudioManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\DungeonScene.cpp">
@@ -147,7 +147,7 @@
     <ClCompile Include="scripts\MapGenerator.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\Scene.cpp">
+    <ClCompile Include="scripts\engine\core\src\Scene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\TitleScene.cpp">
@@ -174,7 +174,7 @@
     <ClCompile Include="scripts\PlayerState.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\GUIDebugger.cpp">
+    <ClCompile Include="scripts\engine\debug\src\GUIDebugger.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\external\Imgui\imgui.cpp">
@@ -204,16 +204,16 @@
     <ClCompile Include="scripts\TownUI.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\FireParticleComponent.cpp">
+    <ClCompile Include="scripts\engine\graphics\src\FireParticleComponent.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\myJson.cpp">
+    <ClCompile Include="scripts\engine\asset\src\myJson.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\DebugCamera.cpp">
+    <ClCompile Include="scripts\engine\debug\src\DebugCamera.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="scripts\TextureLoader.cpp">
+    <ClCompile Include="scripts\engine\graphics\src\TextureLoader.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="scripts\Treasure.cpp">
@@ -227,61 +227,61 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="scripts\BIN_FILE12.h">
+    <ClInclude Include="scripts\engine\graphics\include\BIN_FILE12.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\WinMain.h">
+    <ClInclude Include="scripts\engine\core\include\WinMain.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\external\stb\stb_image.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\FBXConverter.h">
+    <ClInclude Include="scripts\engine\graphics\include\FBXConverter.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Actor.h">
+    <ClInclude Include="scripts\engine\core\include\Actor.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\BufferStruct.h">
+    <ClInclude Include="scripts\engine\graphics\include\BufferStruct.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Game.h">
+    <ClInclude Include="scripts\engine\core\include\Game.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Graphic.h">
+    <ClInclude Include="scripts\engine\graphics\include\Graphic.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\input.h">
+    <ClInclude Include="scripts\engine\input\include\input.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\timer.h">
+    <ClInclude Include="scripts\engine\utility\include\timer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\Player.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Component.h">
+    <ClInclude Include="scripts\engine\core\include\Component.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\MeshComponent.h">
+    <ClInclude Include="scripts\engine\graphics\include\MeshComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\MyMath.h">
+    <ClInclude Include="scripts\engine\utility\include\MyMath.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\CameraComponent.h">
+    <ClInclude Include="scripts\engine\graphics\include\CameraComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\SpriteComponent.h">
+    <ClInclude Include="scripts\engine\graphics\include\SpriteComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\PointLightComponent.h">
+    <ClInclude Include="scripts\engine\graphics\include\PointLightComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\SpotLightComponent.h">
+    <ClInclude Include="scripts\engine\graphics\include\SpotLightComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\TextComponent.h">
+    <ClInclude Include="scripts\engine\graphics\include\TextComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\MessageWindow.h">
@@ -296,13 +296,13 @@
     <ClInclude Include="scripts\DamageText.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\AssetManager.h">
+    <ClInclude Include="scripts\engine\asset\include\AssetManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\ItemManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Random.h">
+    <ClInclude Include="scripts\engine\utility\include\Random.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\external\json\json.hpp">
@@ -314,13 +314,13 @@
     <ClInclude Include="scripts\external\magic_enum\magic_enum.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\SceneManager.h">
+    <ClInclude Include="scripts\engine\core\include\SceneManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Object.h">
+    <ClInclude Include="scripts\engine\core\include\Object.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\MyUtility.h">
+    <ClInclude Include="scripts\engine\utility\include\MyUtility.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\PlayerManager.h">
@@ -341,7 +341,7 @@
     <ClInclude Include="scripts\StatusMenu.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\AudioManager.h">
+    <ClInclude Include="scripts\engine\audio\include\AudioManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\DungeonScene.h">
@@ -353,7 +353,7 @@
     <ClInclude Include="scripts\GameOverScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\PerlinNoise1D.h">
+    <ClInclude Include="scripts\engine\utility\include\PerlinNoise1D.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\Resource.h">
@@ -371,7 +371,7 @@
     <ClInclude Include="scripts\MapGenerator.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\Scene.h">
+    <ClInclude Include="scripts\engine\core\include\Scene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\TitleScene.h">
@@ -398,7 +398,7 @@
     <ClInclude Include="scripts\PlayerState.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\GUIDebugger.h">
+    <ClInclude Include="scripts\engine\debug\include\GUIDebugger.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\external\Imgui\imconfig.h">
@@ -431,19 +431,19 @@
     <ClInclude Include="scripts\TownUI.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\FireParticleComponent.h">
+    <ClInclude Include="scripts\engine\graphics\include\FireParticleComponent.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\myJson.h">
+    <ClInclude Include="scripts\engine\asset\include\myJson.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\DebugCamera.h">
+    <ClInclude Include="scripts\engine\debug\include\DebugCamera.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\external\json\json_fwd.hpp">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="scripts\TextureLoader.h">
+    <ClInclude Include="scripts\engine\graphics\include\TextureLoader.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="scripts\Treasure.h">
