@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- 全構成共通のインクルードディレクトリ。フォルダを追加したらここに登録する -->
+  <PropertyGroup>
+    <ScriptsDir>$(MSBuildThisFileDirectory)scripts\</ScriptsDir>
+    <ExternalIncludeDirs>$(ScriptsDir)external;$(ScriptsDir)external\Imgui;$(ScriptsDir)external\json;$(ScriptsDir)external\magic_enum;$(ScriptsDir)external\minimp3;$(ScriptsDir)external\stb</ExternalIncludeDirs>
+    <EngineIncludeDirs>$(ScriptsDir)engine\core\include;$(ScriptsDir)engine\graphics\include;$(ScriptsDir)engine\audio\include;$(ScriptsDir)engine\input\include;$(ScriptsDir)engine\asset\include;$(ScriptsDir)engine\utility\include;$(ScriptsDir)engine\debug\include</EngineIncludeDirs>
+    <GameIncludeDirs>$(ScriptsDir)game\title\include;$(ScriptsDir)game\gameover\include;$(ScriptsDir)game\town\scene\include;$(ScriptsDir)game\town\menu\include;$(ScriptsDir)game\dungeon\scene\include;$(ScriptsDir)game\dungeon\player\include;$(ScriptsDir)game\dungeon\enemy\include;$(ScriptsDir)game\dungeon\character\include;$(ScriptsDir)game\dungeon\turn\include;$(ScriptsDir)game\dungeon\map\include;$(ScriptsDir)game\dungeon\object\include;$(ScriptsDir)game\common\player\include;$(ScriptsDir)game\common\item\include;$(ScriptsDir)game\common\ui\include</GameIncludeDirs>
+    <ProjectIncludeDirs>$(ScriptsDir)pch;$(ExternalIncludeDirs);$(EngineIncludeDirs);$(GameIncludeDirs)</ProjectIncludeDirs>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectIncludeDirs);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+</Project>
