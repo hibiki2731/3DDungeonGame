@@ -380,7 +380,7 @@
     <ClInclude Include="scripts\pch\pch.h" />
     <ClInclude Include="scripts\engine\core\include\Actor.h" />
     <ClInclude Include="scripts\engine\asset\include\AssetManager.h" />
-    <ClInclude Include="scripts\game\dungeon\character\include\AttackType.h" />
+    <ClInclude Include="scripts\game\dungeon\player\include\AttackType.h" />
     <ClInclude Include="scripts\game\dungeon\player\include\PlayerAttackComponent.h" />
     <ClInclude Include="scripts\engine\audio\include\AudioManager.h" />
     <ClInclude Include="scripts\game\dungeon\character\include\CharacterComponent.h" />

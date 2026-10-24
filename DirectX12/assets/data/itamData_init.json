@@ -144,7 +144,7 @@
             "id": "HERB",
             "name": "薬草",
             "price": [
-                3
+                2
             ],
             "value": 20
         },
@@ -158,7 +158,7 @@
             "id": "SALTED_KELP",
             "name": "塩昆布",
             "price": [
-                5
+                3
             ],
             "value": 20
         }

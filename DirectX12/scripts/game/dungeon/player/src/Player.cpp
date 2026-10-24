@@ -203,6 +203,10 @@ void Player::giveDamage(int damage)
 	//直接HPを減らさない
 	//行動中に受けたダメージを全て加算し、行動終了後にまとめてHPから引くようにする
 	mPendingDamage += damage;
+	
+	//受けたダメージをメッセージウィンドウに表示
+	std::string message = std::to_string(damage) + "ダメージ受けた！";
+	mScene.pushMessage(message);
 }
 
 void Player::damagedProcess()
