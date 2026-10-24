@@ -10,7 +10,7 @@
     "flashDuration": 0.5,
     "hp": 25,
     "inventory": [],
-    "maxhp": 20,
+    "maxhp": 25,
     "moveSpeed": 5.0,
     "power": 3,
     "rotSpeed": 4.5,
