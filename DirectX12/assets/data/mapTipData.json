@@ -42,7 +42,7 @@
         },
         "3":{
             "category":"ENEMY",
-            "enemyID":"BOSS_WEAKPOINT"
+            "enemyID":"BOSS_PILLAR"
         }
     }
 

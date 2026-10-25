@@ -97,8 +97,7 @@ void TurnEndState::spawnEnemyAndResource()
 
 void TurnEndState::spawnEnemy()
 {
-	int playerIndex[2];
-	mDungeonScene.getPlayer()->getIndexPos(playerIndex);
+	const std::array<int, 2> playerIndex = mDungeonScene.getPlayer()->getIndexPos();
 
 	int i = 0; //湧き場がない場合、一定回数のループ後にループを抜ける
 

@@ -1,5 +1,5 @@
 {
-    "actionLimit": 20,
+    "actionLimit": 200,
     "armers": [
         "NONE"
     ],
@@ -8,11 +8,11 @@
     "equippedWeaponIndex": 0,
     "explorer": [],
     "flashDuration": 0.5,
-    "hp": 25,
+    "hp": 200,
     "inventory": [],
     "maxhp": 25,
     "moveSpeed": 5.0,
-    "power": 20,
+    "power": 7,
     "rotSpeed": 4.5,
     "weapons": [
         "NONE"

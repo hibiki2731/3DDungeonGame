@@ -7,7 +7,8 @@
         "defense": 1,
         "meshID": "SLIME",
         "movePattern": "SENSE",
-        "senseRange": 4
+        "senseRange": 4,
+        "attackPattern": "MELEE"
     },
     "NURIKABE": {
         "name": "ぬりかべ",
@@ -16,15 +17,17 @@
         "dropMoney": 10,
         "defense": 4,
         "meshID": "NURIKABE",
-        "movePattern": "RANDOM"
+        "movePattern": "RANDOM",
+        "attackPattern": "MELEE"
     },
     "BOSS_PILLAR":{
         "name": "ザ・ウォールズ",
-        "hp": 50,
+        "hp": 60,
         "power": 0,
         "dropMoney": 50,
-        "defence": 2,
+        "defense": 2,
         "meshID": "BOSS_PILLAR",
-        "movePattern": "BOSS_PILLAR"
+        "movePattern": "BOSS_PILLAR",
+        "attackPattern": "NONE"
     }
 }

@@ -146,16 +146,9 @@ int Player::getDirection()
 	return mCharacter->getDirection();
 }
 
-void Player::getIndexPos(int(&pos)[2])
+const std::array<int, 2>& Player::getIndexPos()
 {
-	pos[0] = mCharacter->getIndexPos()[0];
-	pos[1] = mCharacter->getIndexPos()[1];
-}
-
-std::vector<int> Player::getIndexPos()
-{
-	std::vector<int> pos = { mCharacter->getIndexPos()[0], mCharacter->getIndexPos()[1] };
-	return pos;
+	return mCharacter->getIndexPos();
 }
 
 int Player::getCurrentHP()

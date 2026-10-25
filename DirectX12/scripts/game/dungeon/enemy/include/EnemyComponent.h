@@ -3,6 +3,7 @@
 #include "CharacterComponent.h"
 #include "MeshComponent.h"
 #include "EnemyMoveStrategy.h"
+#include "EnemyAttackStrategy.h"
 
 //前方宣言
 class Player;
@@ -19,10 +20,12 @@ public:
 	void endProcess() override;			//コンポーネントが破棄される際の処理
 	void startAct();					//エネミーの行動を開始する
 	void startFlash();					//ダメージを受けたときの点滅を開始
+	void lookAt(const std::array<int, 2>& targetIndex);	//隣接するマスの方向を向く
 
 	//setter
 	void setMesh(MeshComponent* mesh);		//メッシュの設定
 	void setMoveStrategy(std::unique_ptr<EnemyMoveStrategy> strategy); //行動パターンの設定
+	void setAttackStrategy(std::unique_ptr<EnemyAttackStrategy> strategy); //攻撃パターンの設定
 	void setDropMoney(int money);			//エネミー撃破時に落とすお金の量を設定
 	void setName(const std::string& name);	//エネミーの名前を設定
 
@@ -44,6 +47,7 @@ private:
 	int				mDropMoney;			//ドロップするお金
 	bool			isActive;			//true : 行動可能  false : 行動済み
 	std::unique_ptr<EnemyMoveStrategy> mMoveStrategy;	//行動パターン
+	std::unique_ptr<EnemyAttackStrategy> mAttackStrategy;	//攻撃パターン
 	int				mDistPlayer; 		//プレイヤーからの距離(マンハッタン距離)、エネミーの更新順序を計算する際に使用
 	DungeonScene&	mScene;				//シーン
 	//---点滅処理用---
@@ -53,7 +57,6 @@ private:
 	XMFLOAT3		mTargetPos;			//移動先の位置
 	float			mMoveSpeed;			//移動スピード
 	bool			isMoving;			//移動フラグ　ture : 移動中　false : 停止
-	
-	const struct PlayerData& mPlayerData;//プレイヤー情報
+
 };
 

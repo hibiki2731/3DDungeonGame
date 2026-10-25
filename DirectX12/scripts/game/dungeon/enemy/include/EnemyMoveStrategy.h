@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <memory>
+#include <array>
 #include "json.hpp"
 
 //前方宣言
@@ -16,23 +17,30 @@ class DungeonScene;
 class EnemyMoveStrategy
 {
 public:
+	EnemyMoveStrategy(EnemyComponent& enemy, DungeonScene& scene) : mEnemy(enemy), mScene(scene) {}
 	virtual ~EnemyMoveStrategy() = default;
-	//移動先のインデックス座標を計算する。targetIndexには現在のインデックス座標が入った状態で渡される
-	virtual std::array<int, 2> calcTargetIndex(EnemyComponent& enemy, DungeonScene& scene) = 0;
+	//移動先のインデックス座標を計算して返す。移動しない場合は現在のインデックス座標を返す
+	virtual std::array<int, 2> calcTargetIndex() = 0;
+
+protected:
+	EnemyComponent&	mEnemy;	//行動パターンを持つエネミー
+	DungeonScene&	mScene;	//シーン
 };
 
 //ランダムに移動
 class RandomWalkStrategy : public EnemyMoveStrategy
 {
 public:
-	std::array<int, 2> calcTargetIndex(EnemyComponent& enemy, DungeonScene& scene) override;
+	RandomWalkStrategy(EnemyComponent& enemy, DungeonScene& scene) : EnemyMoveStrategy(enemy, scene) {}
+	std::array<int, 2> calcTargetIndex() override;
 };
 
 //A*アルゴリズムでプレイヤーを追跡
 class AstarStrategy : public EnemyMoveStrategy
 {
 public:
-	std::array<int, 2> calcTargetIndex(EnemyComponent& enemy, DungeonScene& scene) override;
+	AstarStrategy(EnemyComponent& enemy, DungeonScene& scene) : EnemyMoveStrategy(enemy, scene) {}
+	std::array<int, 2> calcTargetIndex() override;
 
 private:
 	//A*アルゴリズム用構造体
@@ -59,8 +67,9 @@ private:
 class SenseStrategy : public EnemyMoveStrategy
 {
 public:
-	explicit SenseStrategy(int senseRange) : mSenseRange(senseRange) {}
-	std::array<int, 2> calcTargetIndex(EnemyComponent& enemy, DungeonScene& scene);
+	SenseStrategy(EnemyComponent& enemy, DungeonScene& scene, int senseRange)
+		: EnemyMoveStrategy(enemy, scene), mSenseRange(senseRange), mAstar(enemy, scene), mRandomWalk(enemy, scene) {}
+	std::array<int, 2> calcTargetIndex() override;
 
 private:
 	int					mSenseRange;	//プレイヤーを感知する範囲(マンハッタン距離)
@@ -72,9 +81,21 @@ private:
 class BossPillarStrategy : public EnemyMoveStrategy
 {
 public:
-	//TODO: ボスの挙動を実装する。現在はその場から動かない
-	std::array<int, 2> calcTargetIndex(EnemyComponent& enemy, DungeonScene& scene);
+	BossPillarStrategy(EnemyComponent& enemy, DungeonScene& scene);
+	std::array<int, 2> calcTargetIndex() override;
+	
+private:
+	std::array<std::array<int, 2>, 3> mMovablePosition;	//移動可能位置
+	int mCurrentMovablePositionIndex;
+	int mAccumulatedDamage;
+	int mDamageThreshold;
+	int mStayedTurnCount;
+	int mStayedTurnThreshold;
+	
+	int mPreEnemyHP;
+	
+	std::array<int, 2> selectNextPosition();	
 };
 
 //エネミーデータ(json)のmovePatternから行動パターンを生成する
-std::unique_ptr<EnemyMoveStrategy> createMoveStrategy(const nlohmann::json& enemyJson);
+std::unique_ptr<EnemyMoveStrategy> createMoveStrategy(const nlohmann::json& enemyJson, EnemyComponent& enemy, DungeonScene& scene);

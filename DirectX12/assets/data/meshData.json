@@ -49,7 +49,7 @@
         "jsonPath": "assets/3DModels/Boss/BossObject/boss.json"
     },
     "BOSS_PILLAR":{
-        "fbxPath": "assets/3DModels/Boss/BossObject/bossPillar.fbx",
-        "jsonPath": "assets/3DModels/Boss/BossObject/bossPillar.json"
+        "fbxPath": "assets/3DModels/Boss/BossPillar/bossPillar.fbx",
+        "jsonPath": "assets/3DModels/Boss/BossPillar/bossPillar.json"
     }
 }

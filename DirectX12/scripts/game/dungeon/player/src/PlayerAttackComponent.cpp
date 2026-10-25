@@ -16,7 +16,7 @@ EnemyComponent* PlayerAttackComponent::searchTargetEnemy()
 {
 	//前方のエネミーのポインターを取得
 	EnemyComponent* target = nullptr;
-	std::vector<int> playerPos = mPlayer.getIndexPos();
+	const std::array<int, 2> playerPos = mPlayer.getIndexPos();
 	switch (mPlayer.getDirection()) {
 	case Direction::UP:
 		target = mScene.getEnemyFromIndexPos(playerPos[0], playerPos[1] + 1);

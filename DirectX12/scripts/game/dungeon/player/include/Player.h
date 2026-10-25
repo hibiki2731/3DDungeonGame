@@ -5,6 +5,7 @@
 #include "PlayerState.h"
 #include "json_fwd.hpp"
 #include <vector>
+#include <array>
 #include <memory>
 #include <unordered_map>
 
@@ -30,8 +31,7 @@ public:
 
 	//getter
 	int getDirection();
-	void getIndexPos(int(&pos)[2]);
-	std::vector<int> getIndexPos();
+	const std::array<int, 2>& getIndexPos();
 	int getCurrentHP();
 	int getCurrentAP();
 	int getPower();

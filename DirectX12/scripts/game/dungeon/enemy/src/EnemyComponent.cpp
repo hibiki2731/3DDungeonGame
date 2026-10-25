@@ -14,11 +14,11 @@
 
 EnemyComponent::EnemyComponent(Actor& owner, DungeonScene& scene) 
 	: CharacterComponent(owner, scene),
-	mScene(scene),
-	mPlayerData(scene.getGame().getPlayerManager().getPlayerData())
+	mScene(scene)
 {
 	//初期化
-	mMoveStrategy	= std::make_unique<RandomWalkStrategy>();
+	mMoveStrategy	= std::make_unique<RandomWalkStrategy>(*this, scene);
+	mAttackStrategy	= std::make_unique<MeleeAttackStrategy>(*this, scene);
 	isActive		= false;
 	mTargetPos		= mOwner.getPosition();
 	mDistPlayer		= 10000000;
@@ -96,8 +96,7 @@ void EnemyComponent::startAct()
 	move();		//行動パターンに基づいて移動先を決定
 	
 	//プレイヤーとの距離を計算 プレイヤーに近いエネミーから行動するようにエネミー配列をソートするため。
-	int playerIndex[2];
-	mScene.getPlayer()->getIndexPos(playerIndex);
+	const std::array<int, 2> playerIndex = mScene.getPlayer()->getIndexPos();
 	mDistPlayer = abs(playerIndex[0] - mIndexPos[0]) + abs(playerIndex[1] - mIndexPos[1]);
 }
 
@@ -109,6 +108,11 @@ void EnemyComponent::setMesh(MeshComponent* mesh)
 void EnemyComponent::setMoveStrategy(std::unique_ptr<EnemyMoveStrategy> strategy)
 {
 	mMoveStrategy = std::move(strategy);
+}
+
+void EnemyComponent::setAttackStrategy(std::unique_ptr<EnemyAttackStrategy> strategy)
+{
+	mAttackStrategy = std::move(strategy);
 }
 
 void EnemyComponent::setDropMoney(int money)
@@ -157,7 +161,7 @@ void EnemyComponent::move()
 	isMoving = true;
 
 	//行動パターンに応じて移動先のインデックス座標をもとめる
-	const std::array<int, 2> targetIndexPos = mMoveStrategy->calcTargetIndex(*this, mScene);
+	const std::array<int, 2> targetIndexPos = mMoveStrategy->calcTargetIndex();
 
 	//進先に障害物がある場合移動不可
 	if (mScene.getTileDataAt(targetIndexPos[0], targetIndexPos[1]) == TileType::WALL ||
@@ -166,15 +170,8 @@ void EnemyComponent::move()
 		return;
 	}
 
-	//向きの変更
-	//右向き
-	if (targetIndexPos[0] - mIndexPos[0] == 1) mOwner.setYRot(XM_PIDIV2);
-	//左向き
-	else if (targetIndexPos[0] - mIndexPos[0] == -1) mOwner.setYRot(-XM_PIDIV2);
-	//上向き
-	else if (targetIndexPos[1] - mIndexPos[1] == 1) mOwner.setYRot(0.0f);
-	//下向き
-	else if (targetIndexPos[1] - mIndexPos[1] == -1) mOwner.setYRot(XM_PI);
+	//移動方向を向く
+	lookAt(targetIndexPos);
 
 	//移動先のワールド座標を計算
 	mTargetPos = XMFLOAT3(targetIndexPos[0] * MAPTIPSIZE, 0.0f, targetIndexPos[1] * MAPTIPSIZE);
@@ -192,40 +189,33 @@ void EnemyComponent::attack()
 	//行動済みならスキップ
 	if (!isActive) return;
 
-	//プレイヤーのインデックス座標を取得
-	Player* player = mScene.getPlayer();
-	int playerIndexPos[2];
-	player->getIndexPos(playerIndexPos);
+	//攻撃パターンに応じて攻撃し、攻撃した場合は行動終了
+	if (mAttackStrategy->tryAttack()) {
+		finishAct();
+	}
+}
 
-	//プレイヤーとの位置の差を計算
-	int diffIndexPos[2] = { playerIndexPos[0] - mIndexPos[0], playerIndexPos[1] - mIndexPos[1] };
+void EnemyComponent::lookAt(const std::array<int, 2>& targetIndex)
+{
+	//目標との位置の差を計算
+	int diffX = targetIndex[0] - mIndexPos[0];
+	int diffY = targetIndex[1] - mIndexPos[1];
 
-	//プレイヤーの位置によって向きを変える
-	//プレイヤーが左側
-	if (diffIndexPos[0] == -1 && diffIndexPos[1] == 0) {
-		mOwner.setYRot(-XM_PIDIV2);
-	}
-	//プレイヤーが右側
-	else if (diffIndexPos[0] == 1 && diffIndexPos[1] == 0) {
-		mOwner.setYRot(XM_PIDIV2);
-	}
-	//プレイヤーが下
-	else if (diffIndexPos[0] == 0 && diffIndexPos[1] == -1) {
-		mOwner.setYRot(XM_PI);
-	}
-	else if (diffIndexPos[0] == 0 && diffIndexPos[1] == 1) {
-		mOwner.setYRot(0.0f);
-	}
-	else {
-		return;
-	}
+	//より大きい距離を用いて、位置の差を正規化
+	const int maxDiff = max(abs(diffX), abs(diffY));
+	if (maxDiff <= 0) return;
 
-	//ダメージを計算し、プレイヤーのHPを減らす
-	int damage = max(0, mPower - mPlayerData.defence);
-	player->giveDamage(damage);
+	diffX /= maxDiff;
+	diffY /= maxDiff;
 
-	//行動終了
-	finishAct();
+	//右向き
+	if (diffX == 1 && diffY == 0) mOwner.setYRot(XM_PIDIV2);
+	//左向き
+	else if (diffX == -1 && diffY == 0) mOwner.setYRot(-XM_PIDIV2);
+	//上向き
+	else if (diffX == 0 && diffY == 1) mOwner.setYRot(0.0f);
+	//下向き
+	else if (diffX == 0 && diffY == -1) mOwner.setYRot(XM_PI);
 }
 
 void EnemyComponent::finishAct()

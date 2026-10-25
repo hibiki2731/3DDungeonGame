@@ -30,7 +30,9 @@ Enemy::Enemy(DungeonScene& scene, const std::string& enemyID, float x, float y)
 	mEnemy->setDropMoney(dropMoney);
 	mEnemy->setName(enemyData[enemyID]["name"].get<std::string>());
 	//jsonのmovePatternに応じた行動パターンを設定する
-	mEnemy->setMoveStrategy(createMoveStrategy(enemyData[enemyID]));
+	mEnemy->setMoveStrategy(createMoveStrategy(enemyData[enemyID], *mEnemy, scene));
+	//jsonのattackPatternに応じた攻撃パターンを設定する
+	mEnemy->setAttackStrategy(createAttackStrategy(enemyData[enemyID], *mEnemy, scene));
 
 	//所有権をActorに渡す
 	addComponent(std::move(mesh));

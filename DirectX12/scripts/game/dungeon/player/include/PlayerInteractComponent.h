@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Component.h"
+#include <array>
 
 class DungeonScene;
 class Player;
@@ -23,7 +24,7 @@ public:
 
 private:
 	//プレイヤーの前方のインデックス座標を取得
-	std::vector<int> getFrontIndexPos();
+	std::array<int, 2> getFrontIndexPos();
 
 	DungeonScene& mScene;
 	Player& mPlayer;

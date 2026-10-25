@@ -88,8 +88,7 @@ MiniMap::MiniMap(DungeonScene& scene)
 
 void MiniMap::updatePosition()
 {
-	int playerPos[2];
-	mDungeonScene.getPlayer()->getIndexPos(playerPos);
+	const std::array<int, 2> playerPos = mDungeonScene.getPlayer()->getIndexPos();
 	//各マスのマップデータを読み込む
 	for (int i = 0; i < TileNum; i++) {
 		int x = playerPos[0] + (i % (DisplayRange * 2 + 1)) - DisplayRange;

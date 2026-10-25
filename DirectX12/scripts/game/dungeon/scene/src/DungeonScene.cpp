@@ -146,8 +146,7 @@ void DungeonScene::spawnResource()
 {
 	if (mResources.size() >= mMaxResourcePoint) return;
 
-	int playerIndex[2];
-	mPlayer->getIndexPos(playerIndex);
+	const std::array<int, 2> playerIndex = mPlayer->getIndexPos();
 
 	int i = 0;
 	//障害物がない　かつ　プレイヤーから4マス以上9マス以下の範囲でスポーン
