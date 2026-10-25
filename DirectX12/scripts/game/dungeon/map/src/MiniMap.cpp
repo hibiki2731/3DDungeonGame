@@ -34,7 +34,8 @@ MiniMap::MiniMap(DungeonScene& scene)
 
 	//プレイヤーアイコン
 	auto playerIcon = std::make_unique<SpriteComponent>(*this, 18.0f);
-	playerIcon->create("assets/picture/UI2/PNG/Default/minimap_arrow_c.png");
+	//playerIcon->create("assets/picture/UI2/PNG/Default/minimap_arrow_c.png");
+	playerIcon->create("assets/picture/minimap_player.png");
 	playerIcon->setBordarSize(0.0f);
 	playerIcon->setSpriteSize(IconSize);
 	playerIcon->setPosition(mMiniMapPosition + XMFLOAT3(IconSize.x * 2.0f, IconSize.y * 2.0f, -2.0f));
@@ -61,7 +62,8 @@ MiniMap::MiniMap(DungeonScene& scene)
 	for (int y = 0; y < DisplayRange * 2 + 1; y++) {
 		for (int x = 0; x < DisplayRange * 2 + 1; x++) {
 			auto enemyIcon = std::make_unique<SpriteComponent>(*this);
-			enemyIcon->create("assets/picture/UI2/PNG/Default/minimap_icon_jewel_red.png");
+			//enemyIcon->create("assets/picture/UI2/PNG/Default/minimap_icon_jewel_red.png");
+			enemyIcon->create("assets/picture/minimap_enemy.png");
 			enemyIcon->setBordarSize(0.0f);
 			enemyIcon->setSpriteSize(IconSize);
 			enemyIcon->setPosition(mMiniMapPosition + XMFLOAT3(IconSize.x * x, IconSize.y * y, 100.0f));
@@ -75,7 +77,8 @@ MiniMap::MiniMap(DungeonScene& scene)
 	for (int y = 0; y < DisplayRange * 2 + 1; y++){
 		for (int x = 0; x < DisplayRange * 2 + 1; x++) {
 			auto resourceIcon = std::make_unique<SpriteComponent>(*this, 19.5f);
-			resourceIcon->create("assets/picture/UI2/PNG/Default/minimap_icon_star_yellow.png");
+			//resourceIcon->create("assets/picture/UI2/PNG/Default/minimap_icon_star_yellow.png");
+			resourceIcon->create("assets/picture/minimap_resource.png");
 			resourceIcon->setBordarSize(0.0f);
 			resourceIcon->setSpriteSize(IconSize);
 			resourceIcon->setPosition(mMiniMapPosition + XMFLOAT3(IconSize.x * x, IconSize.y * y, -101.f));
@@ -83,12 +86,35 @@ MiniMap::MiniMap(DungeonScene& scene)
 			addComponent(std::move(resourceIcon));
 		}
 	}
+	
+	//宝箱アイコン
+	auto treasureIcon = std::make_unique<SpriteComponent>(*this, 19.5f);
+	treasureIcon->create("assets/picture/minimap_chest.png");
+	treasureIcon->setBordarSize(0.0f);
+	treasureIcon->setSpriteSize(IconSize);
+	treasureIcon->setPosition(mMiniMapPosition + XMFLOAT3(0.0f, 0.0f, -101.f));
+	mTreasureIcon = treasureIcon.get();
+	addComponent(std::move(treasureIcon));
+
+	//ゴールアイコン
+	auto goalIcon = std::make_unique<SpriteComponent>(*this, 19.5f);
+	goalIcon->create("assets/picture/minimap_flag.png");
+	goalIcon->setBordarSize(0.0f);
+	goalIcon->setSpriteSize(IconSize);
+	goalIcon->setPosition(mMiniMapPosition + XMFLOAT3(0.0f, 0.0f, -101.f));
+	mGoalIcon = goalIcon.get();
+	addComponent(std::move(goalIcon));
+	
 
 }
 
 void MiniMap::updatePosition()
 {
 	const std::array<int, 2> playerPos = mDungeonScene.getPlayer()->getIndexPos();
+	//宝箱、ゴールのアイコンの位置を初期化(隠す)
+	mTreasureIcon->setPosZ(100.0f);
+	mGoalIcon->setPosZ(100.0f);
+
 	//各マスのマップデータを読み込む
 	for (int i = 0; i < TileNum; i++) {
 		int x = playerPos[0] + (i % (DisplayRange * 2 + 1)) - DisplayRange;
@@ -110,8 +136,23 @@ void MiniMap::updatePosition()
 
 		//タイル情報
 		int tileType = mDungeonScene.getTileDataAt(x, y);
-		if (tileType != TileType::WALL) mTileIcon[i]->setPosZ(19.0f);
-		else mTileIcon[i]->setPosZ(100.0f);
+		mTileIcon[i]->setPosZ(19.0f); //床は基本表示（壁や穴のみ非表示）
+		switch (tileType) {
+		case TileType::FLOOR:
+		case TileType::RESOURCE:
+			break;
+		case TileType::TREASURE:
+			mTreasureIcon->setPosition(XMFLOAT3(mMiniMapPosition + XMFLOAT3(IconSize.x * (i % (DisplayRange * 2 + 1)), IconSize.y * (DisplayRange * 2 - i / (DisplayRange * 2 + 1)), -2.0f)));
+			break;
+		case TileType::GOAL:
+			mGoalIcon->setPosition(XMFLOAT3(mMiniMapPosition + XMFLOAT3(IconSize.x * (i % (DisplayRange * 2 + 1)), IconSize.y * (DisplayRange * 2 - i / (DisplayRange * 2 + 1)), -2.0f)));
+			break;
+		case TileType::EMPTY:
+		case TileType::WALL:
+		default:
+			mTileIcon[i]->setPosZ(100.0f);	//非表示
+			break;
+		}
 
 		//敵情報
 		int objectType = mDungeonScene.getCharacterDataAt(x, y);
@@ -119,7 +160,7 @@ void MiniMap::updatePosition()
 		else mEnemyIcon[i]->setPosZ(100.0f);
 
 		//リソース情報
-		if (tileType >= TileType::RESOURCE) mResourceIcon[i]->setPosZ(18.5f);
+		if (tileType == TileType::RESOURCE) mResourceIcon[i]->setPosZ(18.0f);
 		else mResourceIcon[i]->setPosZ(100.0f);
 	}
 }

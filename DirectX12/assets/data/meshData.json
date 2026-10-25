@@ -55,5 +55,9 @@
     "BOSS_ROCK":{
         "fbxPath": "assets/3DModels/Boss/BossAttackRock/bossAttackRock.fbx",
         "jsonPath": "assets/3DModels/Boss/BossAttackRock/bossAttackRock.json"
+    },
+    "BOSS_DOOR":{
+        "fbxPath": "assets/3DModels/Door/bossDoor.fbx",
+        "jsonPath": "assets/3DModels/Door/bossDoor.json"
     }
 }

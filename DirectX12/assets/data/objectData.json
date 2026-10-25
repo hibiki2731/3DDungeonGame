@@ -1,5 +1,70 @@
 {
     "DUNGEON_1": {
+        "BossDoor": {
+            "components": [
+                {
+                    "meshID": "BOSS_DOOR",
+                    "name": "MeshComponent"
+                },
+                {
+                    "intensity": 6.0,
+                    "lightColor": [
+                        0.29113924503326416,
+                        0.25881117582321167,
+                        0.16952411830425262,
+                        1.0
+                    ],
+                    "lightOffsetPos": [
+                        -1.0,
+                        0.949999988079071,
+                        0.0,
+                        0.0
+                    ],
+                    "name": "PointLightComponent",
+                    "range": 21.0
+                }
+            ],
+            "label": null,
+            "position": [
+                13.0,
+                0.0,
+                14.0
+            ],
+            "rotation": [
+                0.0,
+                -1.5700000524520874,
+                0.0
+            ],
+            "scale": [
+                0.8999999761581421,
+                1.0,
+                1.0
+            ]
+        },
+        "BossDoorWall": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                12.0,
+                0.0,
+                14.0
+            ],
+            "rotation": [
+                0.0,
+                -1.5700000524520874,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
         "DeadWindow": {
             "components": [
                 {
@@ -364,7 +429,6 @@
                 1.0
             ]
         },
-        "EmptyObject": null,
         "EndWindow": {
             "components": [
                 {
@@ -729,6 +793,55 @@
                 1.0
             ]
         },
+        "TorchBack2": {
+            "components": [
+                {
+                    "intensity": 1.0,
+                    "lightColor": [
+                        1.0,
+                        0.4000000059604645,
+                        0.0,
+                        1.0
+                    ],
+                    "lightOffsetPos": [
+                        0.0,
+                        0.4000000059604645,
+                        -0.3499999940395355,
+                        0.0
+                    ],
+                    "name": "PointLightComponent",
+                    "range": 50.0
+                },
+                {
+                    "name": "FireParticleComponent",
+                    "particleEmitPos": [
+                        0.0,
+                        0.30000001192092896,
+                        -0.10000000149011612
+                    ]
+                },
+                {
+                    "meshID": "TORCH",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                12.0,
+                1.2999999523162842,
+                15.0
+            ],
+            "rotation": [
+                0.0,
+                -1.7000000476837158,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
         "TorchFront": {
             "components": [
                 {
@@ -863,54 +976,6 @@
                 5.0,
                 1.2999999523162842,
                 2.0
-            ],
-            "rotation": [
-                0.0,
-                0.0,
-                0.0
-            ],
-            "scale": [
-                1.0,
-                1.0,
-                1.0
-            ]
-        },
-        "TorchLeft2": {
-            "components": [
-                {
-                    "intensity": 1.0,
-                    "lightColor": [
-                        1.0,
-                        0.4000000059604645,
-                        0.0,
-                        1.0
-                    ],
-                    "lightOffsetPos": [
-                        -0.20000000298023224,
-                        0.4000000059604645,
-                        0.0,
-                        0.0
-                    ],
-                    "name": "PointLightComponent",
-                    "range": 50.0
-                },
-                {
-                    "name": "FireParticleComponent",
-                    "particleEmitPos": [
-                        -0.10000000149011612,
-                        0.30000001192092896,
-                        0.0
-                    ]
-                },
-                {
-                    "meshID": "TORCH",
-                    "name": "MeshComponent"
-                }
-            ],
-            "position": [
-                15.0,
-                1.2999999523162842,
-                14.0
             ],
             "rotation": [
                 0.0,

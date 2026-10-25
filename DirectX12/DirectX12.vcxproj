@@ -277,6 +277,7 @@
     <ClCompile Include="scripts\engine\debug\src\DebugCamera.cpp" />
     <ClCompile Include="scripts\game\dungeon\scene\src\DungeonScene.cpp" />
     <ClCompile Include="scripts\game\dungeon\scene\src\DungeonUI.cpp" />
+    <ClCompile Include="scripts\game\dungeon\scene\src\BossDefeatEvent.cpp" />
     <ClCompile Include="scripts\game\dungeon\enemy\src\EnemyComponent.cpp" />
     <ClCompile Include="scripts\game\dungeon\enemy\src\EnemyMoveStrategy.cpp" />
     <ClCompile Include="scripts\game\dungeon\enemy\src\EnemyAttackStrategy.cpp" />
@@ -392,6 +393,7 @@
     <ClInclude Include="scripts\engine\graphics\include\BufferStruct.h" />
     <ClInclude Include="scripts\game\dungeon\scene\include\DungeonScene.h" />
     <ClInclude Include="scripts\game\dungeon\scene\include\DungeonUI.h" />
+    <ClInclude Include="scripts\game\dungeon\scene\include\BossDefeatEvent.h" />
     <ClInclude Include="scripts\game\dungeon\enemy\include\EnemyComponent.h" />
     <ClInclude Include="scripts\game\dungeon\enemy\include\EnemyMoveStrategy.h" />
     <ClInclude Include="scripts\game\dungeon\enemy\include\EnemyAttackStrategy.h" />

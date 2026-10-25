@@ -55,6 +55,7 @@ Player::Player(DungeonScene& scene, float x, float y)
 	mMoveSpeed		= mPlayerData.moveSpeed;		//移動速度
 	mFlashDuration  = mPlayerData.flushDuration;	//ダメージを受けたときの点滅時間
 	mAP 			= mPlayerData.ap;				//APの初期値
+	mConsumeAP		= true;
 
 	//キャラクターコンポーネントの生成
 	auto character = std::make_unique<CharacterComponent>(*this, scene);
@@ -220,6 +221,11 @@ void Player::damagedProcess()
 	mScene.getGame().getAudioManager().playSE("DAMAGE2");
 }
 
+void Player::startCameraShake()
+{
+	mCamera->startShake();
+}
+
 void Player::recoverAP(int value)
 {
 	mAP += value;
@@ -259,9 +265,11 @@ void Player::endAction()
 	if (type != PlayerStateType::REQUEST_ACTION && type != PlayerStateType::ACTING) return;
 
 	//残り行動回数を減らす
-	mAP--;
-	//UIの更新
-	if(mAP >= 0) mScene.updateAPUI();
+	if (mConsumeAP) {
+		mAP--;
+		//UIの更新
+		if(mAP >= 0) mScene.updateAPUI();
+	}
 
 	changeState(PlayerStateType::WAIT);
 }

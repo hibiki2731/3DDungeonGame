@@ -20,6 +20,7 @@ public:
 	void endProcess() override;			//コンポーネントが破棄される際の処理
 	void startAct();					//エネミーの行動を開始する
 	void startFlash();					//ダメージを受けたときの点滅を開始
+	void despawn();						//報酬・メッセージなしで除去する
 	void lookAt(const std::array<int, 2>& targetIndex);	//隣接するマスの方向を向く
 
 	//setter
@@ -49,6 +50,7 @@ private:
 	MeshComponent*	mMesh;			    //エネミーに設定されているメッシュ
 	int				mDropMoney;			//ドロップするお金
 	bool			isActive;			//true : 行動可能  false : 行動済み
+	bool			mIsDeadProcessed;	//死亡処理(または除去)を実行済みか
 	std::unique_ptr<EnemyMoveStrategy> mMoveStrategy;	//行動パターン
 	std::unique_ptr<EnemyAttackStrategy> mAttackStrategy;	//攻撃パターン
 	int				mDistPlayer; 		//プレイヤーからの距離(マンハッタン距離)、エネミーの更新順序を計算する際に使用

@@ -64,6 +64,9 @@ TurnState* EnemyActionState::update()
 //---ターン終了---
 TurnState* TurnEndState::update()
 {
+	//イベント再生中はターンを進めない(プレイヤーの入力待ちに入らないようにする)
+	if (mDungeonScene.isEventPlaying()) return nullptr;
+
 	//プレイヤーが待機状態になるまで待つ
 	if (mPlayer.getStateType() != PlayerStateType::WAIT) return nullptr;
 

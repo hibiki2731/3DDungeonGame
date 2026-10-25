@@ -98,7 +98,7 @@ std::array<int, 2> AstarStrategy::calcTargetIndex()
 			if (nextIndex[0] >= 0 && nextIndex[0] < mScene.getMapSize()
 				&& nextIndex[1] >= 0 && nextIndex[1] < mScene.getMapSize()
 				&& !grid[nextIndex[0]][nextIndex[1]].isClosed
-				&& mScene.getTileDataAt(nextIndex[0], nextIndex[1]) != TileType::WALL
+				&& mScene.isWalkableTile(nextIndex[0], nextIndex[1])
 				) {
 				gCost = grid[current.x][current.y].gCost + 1;
 				//よりGコストの小さいルートを見つけた場合、親ノードとGコストを更新

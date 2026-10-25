@@ -8,6 +8,7 @@ class EnemyComponent;
 class FireParticleComponent;
 class Treasure;
 class Object;
+class BossDefeatEvent;
 
 enum class Stage {
 	MAP1,
@@ -48,6 +49,11 @@ public:
 	virtual void onEnterMap() {};
     void onExit() override;
 	virtual void onExitMap() {};
+	virtual void onUpdateMap() {};	//updateSceneの最後に呼ばれる
+	//エネミー撃破時に呼ばれる。trueを返した場合、そのエネミーの除去はシーン側が引き受ける
+	virtual bool onEnemyDefeated(EnemyComponent& enemy) { return false; }
+	//イベント再生中か(trueの間はターンを進めず、プレイヤーの操作を受け付けない)
+	virtual bool isEventPlaying() const { return false; }
     
     //シーン名は階層ごとの派生クラスで定義する
     virtual const std::string getName() const override = 0;
@@ -102,6 +108,7 @@ public:
 	const int getMapSize() const { return mMapSize; }
 	int getTileDataAt(int x, int y);
 	int getTileDataAt(int index);   
+	bool isWalkableTile(int x, int y);	//通行可能なタイルか(FLOOR / RESOURCE のみ通行可能)
 	int getCharacterDataAt(int x, int y);
 	int getCharacterDataAt(int index);
 	Treasure* getTreasureAt(int x, int y);
@@ -161,6 +168,8 @@ class Dungeon1Scene :
 public:
 	Dungeon1Scene(class Game& game) : DungeonScene(game, Stage::MAP1) {}
 
+	void onEnterMap() override;
+
 	const std::string getName() const override {
 		return "DUNGEON_1";
 	};
@@ -175,10 +184,17 @@ public:
 	~Dungeon2Scene() override;
 
 	void onEnterMap() override;
+	void onExitMap() override;
+	void onUpdateMap() override;
+	bool onEnemyDefeated(EnemyComponent& enemy) override;
+	bool isEventPlaying() const override;
 	const std::string getName() const override {
 		return "DUNGEON_2";
 	};
 
+	void removeBossObject();	//ゴールを隠しているボスのオブジェクトを除去する
+
 private:
-	std::unique_ptr<Object> mBossObj;
+	Object* mBossObj;	//ボスのオブジェクト(所有権はシーン)
+	std::unique_ptr<BossDefeatEvent> mBossDefeatEvent;	//ボス討伐イベント
 };

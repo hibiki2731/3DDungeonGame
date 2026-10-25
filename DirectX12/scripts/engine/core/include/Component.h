@@ -29,6 +29,8 @@ public:
 	virtual void updateComponent() {};
 	virtual void lateUpdateComponent() {};
 	int getUpdateOrder() const { return mUpdateOrder; }
+	//所有アクターの取得
+	Actor& getOwner() { return mOwner; }
 
 	//終了処理
 	virtual void endProcess() {};

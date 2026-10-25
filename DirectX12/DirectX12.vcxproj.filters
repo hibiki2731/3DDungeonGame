@@ -414,6 +414,9 @@
     <ClCompile Include="scripts\game\dungeon\scene\src\DungeonUI.cpp">
       <Filter>game\dungeon\scene\src</Filter>
     </ClCompile>
+    <ClCompile Include="scripts\game\dungeon\scene\src\BossDefeatEvent.cpp">
+      <Filter>game\dungeon\scene\src</Filter>
+    </ClCompile>
     <ClCompile Include="scripts\game\dungeon\turn\src\TurnState.cpp">
       <Filter>game\dungeon\turn\src</Filter>
     </ClCompile>
@@ -657,6 +660,9 @@
       <Filter>game\dungeon\scene\include</Filter>
     </ClInclude>
     <ClInclude Include="scripts\game\dungeon\scene\include\DungeonUI.h">
+      <Filter>game\dungeon\scene\include</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\game\dungeon\scene\include\BossDefeatEvent.h">
       <Filter>game\dungeon\scene\include</Filter>
     </ClInclude>
     <ClInclude Include="scripts\game\dungeon\turn\include\TurnState.h">

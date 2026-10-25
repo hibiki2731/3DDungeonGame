@@ -5,7 +5,9 @@
         "TorchBack",
         "TorchRight",
         "TorchLeft",
-        "TorchLeft2"
+        "BossDoorWall",
+        "TorchBack2",
+        "BossDoor"
     ],
     "DUNGEON_2": [
         "TorchLeft",

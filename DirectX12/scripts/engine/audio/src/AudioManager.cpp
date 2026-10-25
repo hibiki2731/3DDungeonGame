@@ -76,7 +76,7 @@ void AudioManager::initXAudio()
 	//マスタリングボイスの初期化
 	hr = mXAudio->CreateMasteringVoice(&mMasteringVoice);
 	if (FAILED(hr)) std::cerr << "マスタリングボイスの初期化失敗\n";
-	mMasteringVoice->SetVolume(0.2f);
+	mMasteringVoice->SetVolume(0.1f);
 }
 
 void AudioManager::loadSoundFiles()
@@ -130,7 +130,7 @@ void AudioManager::playBGM(const std::string& soundID)
 	//BGMを止める
 	finishBGM();
 
-	soundData.sourceVoices[0]->SetVolume(1.0f);	//元音源と同じ音量
+	soundData.sourceVoices[0]->SetVolume(0.5f);	//元音源の半分の音量
 
 	//バッファの設定
 	soundData.buffer.LoopCount = XAUDIO2_LOOP_INFINITE;	//ループ再生
@@ -193,6 +193,16 @@ void AudioManager::pauseAllSounds()
 		voice->Stop();
 	}
 	pauseBGM();
+}
+
+bool AudioManager::isPlaying(IXAudio2SourceVoice* voice)
+{
+	if (!voice) return false;
+
+	//再生待ちのバッファがあれば再生中
+	XAUDIO2_VOICE_STATE state;
+	voice->GetState(&state);
+	return state.BuffersQueued != 0;
 }
 
 void AudioManager::finishBGM()

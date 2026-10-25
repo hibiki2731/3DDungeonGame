@@ -20,6 +20,7 @@ EnemyComponent::EnemyComponent(Actor& owner, DungeonScene& scene)
 	mMoveStrategy	= std::make_unique<RandomWalkStrategy>(*this, scene);
 	mAttackStrategy	= std::make_unique<MeleeAttackStrategy>(*this, scene);
 	isActive		= false;
+	mIsDeadProcessed = false;
 	mTargetPos		= mOwner.getPosition();
 	mDistPlayer		= 10000000;
 	mDropMoney		= 0;
@@ -88,8 +89,8 @@ void EnemyComponent::endProcess()
 //エネミーターン開始時の処理
 void EnemyComponent::startAct()
 {
-	//すでに死亡していたら行動しない
-	if(!isAlive) return;
+	//すでに死亡・除去されていたら行動しない
+	if(!isAlive || mIsDeadProcessed) return;
 	//ターン経過するアクションを実行可能にする
 	isActive = true;
 
@@ -166,7 +167,7 @@ void EnemyComponent::move()
 	const std::array<int, 2> targetIndexPos = mMoveStrategy->calcTargetIndex();
 
 	//進先に障害物がある場合移動不可
-	if (mScene.getTileDataAt(targetIndexPos[0], targetIndexPos[1]) == TileType::WALL ||
+	if (!mScene.isWalkableTile(targetIndexPos[0], targetIndexPos[1]) ||
 		mScene.getCharacterDataAt(targetIndexPos[0], targetIndexPos[1]) != CharacterType::EMPTY) {
 		mTargetPos = mOwner.getPosition();
 		return;
@@ -229,8 +230,10 @@ void EnemyComponent::finishAct()
 
 void EnemyComponent::deadProcess()
 {
-	//ステートの変更
-	mOwner.setState(Actor::State::Dead);
+	//死亡演出でアクターが残る場合に毎フレーム呼ばれるため、一度だけ実行する
+	if (mIsDeadProcessed) return;
+	mIsDeadProcessed = true;
+
 	//お金の取得
 	mScene.getGame().getItemManager().addResource("GOLD", mDropMoney);
 		
@@ -240,4 +243,18 @@ void EnemyComponent::deadProcess()
 	mScene.updateGold();
 
 	finishAct();
+
+	//シーンに撃破を通知。シーンが除去を引き受けない場合はここで除去する
+	if (!mScene.onEnemyDefeated(*this)) {
+		mOwner.setState(Actor::State::Dead);
+	}
+}
+
+void EnemyComponent::despawn()
+{
+	if (mIsDeadProcessed) return;
+	mIsDeadProcessed = true;
+
+	finishAct();
+	mOwner.setState(Actor::State::Dead);
 }

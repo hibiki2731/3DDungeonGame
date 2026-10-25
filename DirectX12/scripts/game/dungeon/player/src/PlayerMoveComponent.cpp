@@ -41,10 +41,8 @@ void PlayerMoveComponent::move(Direction direction)
 	const std::array<int, 2> targetIndexPos = calcTargetIndexPos(direction);
 
 	//進先に障害物がある場合移動不可
-	const int tileData = mScene.getTileDataAt(targetIndexPos[0], targetIndexPos[1]);
 	const int characterData = mScene.getCharacterDataAt(targetIndexPos[0], targetIndexPos[1]);
-	if (tileData == TileType::WALL ||
-		tileData == TileType::TREASURE ||
+	if (!mScene.isWalkableTile(targetIndexPos[0], targetIndexPos[1]) ||
 		characterData != CharacterType::EMPTY) return;
 
 	//移動前の座標を空に

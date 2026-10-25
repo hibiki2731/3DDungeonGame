@@ -20,6 +20,8 @@ private:
 	std::vector<SpriteComponent*> mTileIcon;
 	std::vector<SpriteComponent*> mEnemyIcon;
 	std::vector<SpriteComponent*> mResourceIcon;
+	SpriteComponent* mTreasureIcon;
+	SpriteComponent* mGoalIcon;
 	XMFLOAT3 mMiniMapPosition;
 
 };

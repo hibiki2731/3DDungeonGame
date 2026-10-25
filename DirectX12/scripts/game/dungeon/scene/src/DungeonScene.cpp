@@ -17,9 +17,10 @@
 #include "DebugCamera.h"
 #include "Treasure.h"
 #include "EnemySpawner.h"
+#include "BossDefeatEvent.h"
 #include "Object.h"
 #include <string>
-//#define EDIT
+#define EDIT
 
 DungeonScene::DungeonScene(Game& game, Stage stage)
 	:Scene(game),
@@ -44,6 +45,7 @@ void DungeonScene::fastUpdateScene() {
 void DungeonScene::updateScene()
 {
 	mDamageTextManaager->update();
+	onUpdateMap();
 }
 
 void DungeonScene::lateUpdateScene()
@@ -70,7 +72,6 @@ void DungeonScene::onEnter()
 	mTurnStateMachine->begin();
 
 	mGame.getGraphic().startFadeIn(1.0f); 
-	mGame.getAudioManager().playBGM("BGM_DUNGEON");
 
 #ifdef _DEBUG
 	mDebugFlag = true;
@@ -288,6 +289,13 @@ int DungeonScene::getTileDataAt(int index)
 	return mTileData[x][y];
 }
 
+bool DungeonScene::isWalkableTile(int x, int y)
+{
+	//範囲外はgetTileDataAtがWALLを返すため通行不可になる
+	const int tileType = getTileDataAt(x, y);
+	return tileType == TileType::FLOOR || tileType == TileType::RESOURCE;
+}
+
 int DungeonScene::getCharacterDataAt(int x, int y)
 {
 	//配列範囲外なら空を出力
@@ -454,12 +462,61 @@ EnemySpawner& DungeonScene::getEnemySpawner()
 	return *mEnemySpawner;
 }
 
-Dungeon2Scene::Dungeon2Scene(Game& game) : DungeonScene(game, Stage::MAP2) {}
+Dungeon2Scene::Dungeon2Scene(Game& game)
+	: DungeonScene(game, Stage::MAP2),
+	mBossObj(nullptr)
+{
+	mBossDefeatEvent = std::make_unique<BossDefeatEvent>(*this);
+}
+void Dungeon1Scene::onEnterMap(){
+	//BGMの再生
+	mGame.getAudioManager().playBGM("BGM_DUNGEON");
+	
+}
 
 Dungeon2Scene::~Dungeon2Scene() = default;
 
 void Dungeon2Scene::onEnterMap() {
-	std::string objName = "BossObject";
-	mBossObj = std::make_unique<Object>(*this, objName);
+	//BGMの再生
+	mGame.getAudioManager().playBGM("BGM_BOSS_BATTLE");
 	
+	//ボスのオブジェクトの生成(所有権はシーンに渡し、シーン退出時に通常のアクターとして破棄されるようにする)
+	auto bossObj = std::make_unique<Object>(*this, "BossObject");
+	mBossObj = bossObj.get();
+	addActor(std::move(bossObj));
+
+	mBossDefeatEvent->reset();
+}
+
+void Dungeon2Scene::onExitMap()
+{
+	mBossObj = nullptr;
+	mBossDefeatEvent->reset();
+}
+
+void Dungeon2Scene::onUpdateMap()
+{
+	mBossDefeatEvent->update();
+}
+
+bool Dungeon2Scene::onEnemyDefeated(EnemyComponent& enemy)
+{
+	//ボス以外は通常の撃破処理
+	if (enemy.getEnemyID() != "BOSS_PILLAR") return false;
+
+	//ボス討伐イベントを開始。ボスは沈む演出の後にイベント側で除去する
+	mBossDefeatEvent->start(enemy);
+	return true;
+}
+
+bool Dungeon2Scene::isEventPlaying() const
+{
+	return mBossDefeatEvent->isPlaying();
+}
+
+void Dungeon2Scene::removeBossObject()
+{
+	if (!mBossObj) return;
+	mBossObj->setState(Actor::State::Dead);
+	mBossObj = nullptr;
 }
