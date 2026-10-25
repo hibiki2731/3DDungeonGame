@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Component.h"
 #include <DirectXMath.h>
+#include <array>
 
 using namespace DirectX;
 
@@ -27,7 +28,7 @@ public:
 	int getDefence();
 	int getDirection();
 	bool getAlive();
-	std::vector<int>& getIndexPos();
+	std::array<int, 2>& getIndexPos();
 	int getIndexPosInt();
 
 	//setter
@@ -58,7 +59,7 @@ protected:
 	int mDirection; //左上右下 0000
 
 	//位置
-	std::vector<int> mIndexPos; //{x, y}
+	std::array<int, 2> mIndexPos; //{x, y}
 
 	DungeonScene& mScene;
 };

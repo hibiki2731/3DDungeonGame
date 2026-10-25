@@ -386,7 +386,7 @@ EnemyComponent* DungeonScene::getEnemyFromIndexPos(int index)
 	int x = index % mMapSize;
 	int y = index / mMapSize;
 	for (auto enemy : mEnemies) {
-		std::vector<int> charIndexPos = enemy->getIndexPos();
+		const std::array<int, 2>& charIndexPos = enemy->getIndexPos();
 		if (charIndexPos[0] == x && charIndexPos[1] == y) {
 			return enemy;
 		}
@@ -397,7 +397,7 @@ EnemyComponent* DungeonScene::getEnemyFromIndexPos(int index)
 EnemyComponent* DungeonScene::getEnemyFromIndexPos(int x, int y)
 {
 	for (auto enemy : mEnemies) {
-		std::vector<int> charIndexPos = enemy->getIndexPos();
+		const std::array<int, 2>& charIndexPos = enemy->getIndexPos();
 		if (charIndexPos[0] == x && charIndexPos[1] == y) {
 			return enemy;
 		}

@@ -366,6 +366,9 @@
     <ClCompile Include="scripts\game\dungeon\enemy\src\EnemyComponent.cpp">
       <Filter>game\dungeon\enemy\src</Filter>
     </ClCompile>
+    <ClCompile Include="scripts\game\dungeon\enemy\src\EnemyMoveStrategy.cpp">
+      <Filter>game\dungeon\enemy\src</Filter>
+    </ClCompile>
     <ClCompile Include="scripts\game\dungeon\map\src\MapGenerator.cpp">
       <Filter>game\dungeon\map\src</Filter>
     </ClCompile>
@@ -600,6 +603,9 @@
       <Filter>game\dungeon\enemy\include</Filter>
     </ClInclude>
     <ClInclude Include="scripts\game\dungeon\enemy\include\EnemyComponent.h">
+      <Filter>game\dungeon\enemy\include</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\game\dungeon\enemy\include\EnemyMoveStrategy.h">
       <Filter>game\dungeon\enemy\include</Filter>
     </ClInclude>
     <ClInclude Include="scripts\game\dungeon\map\include\MapGenerator.h">

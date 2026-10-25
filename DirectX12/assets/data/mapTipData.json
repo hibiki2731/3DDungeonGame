@@ -39,6 +39,10 @@
         "2":{
             "category":"ENEMY",
             "enemyID":"NURIKABE"
+        },
+        "3":{
+            "category":"ENEMY",
+            "enemyID":"BOSS_WEAKPOINT"
         }
     }
 

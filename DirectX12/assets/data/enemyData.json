@@ -17,5 +17,14 @@
         "defense": 4,
         "meshID": "NURIKABE",
         "movePattern": "RANDOM"
+    },
+    "BOSS_PILLAR":{
+        "name": "ザ・ウォールズ",
+        "hp": 50,
+        "power": 0,
+        "dropMoney": 50,
+        "defence": 2,
+        "meshID": "BOSS_PILLAR",
+        "movePattern": "BOSS_PILLAR"
     }
 }
