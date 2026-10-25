@@ -29,12 +29,11 @@ Enemy::Enemy(DungeonScene& scene, const std::string& enemyID, float x, float y)
 	int dropMoney = enemyData[enemyID].value("dropMoney", 0) + scene.getGame().getItemManager().getResourceData("GOLD").yield;
 	mEnemy->setDropMoney(dropMoney);
 	mEnemy->setName(enemyData[enemyID]["name"].get<std::string>());
-	MovePattern pattern = magic_enum::enum_cast<MovePattern>(enemyData[enemyID]["movePattern"].get<std::string>()).value();
-	mEnemy->setMovePattern(pattern);
-	//移動パターンがSENSEのときは、senseRangeを設定する
-	if (pattern == MovePattern::SENSE) {
-		mEnemy->setSenseRange(enemyData[enemyID].value("senseRange", 0));
-	}
+	mEnemy->setEnemyID(enemyID);
+	//jsonのmovePatternに応じた行動パターンを設定する
+	mEnemy->setMoveStrategy(createMoveStrategy(enemyData[enemyID], *mEnemy, scene));
+	//jsonのattackPatternに応じた攻撃パターンを設定する
+	mEnemy->setAttackStrategy(createAttackStrategy(enemyData[enemyID], *mEnemy, scene));
 
 	//所有権をActorに渡す
 	addComponent(std::move(mesh));

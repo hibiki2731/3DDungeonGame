@@ -366,6 +366,15 @@
     <ClCompile Include="scripts\game\dungeon\enemy\src\EnemyComponent.cpp">
       <Filter>game\dungeon\enemy\src</Filter>
     </ClCompile>
+    <ClCompile Include="scripts\game\dungeon\enemy\src\EnemyMoveStrategy.cpp">
+      <Filter>game\dungeon\enemy\src</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\game\dungeon\enemy\src\EnemyAttackStrategy.cpp">
+      <Filter>game\dungeon\enemy\src</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\game\dungeon\enemy\src\EnemySpawner.cpp">
+      <Filter>game\dungeon\enemy\src</Filter>
+    </ClCompile>
     <ClCompile Include="scripts\game\dungeon\map\src\MapGenerator.cpp">
       <Filter>game\dungeon\map\src</Filter>
     </ClCompile>
@@ -403,6 +412,9 @@
       <Filter>game\dungeon\scene\src</Filter>
     </ClCompile>
     <ClCompile Include="scripts\game\dungeon\scene\src\DungeonUI.cpp">
+      <Filter>game\dungeon\scene\src</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\game\dungeon\scene\src\BossDefeatEvent.cpp">
       <Filter>game\dungeon\scene\src</Filter>
     </ClCompile>
     <ClCompile Include="scripts\game\dungeon\turn\src\TurnState.cpp">
@@ -602,6 +614,15 @@
     <ClInclude Include="scripts\game\dungeon\enemy\include\EnemyComponent.h">
       <Filter>game\dungeon\enemy\include</Filter>
     </ClInclude>
+    <ClInclude Include="scripts\game\dungeon\enemy\include\EnemyMoveStrategy.h">
+      <Filter>game\dungeon\enemy\include</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\game\dungeon\enemy\include\EnemyAttackStrategy.h">
+      <Filter>game\dungeon\enemy\include</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\game\dungeon\enemy\include\EnemySpawner.h">
+      <Filter>game\dungeon\enemy\include</Filter>
+    </ClInclude>
     <ClInclude Include="scripts\game\dungeon\map\include\MapGenerator.h">
       <Filter>game\dungeon\map\include</Filter>
     </ClInclude>
@@ -639,6 +660,9 @@
       <Filter>game\dungeon\scene\include</Filter>
     </ClInclude>
     <ClInclude Include="scripts\game\dungeon\scene\include\DungeonUI.h">
+      <Filter>game\dungeon\scene\include</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\game\dungeon\scene\include\BossDefeatEvent.h">
       <Filter>game\dungeon\scene\include</Filter>
     </ClInclude>
     <ClInclude Include="scripts\game\dungeon\turn\include\TurnState.h">

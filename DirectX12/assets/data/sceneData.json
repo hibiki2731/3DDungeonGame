@@ -1,16 +1,44 @@
 {
-    "DUNGEON": [
+    "DUNGEON_1": [
         "TorchFront",
         "TorchFront2",
         "TorchBack",
         "TorchRight",
         "TorchLeft",
-        "TorchLeft2"
+        "BossDoorWall",
+        "TorchBack2",
+        "BossDoor"
     ],
+    "DUNGEON_2": [
+        "TorchLeft",
+        "TorchLeft_copy",
+        "TorchRight",
+        "TorchRight_copy",
+        "BackRockWall",
+        "RightRockWall",
+        "LeftRockWall",
+        "FrontRockWall4",
+        "FrontRockWall1",
+        "FrontRockWall2",
+        "FrontRockWall3",
+        "FrontRockWall5",
+        "FrontRockWall6",
+        "FrontRockWall14",
+        "FrontRockWall8",
+        "FrontRockWall9",
+        "FrontRockWall10",
+        "FrontRockWall11",
+        "FrontRockWall12",
+        "FrontRockWall13",
+        "FrontRockWall7_copy",
+        "UnderFrontWall",
+        "UnderBackWall",
+        "UnderBackWall_copy"
+    ],
+    "GAMEOVER": [],
     "TITLE": [],
     "TOWN": [
         "Backgound",
         "ControllDescriptor"
-    ],
-    "GAMEOVER":[]
+    ]
 }

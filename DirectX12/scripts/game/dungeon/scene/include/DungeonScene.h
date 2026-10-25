@@ -7,9 +7,13 @@ class Player;
 class EnemyComponent;
 class FireParticleComponent;
 class Treasure;
+class Object;
+class BossDefeatEvent;
 
 enum class Stage {
 	MAP1,
+	MAP2,
+	COUNT
 };
 struct TileType {
 	enum Type {
@@ -18,6 +22,7 @@ struct TileType {
 		FLOOR = 1,
 		RESOURCE = 2,
 		TREASURE = 3,
+		EMPTY = 4,
 	};
 };
 
@@ -33,18 +38,25 @@ class DungeonScene :
     public Scene
 {
 public:
-    DungeonScene(class Game& game);
+    DungeonScene(class Game& game, Stage stage);
+    virtual ~DungeonScene();
 
     void fastUpdateScene() override;
 	void updateScene() override;
 	void lateUpdateScene() override;
 	void drawScene() override;
     void onEnter() override;
+	virtual void onEnterMap() {};
     void onExit() override;
+	virtual void onExitMap() {};
+	virtual void onUpdateMap() {};	//updateSceneの最後に呼ばれる
+	//エネミー撃破時に呼ばれる。trueを返した場合、そのエネミーの除去はシーン側が引き受ける
+	virtual bool onEnemyDefeated(EnemyComponent& enemy) { return false; }
+	//イベント再生中か(trueの間はターンを進めず、プレイヤーの操作を受け付けない)
+	virtual bool isEventPlaying() const { return false; }
     
-    const std::string getName() const override {
-        return "DUNGEON";
-    };
+    //シーン名は階層ごとの派生クラスで定義する
+    virtual const std::string getName() const override = 0;
 
 
     //エネミーの作成
@@ -96,6 +108,7 @@ public:
 	const int getMapSize() const { return mMapSize; }
 	int getTileDataAt(int x, int y);
 	int getTileDataAt(int index);   
+	bool isWalkableTile(int x, int y);	//通行可能なタイルか(FLOOR / RESOURCE のみ通行可能)
 	int getCharacterDataAt(int x, int y);
 	int getCharacterDataAt(int index);
 	Treasure* getTreasureAt(int x, int y);
@@ -116,6 +129,8 @@ public:
 	void createDamageText(const XMFLOAT3& pos, int digit);
 	//ターンオブザーバー
 	class TurnStateMachine& getTurnStateMachine();
+	//エネミー生成管理
+	class EnemySpawner& getEnemySpawner();
 
 private:
 	//マップ情報
@@ -143,5 +158,43 @@ private:
 	std::unique_ptr<class MapGenerator> mMapGenerator;	//マップ生成
 	std::unique_ptr<class TurnStateMachine > mTurnStateMachine;	//ターン管理
 	std::unique_ptr<class DamageTextGenerator> mDamageTextManaager;	//ダメージテキスト管理
+	std::unique_ptr<class EnemySpawner> mEnemySpawner;	//エネミー生成管理
 };
 
+//1階のシーン
+class Dungeon1Scene :
+	public DungeonScene
+{
+public:
+	Dungeon1Scene(class Game& game) : DungeonScene(game, Stage::MAP1) {}
+
+	void onEnterMap() override;
+
+	const std::string getName() const override {
+		return "DUNGEON_1";
+	};
+};
+
+//2階のシーン
+class Dungeon2Scene :
+	public DungeonScene
+{
+public:
+	Dungeon2Scene(class Game& game);
+	~Dungeon2Scene() override;
+
+	void onEnterMap() override;
+	void onExitMap() override;
+	void onUpdateMap() override;
+	bool onEnemyDefeated(EnemyComponent& enemy) override;
+	bool isEventPlaying() const override;
+	const std::string getName() const override {
+		return "DUNGEON_2";
+	};
+
+	void removeBossObject();	//ゴールを隠しているボスのオブジェクトを除去する
+
+private:
+	Object* mBossObj;	//ボスのオブジェクト(所有権はシーン)
+	std::unique_ptr<BossDefeatEvent> mBossDefeatEvent;	//ボス討伐イベント
+};

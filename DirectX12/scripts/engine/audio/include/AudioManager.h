@@ -15,6 +15,7 @@ public:
 
 	void playBGM(const std::string& soundID);
 	IXAudio2SourceVoice* playSE(const std::string& soundID);
+	bool isPlaying(IXAudio2SourceVoice* voice);	//playSEが返したボイスが再生中か
 	void pauseBGM();
 	void pauseAllSounds();
 	void finishBGM();

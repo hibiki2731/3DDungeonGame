@@ -14,12 +14,13 @@
 
 EnemyComponent::EnemyComponent(Actor& owner, DungeonScene& scene) 
 	: CharacterComponent(owner, scene),
-	mScene(scene),
-	mPlayerData(scene.getGame().getPlayerManager().getPlayerData())
+	mScene(scene)
 {
 	//初期化
-	mState			= MovePattern::RANDOM;
+	mMoveStrategy	= std::make_unique<RandomWalkStrategy>(*this, scene);
+	mAttackStrategy	= std::make_unique<MeleeAttackStrategy>(*this, scene);
 	isActive		= false;
+	mIsDeadProcessed = false;
 	mTargetPos		= mOwner.getPosition();
 	mDistPlayer		= 10000000;
 	mDropMoney		= 0;
@@ -34,9 +35,13 @@ EnemyComponent::EnemyComponent(Actor& owner, DungeonScene& scene)
 	//アクターの初期位置から、インデックス位置を計算
 	mIndexPos[1] = static_cast<int>(std::round(mOwner.getPosition().z / MAPTIPSIZE));
 	mIndexPos[0] = static_cast<int>(std::round(mOwner.getPosition().x / MAPTIPSIZE));
+	//自分のいるマスをマップデータに登録する(途中で生成されたエネミーも障害物として扱われるようにするため)
+	scene.setCharacterDataAt(mIndexPos[0], mIndexPos[1], CharacterType::ENEMY);
 	//シーンのエネミーの処理用配列に追加する
 	scene.addEnemy(this);
 }
+
+EnemyComponent::~EnemyComponent() = default;
 
 void EnemyComponent::updateComponent()
 {
@@ -84,8 +89,8 @@ void EnemyComponent::endProcess()
 //エネミーターン開始時の処理
 void EnemyComponent::startAct()
 {
-	//すでに死亡していたら行動しない
-	if(!isAlive) return;
+	//すでに死亡・除去されていたら行動しない
+	if(!isAlive || mIsDeadProcessed) return;
 	//ターン経過するアクションを実行可能にする
 	isActive = true;
 
@@ -94,8 +99,7 @@ void EnemyComponent::startAct()
 	move();		//行動パターンに基づいて移動先を決定
 	
 	//プレイヤーとの距離を計算 プレイヤーに近いエネミーから行動するようにエネミー配列をソートするため。
-	int playerIndex[2];
-	mScene.getPlayer()->getIndexPos(playerIndex);
+	const std::array<int, 2> playerIndex = mScene.getPlayer()->getIndexPos();
 	mDistPlayer = abs(playerIndex[0] - mIndexPos[0]) + abs(playerIndex[1] - mIndexPos[1]);
 }
 
@@ -104,14 +108,14 @@ void EnemyComponent::setMesh(MeshComponent* mesh)
 {
 	mMesh = mesh;
 }
-void EnemyComponent::setMovePattern(MovePattern state)
+void EnemyComponent::setMoveStrategy(std::unique_ptr<EnemyMoveStrategy> strategy)
 {
-	mState = state;
+	mMoveStrategy = std::move(strategy);
 }
 
-void EnemyComponent::setSenseRange(int range)
+void EnemyComponent::setAttackStrategy(std::unique_ptr<EnemyAttackStrategy> strategy)
 {
-	mSenseRange = range;
+	mAttackStrategy = std::move(strategy);
 }
 
 void EnemyComponent::setDropMoney(int money)
@@ -159,26 +163,18 @@ void EnemyComponent::move()
 
 	isMoving = true;
 
-	int targetIndexPos[2] = {mIndexPos[0], mIndexPos[1]};
-	//移動先のインデックス座標をもとめる
-	calcTargetIndex(targetIndexPos);
+	//行動パターンに応じて移動先のインデックス座標をもとめる
+	const std::array<int, 2> targetIndexPos = mMoveStrategy->calcTargetIndex();
 
 	//進先に障害物がある場合移動不可
-	if (mScene.getTileDataAt(targetIndexPos[0], targetIndexPos[1]) == TileType::WALL ||
+	if (!mScene.isWalkableTile(targetIndexPos[0], targetIndexPos[1]) ||
 		mScene.getCharacterDataAt(targetIndexPos[0], targetIndexPos[1]) != CharacterType::EMPTY) {
 		mTargetPos = mOwner.getPosition();
 		return;
 	}
 
-	//向きの変更
-	//右向き
-	if (targetIndexPos[0] - mIndexPos[0] == 1) mOwner.setYRot(XM_PIDIV2);
-	//左向き
-	else if (targetIndexPos[0] - mIndexPos[0] == -1) mOwner.setYRot(-XM_PIDIV2);
-	//上向き
-	else if (targetIndexPos[1] - mIndexPos[1] == 1) mOwner.setYRot(0.0f);
-	//下向き
-	else if (targetIndexPos[1] - mIndexPos[1] == -1) mOwner.setYRot(XM_PI);
+	//移動方向を向く
+	lookAt(targetIndexPos);
 
 	//移動先のワールド座標を計算
 	mTargetPos = XMFLOAT3(targetIndexPos[0] * MAPTIPSIZE, 0.0f, targetIndexPos[1] * MAPTIPSIZE);
@@ -186,7 +182,7 @@ void EnemyComponent::move()
 	//マップデータや自身のインデックス座標を更新
 	mScene.setCharacterDataAt(mIndexPos[0], mIndexPos[1], CharacterType::EMPTY); 			//元居た場所を空に
 	mScene.setCharacterDataAt(targetIndexPos[0], targetIndexPos[1], CharacterType::ENEMY); 	//移動先のデータを先に更新する
-	mIndexPos[0] = targetIndexPos[0]; mIndexPos[1] = targetIndexPos[1]; 					//インデックス座標の更新
+	mIndexPos = targetIndexPos; 																//インデックス座標の更新
 
 	//行動終了処理は移動先に到着したとき行う
 }
@@ -196,40 +192,33 @@ void EnemyComponent::attack()
 	//行動済みならスキップ
 	if (!isActive) return;
 
-	//プレイヤーのインデックス座標を取得
-	Player* player = mScene.getPlayer();
-	int playerIndexPos[2];
-	player->getIndexPos(playerIndexPos);
+	//攻撃パターンに応じて攻撃し、攻撃した場合は行動終了
+	if (mAttackStrategy->tryAttack()) {
+		finishAct();
+	}
+}
 
-	//プレイヤーとの位置の差を計算
-	int diffIndexPos[2] = { playerIndexPos[0] - mIndexPos[0], playerIndexPos[1] - mIndexPos[1] };
+void EnemyComponent::lookAt(const std::array<int, 2>& targetIndex)
+{
+	//目標との位置の差を計算
+	int diffX = targetIndex[0] - mIndexPos[0];
+	int diffY = targetIndex[1] - mIndexPos[1];
 
-	//プレイヤーの位置によって向きを変える
-	//プレイヤーが左側
-	if (diffIndexPos[0] == -1 && diffIndexPos[1] == 0) {
-		mOwner.setYRot(-XM_PIDIV2);
-	}
-	//プレイヤーが右側
-	else if (diffIndexPos[0] == 1 && diffIndexPos[1] == 0) {
-		mOwner.setYRot(XM_PIDIV2);
-	}
-	//プレイヤーが下
-	else if (diffIndexPos[0] == 0 && diffIndexPos[1] == -1) {
-		mOwner.setYRot(XM_PI);
-	}
-	else if (diffIndexPos[0] == 0 && diffIndexPos[1] == 1) {
-		mOwner.setYRot(0.0f);
-	}
-	else {
-		return;
-	}
+	//より大きい距離を用いて、位置の差を正規化
+	const int maxDiff = max(abs(diffX), abs(diffY));
+	if (maxDiff <= 0) return;
 
-	//ダメージを計算し、プレイヤーのHPを減らす
-	int damage = max(0, mPower - mPlayerData.defence);
-	player->giveDamage(damage);
+	diffX /= maxDiff;
+	diffY /= maxDiff;
 
-	//行動終了
-	finishAct();
+	//右向き
+	if (diffX == 1 && diffY == 0) mOwner.setYRot(XM_PIDIV2);
+	//左向き
+	else if (diffX == -1 && diffY == 0) mOwner.setYRot(-XM_PIDIV2);
+	//上向き
+	else if (diffX == 0 && diffY == 1) mOwner.setYRot(0.0f);
+	//下向き
+	else if (diffX == 0 && diffY == -1) mOwner.setYRot(XM_PI);
 }
 
 void EnemyComponent::finishAct()
@@ -239,160 +228,12 @@ void EnemyComponent::finishAct()
 	isActive = false;
 }
 
-void EnemyComponent::calcTargetIndex(int(&targetIndex)[2])
-{
-	//行動パターンに応じて移動先を計算する
-	switch (mState) {
-	case MovePattern::RANDOM:
-		randomWalk(targetIndex);
-		break;
-	case MovePattern::ASTAR:
-		Astar(targetIndex);
-		break;
-	case MovePattern::SENSE: 
-		//索敵範囲内プレイヤーがいた場合
-		if (mDistPlayer <= mSenseRange) {
-			Astar(targetIndex);
-		}
-		//索敵範囲内プレイヤーがいない場合
-		else {
-			randomWalk(targetIndex);
-		}
-		break;
-	}
-
-}
-
-void EnemyComponent::Astar(int(&targetIndex)[2])
-{
-	std::priority_queue<Node, std::vector<Node>, std::greater<Node>> openList; //次に探索するマスのリスト
-	std::vector<std::vector<Cell>> grid(mScene.getMapSize(), std::vector<Cell>(mScene.getMapSize()));
-
-	openList.push({ mIndexPos[0], mIndexPos[1], 0 }); //スタート地点
-	grid[mIndexPos[0]][mIndexPos[1]].gCost = 0;
-	grid[mIndexPos[0]][mIndexPos[1]].isClosed = true;
-
-
-	int playerIndex[2];
-	mScene.getPlayer()->getIndexPos(playerIndex);
-
-	while (!openList.empty()) {
-		//openListの先頭ノードをカレントノードに
-		Node current = openList.top();
-		openList.pop(); //先頭から削除
-
-		//クローズドリストの更新
-		grid[current.x][current.y].isClosed = true;
-
-		//カレントノードがプレイヤーと同じ座標なら終了
-		if (current.x == playerIndex[0] && current.y == playerIndex[1]) {
-			break;
-		}
-
-		//周囲4マスのコストを計算
-		int hCost = 0;
-		int gCost = 0;
-		int fCost = 0;
-		int nextIndex[2] = { 0, 0 };
-		for (int direct = 0; direct < 4; direct++) {
-			switch (direct) {
-			case 0:
-				//上
-				nextIndex[0] = current.x; nextIndex[1] = current.y + 1;
-				break;
-			case 1:
-				//下
-				nextIndex[0] = current.x; nextIndex[1] = current.y - 1;
-				break;
-			case 2:
-				//右
-				nextIndex[0] = current.x + 1; nextIndex[1] = current.y;
-				break;
-			case 3:
-				//左
-				nextIndex[0] = current.x - 1; nextIndex[1] = current.y;
-				break;
-			}
-
-			//探索するマスが移動可能かつ探索していないか判定
-			if (nextIndex[0] >= 0 && nextIndex[0] < mScene.getMapSize()
-				&& nextIndex[1] >= 0 && nextIndex[1] < mScene.getMapSize()
-				&& !grid[nextIndex[0]][nextIndex[1]].isClosed
-				&& mScene.getTileDataAt(nextIndex[0], nextIndex[1]) != TileType::WALL
-				) {
-				gCost = grid[current.x][current.y].gCost + 1;
-				//よりGコストの小さいルートを見つけた場合、親ノードとGコストを更新
-				if (grid[nextIndex[0]][nextIndex[1]].gCost > gCost) {
-					grid[nextIndex[0]][nextIndex[1]].parentX = current.x;
-					grid[nextIndex[0]][nextIndex[1]].parentY = current.y;
-					grid[nextIndex[0]][nextIndex[1]].gCost = gCost;
-					hCost = abs(nextIndex[0] - playerIndex[0]) + abs(nextIndex[1] - playerIndex[1]); //プレイヤーまでのマンハッタン距離
-					fCost = hCost + gCost;
-					openList.push({ nextIndex[0] , nextIndex[1], fCost });
-				}
-			}
-		}
-	}
-
-	//プレイヤーにたどり着けない場合何も返さない
-	if (grid[playerIndex[0]][playerIndex[1]].isClosed == false) return; 
-	int childIndex[2];
-	childIndex[0] = playerIndex[0];
-	childIndex[1] = playerIndex[1];
-
-	//次に進むマスを親ノードから探索
-	while (true) {
-		int parentIndex[2] = { grid[childIndex[0]][childIndex[1]].parentX, grid[childIndex[0]][childIndex[1]].parentY };
-		if (parentIndex[0] == mIndexPos[0] && parentIndex[1] == mIndexPos[1]) {
-			targetIndex[0] = childIndex[0];
-			targetIndex[1] = childIndex[1];
-			return;
-		}
-
-		childIndex[0] = parentIndex[0]; childIndex[1] = parentIndex[1];
-
-
-	}
-
-
-}
-
-void EnemyComponent::randomWalk(int(&targetIndex)[2])
-{
-	targetIndex[0] = mIndexPos[0]; targetIndex[1] = mIndexPos[1];
-
-	//ランダムに移動
-	int direction = 1 << Random::dist(0,4);
-	switch (direction) {
-		case Direction::UP:
-			targetIndex[1] += 1;
-			if (targetIndex[1] > mScene.getMapSize() - 1) targetIndex[1]--;
-			break;
-		case Direction::DOWN:
-			targetIndex[1] -= 1;
-			if (targetIndex[1] < 0) targetIndex[1]++;
-			break;
-		case Direction::RIGHT:
-			targetIndex[0] += 1;
-			if (targetIndex[0] > mScene.getMapSize() - 1) targetIndex[0]--;
-			break;
-		case Direction::LEFT:
-			targetIndex[0] -= 1;
-			if (targetIndex[0] < 0) targetIndex[0]++;
-			break;
-		case 1 << 4:
-			//その場で停止
-			break;
-	}
-
-	return;
-
-}
-
 void EnemyComponent::deadProcess()
 {
-	//ステートの変更
-	mOwner.setState(Actor::State::Dead);
+	//死亡演出でアクターが残る場合に毎フレーム呼ばれるため、一度だけ実行する
+	if (mIsDeadProcessed) return;
+	mIsDeadProcessed = true;
+
 	//お金の取得
 	mScene.getGame().getItemManager().addResource("GOLD", mDropMoney);
 		
@@ -402,4 +243,18 @@ void EnemyComponent::deadProcess()
 	mScene.updateGold();
 
 	finishAct();
+
+	//シーンに撃破を通知。シーンが除去を引き受けない場合はここで除去する
+	if (!mScene.onEnemyDefeated(*this)) {
+		mOwner.setState(Actor::State::Dead);
+	}
+}
+
+void EnemyComponent::despawn()
+{
+	if (mIsDeadProcessed) return;
+	mIsDeadProcessed = true;
+
+	finishAct();
+	mOwner.setState(Actor::State::Dead);
 }

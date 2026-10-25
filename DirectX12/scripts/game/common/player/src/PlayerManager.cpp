@@ -34,6 +34,10 @@ void PlayerManager::setHP(int hp)
 	mPlayerData.hp = hp;
 }
 
+void PlayerManager::setAP(int ap){
+	mPlayerData.ap = ap;
+}
+
 void PlayerManager::setMaxHP(int maxhp) {
 	mPlayerData.maxHp = maxhp;
 }
@@ -147,11 +151,14 @@ void PlayerManager::applyToolParamater()
 {
 	//ストレージサイズを初期化
 	mPlayerData.storageSize = mDefaultPlayerData.storageSize;
+	//APを初期化
+	mPlayerData.actionLimit = mDefaultPlayerData.actionLimit;
 	for (auto& toolID : mPlayerData.explorerInventory) {
 		auto toolData = mGame.getItemManager().getExplorerData(toolID);
 		std::string category = toolData.category;
 		if (category == "ACTION_LIMIT") {
-			mPlayerData.actionLimit = mDefaultPlayerData.actionLimit + toolData.value;
+			mPlayerData.actionLimit += toolData.value;
+			mPlayerData.ap = mPlayerData.actionLimit;	//APを最大まで回復
 		}
 		else if (category == "STORAGE_SIZE") {
 			mPlayerData.storageSize++;
@@ -186,6 +193,7 @@ void PlayerManager::loadPlayerData()
 	mDefaultPlayerData.equippedWeaponIndex = json["equippedWeaponIndex"].get<int>();
 	mDefaultPlayerData.equippedArmerIndex = json["equippedArmerIndex"].get<int>();
 	mDefaultPlayerData.actionLimit = json["actionLimit"].get<int>();
+	mDefaultPlayerData.ap = mDefaultPlayerData.actionLimit;
 	mDefaultPlayerData.attackType = AttackType::SINGLE;	//攻撃タイプの初期値はシングルアタックにする
 
 	mPlayerData = mDefaultPlayerData; //プレイヤーデータを初期値で初期化:

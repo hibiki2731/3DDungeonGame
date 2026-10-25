@@ -7,6 +7,7 @@
 #include "ItemManager.h"
 #include "Resource.h"
 #include "Treasure.h"
+#include "SceneManager.h"
 
 PlayerInteractComponent::PlayerInteractComponent(DungeonScene& scene, Player& player, CharacterComponent& character)
 	: Component(player),
@@ -42,7 +43,7 @@ bool PlayerInteractComponent::collect()
 bool PlayerInteractComponent::openTreasure()
 {
 	//前方に宝箱があるか判定
-	const std::vector<int> searchPos = getFrontIndexPos();
+	const std::array<int, 2> searchPos = getFrontIndexPos();
 	if (mScene.getTileDataAt(searchPos[0], searchPos[1]) != TileType::TREASURE) return false;
 
 	//宝箱のポインタを取得、設定されていなかったら何もしない
@@ -58,15 +59,27 @@ bool PlayerInteractComponent::openTreasure()
 	return true;
 }
 
+bool PlayerInteractComponent::downStairs(){
+	const std::array<int, 2> searchPos = getFrontIndexPos();
+	if(mScene.getTileDataAt(searchPos[0], searchPos[1]) != TileType::GOAL || mScene.getName() != "DUNGEON_1")
+		return false;
+	   
+	auto& sceneManager = mScene.getGame().getSceneManager();
+	sceneManager.transitToMap(2);
+
+	return true;
+	
+}
+
 bool PlayerInteractComponent::isFacingGoal()
 {
-	const std::vector<int> searchPos = getFrontIndexPos();
+	const std::array<int, 2> searchPos = getFrontIndexPos();
 	return mScene.getTileDataAt(searchPos[0], searchPos[1]) == TileType::GOAL;
 }
 
-std::vector<int> PlayerInteractComponent::getFrontIndexPos()
+std::array<int, 2> PlayerInteractComponent::getFrontIndexPos()
 {
-	std::vector<int> pos = { mCharacter.getIndexPos()[0], mCharacter.getIndexPos()[1] };
+	std::array<int, 2> pos = mCharacter.getIndexPos();
 
 	switch (mCharacter.getDirection()) {
 	case Direction::UP:

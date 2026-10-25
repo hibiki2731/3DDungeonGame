@@ -38,7 +38,7 @@ public:
 
 	void transitToTitle();
 	void transitToTown();
-	void transitToMap();
+	void transitToMap(int floor = 1); //floor: 遷移先の階層
 	void transitToGameOver();
 	void transitScene();
 

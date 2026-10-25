@@ -294,18 +294,8 @@ void FBXConverter::LoadPartsMaterial(FbxMesh* mesh, const std::string& filePath,
 		return;
 	}
 
-	//最後の'/'の位置を検索
-	std::string path = filePath;
-	size_t lastSlashPos = path.rfind('/');
-	if (lastSlashPos != std::string::npos) {
-		//パス名のみにする
-		path.erase(lastSlashPos + 1);
-		//パス名とテクスチャファイル名をドッキングして出力
-		mParts[k].texturePath = path + textureFilename;
-	}
-	else {
-		mParts[k].texturePath = textureFilename;
-	}
+	//テクスチャはassets/textureに集約する
+	mParts[k].texturePath = "assets/texture/" + textureFilename;
 }
 
 void to_json(nlohmann::json& j, const PARTS& parts) {

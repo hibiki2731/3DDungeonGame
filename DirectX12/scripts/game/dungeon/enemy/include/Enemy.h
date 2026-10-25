@@ -5,7 +5,6 @@
 class EnemyComponent;
 
 enum class MeshName;
-enum class MovePattern;
 
 class Enemy : public Actor
 {

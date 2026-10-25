@@ -38,17 +38,15 @@ void PlayerMoveComponent::updateComponent()
 void PlayerMoveComponent::move(Direction direction)
 {
 	//現在の向きと進行方向から移動先のインデックス座標を計算
-	const std::vector<int> targetIndexPos = calcTargetIndexPos(direction);
+	const std::array<int, 2> targetIndexPos = calcTargetIndexPos(direction);
 
 	//進先に障害物がある場合移動不可
-	const int tileData = mScene.getTileDataAt(targetIndexPos[0], targetIndexPos[1]);
 	const int characterData = mScene.getCharacterDataAt(targetIndexPos[0], targetIndexPos[1]);
-	if (tileData == TileType::WALL ||
-		tileData == TileType::TREASURE ||
+	if (!mScene.isWalkableTile(targetIndexPos[0], targetIndexPos[1]) ||
 		characterData != CharacterType::EMPTY) return;
 
 	//移動前の座標を空に
-	const std::vector<int> currentIndexPos = mPlayer.getIndexPos();
+	const std::array<int, 2> currentIndexPos = mPlayer.getIndexPos();
 	mScene.setCharacterDataAt(currentIndexPos[0], currentIndexPos[1], CharacterType::EMPTY);
 	//マップ上のオブジェクトデータ更新
 	mScene.setCharacterDataAt(targetIndexPos[0], targetIndexPos[1], CharacterType::PLAYER);
@@ -63,7 +61,7 @@ void PlayerMoveComponent::move(Direction direction)
 	isMoving = true;
 }
 
-std::vector<int> PlayerMoveComponent::calcTargetIndexPos(Direction moveDirection)
+std::array<int, 2> PlayerMoveComponent::calcTargetIndexPos(Direction moveDirection)
 {
 	//動く方向と向いている方角の論理和から、最終的に動く向きをもとめる
 	//moveDirection(移動方向)					　: 0001(後),0010(右),0100(上),1000(左)
@@ -76,7 +74,7 @@ std::vector<int> PlayerMoveComponent::calcTargetIndexPos(Direction moveDirection
 	//北　0110, 1001
 	//南　1100, 0011
 
-	std::vector<int> targetIndexPos = mPlayer.getIndexPos();
+	std::array<int, 2> targetIndexPos = mPlayer.getIndexPos();
 	//indexから移動先のインデックス座標を計算
 	switch (index) {
 	//東に移動

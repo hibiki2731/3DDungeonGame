@@ -17,7 +17,8 @@ SceneManager::SceneManager(Game& game)
 	
 	//シーンの登録
 	mSceneMap["TOWN"] = std::make_unique<TownScene>(game);
-	mSceneMap["DUNGEON"] = std::make_unique<DungeonScene>(game);
+	mSceneMap["DUNGEON_1"] = std::make_unique<Dungeon1Scene>(game);
+	mSceneMap["DUNGEON_2"] = std::make_unique<Dungeon2Scene>(game);
 	mSceneMap["GAME_OVER"] = std::make_unique<GameOverScene>(game); 
 	mSceneMap["TITLE"] = std::make_unique<TitleScene>(game);
 	mCurrentScene = mSceneMap[mCurrentSceneType].get();
@@ -102,9 +103,10 @@ void SceneManager::transitToTown()
 	mNextSceneType = "TOWN";
 }
 
-void SceneManager::transitToMap()
+void SceneManager::transitToMap(int floor)
 {
-	mNextSceneType = "DUNGEON";
+	if(floor > static_cast<int>(Stage::COUNT) || floor <= 0) return;
+	mNextSceneType = "DUNGEON_" + std::to_string(floor);
 }
 
 void SceneManager::transitToGameOver(){

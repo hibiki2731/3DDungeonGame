@@ -277,7 +277,11 @@
     <ClCompile Include="scripts\engine\debug\src\DebugCamera.cpp" />
     <ClCompile Include="scripts\game\dungeon\scene\src\DungeonScene.cpp" />
     <ClCompile Include="scripts\game\dungeon\scene\src\DungeonUI.cpp" />
+    <ClCompile Include="scripts\game\dungeon\scene\src\BossDefeatEvent.cpp" />
     <ClCompile Include="scripts\game\dungeon\enemy\src\EnemyComponent.cpp" />
+    <ClCompile Include="scripts\game\dungeon\enemy\src\EnemyMoveStrategy.cpp" />
+    <ClCompile Include="scripts\game\dungeon\enemy\src\EnemyAttackStrategy.cpp" />
+    <ClCompile Include="scripts\game\dungeon\enemy\src\EnemySpawner.cpp" />
     <ClCompile Include="scripts\game\town\menu\src\ExplorerMenu.cpp" />
     <ClCompile Include="scripts\engine\graphics\src\FireParticleComponent.cpp" />
     <ClCompile Include="scripts\game\town\menu\src\ForgeMenu.cpp" />
@@ -389,7 +393,11 @@
     <ClInclude Include="scripts\engine\graphics\include\BufferStruct.h" />
     <ClInclude Include="scripts\game\dungeon\scene\include\DungeonScene.h" />
     <ClInclude Include="scripts\game\dungeon\scene\include\DungeonUI.h" />
+    <ClInclude Include="scripts\game\dungeon\scene\include\BossDefeatEvent.h" />
     <ClInclude Include="scripts\game\dungeon\enemy\include\EnemyComponent.h" />
+    <ClInclude Include="scripts\game\dungeon\enemy\include\EnemyMoveStrategy.h" />
+    <ClInclude Include="scripts\game\dungeon\enemy\include\EnemyAttackStrategy.h" />
+    <ClInclude Include="scripts\game\dungeon\enemy\include\EnemySpawner.h" />
     <ClInclude Include="scripts\game\town\menu\include\ExplorerMenu.h" />
     <ClInclude Include="scripts\engine\graphics\include\FireParticleComponent.h" />
     <ClInclude Include="scripts\game\town\menu\include\ForgeMenu.h" />

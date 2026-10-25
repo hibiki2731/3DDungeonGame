@@ -34,6 +34,11 @@ void TownScene::onEnter() {
 	mGame.getGraphic().startFadeIn(1.0f);
 
 	mGame.getAudioManager().playBGM("BGM_TOWN");
+	
+	//プレイヤーのAPを回復
+	auto& playerManager = mGame.getPlayerManager();
+	auto playerData = playerManager.getPlayerData();
+	playerManager.setAP(playerData.actionLimit);
 
 #ifdef _DEBUG
 	mDebugFlag = true;

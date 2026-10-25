@@ -19,6 +19,9 @@
         },
         "3":{
             "category":"TREASURE"
+        },
+        "4":{
+            "category":"EMPTY"
         }
     },
 
@@ -36,6 +39,10 @@
         "2":{
             "category":"ENEMY",
             "enemyID":"NURIKABE"
+        },
+        "3":{
+            "category":"ENEMY",
+            "enemyID":"BOSS_PILLAR"
         }
     }
 

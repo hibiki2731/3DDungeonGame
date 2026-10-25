@@ -5,6 +5,7 @@
 #include "PlayerState.h"
 #include "json_fwd.hpp"
 #include <vector>
+#include <array>
 #include <memory>
 #include <unordered_map>
 
@@ -30,8 +31,7 @@ public:
 
 	//getter
 	int getDirection();
-	void getIndexPos(int(&pos)[2]);
-	std::vector<int> getIndexPos();
+	const std::array<int, 2>& getIndexPos();
 	int getCurrentHP();
 	int getCurrentAP();
 	int getPower();
@@ -48,6 +48,10 @@ public:
 	void damagedProcess();				//ダメージを受けたときの処理
 	//APを回復する
 	void recoverAP(int value);
+	//行動時にAPを消費するか設定する
+	void setAPConsumption(bool isConsume) { mConsumeAP = isConsume; }
+	//カメラを揺らす
+	void startCameraShake();
 
 	//---外部から状態遷移を要求する窓口---
 	//現在の状態が遷移元として正しい場合のみ遷移し、それ以外は無視する
@@ -68,6 +72,7 @@ private:
 	float	 mFlashTimer;		//ダメージを受けたときの点滅用タイマー
 	float	 mFlashDuration;	//ダメージを受けたときの点滅時間
 	int		 mAP;				//現在のAP
+	bool	 mConsumeAP;		//true : 行動時にAPを消費する
 
 	//状態
 	std::unordered_map<PlayerStateType, std::unique_ptr<PlayerState>> mStates;

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Component.h"
+#include <array>
 
 class DungeonScene;
 class Player;
@@ -17,11 +18,13 @@ public:
 	//前方の宝箱を開ける。開けた場合はtrue(即時に終わる行動のため、そのまま行動終了する)
 	bool openTreasure();
 	//前方に階段があるか判定
+	bool downStairs();
+	//前方にゴールがあるか判定
 	bool isFacingGoal();
 
 private:
 	//プレイヤーの前方のインデックス座標を取得
-	std::vector<int> getFrontIndexPos();
+	std::array<int, 2> getFrontIndexPos();
 
 	DungeonScene& mScene;
 	Player& mPlayer;

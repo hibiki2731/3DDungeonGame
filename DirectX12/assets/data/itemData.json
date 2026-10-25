@@ -63,14 +63,14 @@
             "costResourceID": [
                 "GOLD"
             ],
-            "description": "APの最大値が10増加\n",
+            "description": "APの最大値が20増加\n",
             "id": "BOOTS",
             "inPossession": false,
             "name": "靴",
             "price": [
                 10
             ],
-            "value": 10
+            "value": 20
         },
         {
             "category": "YIELD",
@@ -118,6 +118,22 @@
                 30,
                 20
             ]
+        },
+        {
+            "category": "ACTION_LIMIT",
+            "costResourceID": [
+                "GOLD",
+                "MAGIC_IRON"
+            ],
+            "description": "APの最大値が30増加\n",
+            "id": "BALLOON",
+            "inPossession": false,
+            "name": "風船",
+            "price": [
+                35,
+                10
+            ],
+            "value": 30
         },
         {
             "category": "DOUBLE_ATTACK",

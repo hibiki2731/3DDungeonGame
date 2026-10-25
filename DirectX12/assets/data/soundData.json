@@ -19,6 +19,16 @@
       "id": "BGM_GAMEOVER",
       "fileType": "ogg",
       "filePath": "assets/sounds/BGMs/gameoverBGM.ogg"
+      },
+      {
+      "id": "BGM_BOSS_BATTLE",
+      "fileType": "ogg",
+      "filePath": "assets/sounds/BGMs/bossBattle.ogg"
+      },
+      {
+      "id": "BGM_CLEAR",
+      "fileType": "ogg",
+      "filePath": "assets/sounds/BGMs/bossClear.ogg"
       }
    ],
    "SE": [
@@ -142,6 +152,12 @@
       {
          "id":"OPEN_TREASURE",
          "filePath": "assets/sounds/SEs/openTreasure.mp3",
+         "fileType": "mp3",
+         "poolSize":1
+      },
+      {
+         "id":"BOSS_DEFEATED",
+         "filePath": "assets/sounds/SEs/bossDefeated.mp3",
          "fileType": "mp3",
          "poolSize":1
       }

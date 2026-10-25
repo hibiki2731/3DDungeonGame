@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Component.h"
 #include "DirectXMath.h"
+#include <array>
 using namespace DirectX;
 
 class DungeonScene;
@@ -23,6 +24,6 @@ private:
 	bool isMoving;			//移動中かどうか
 	static const float MoveSpeed;		//移動速度
 
-	std::vector<int> calcTargetIndexPos(Direction moveDirection);
+	std::array<int, 2> calcTargetIndexPos(Direction moveDirection);
 };
 

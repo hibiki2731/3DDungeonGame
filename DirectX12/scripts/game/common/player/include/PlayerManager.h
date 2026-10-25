@@ -11,6 +11,7 @@ struct PlayerData {
 	int power = 0;
 	int defence = 0;
 	int actionLimit = 0;
+	int ap = 0;
 	float moveSpeed = 0.0f;
 	float rotSpeed = 0.0f;
 	float flushDuration = 0.0f;
@@ -34,6 +35,7 @@ public:
 	const std::vector<std::string>& getInventory();
 
 	void setHP(int hp);
+	void setAP(int ap);
 	void setMaxHP(int maxhp);
 	void setPower(int poewr);
 	void setDefence(int defence);

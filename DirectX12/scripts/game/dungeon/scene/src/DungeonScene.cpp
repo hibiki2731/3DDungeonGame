@@ -16,19 +16,27 @@
 #include "FireParticleComponent.h"
 #include "DebugCamera.h"
 #include "Treasure.h"
+#include "EnemySpawner.h"
+#include "BossDefeatEvent.h"
+#include "Object.h"
+#include <string>
 //#define EDIT
 
-DungeonScene::DungeonScene(Game& game)
-	:Scene(game)
+DungeonScene::DungeonScene(Game& game, Stage stage)
+	:Scene(game),
+	mStage(stage)
 {
 	mMapGenerator = std::make_unique<MapGenerator>(*this);
 	mTurnStateMachine = std::make_unique<TurnStateMachine>(*this);
 	mDamageTextManaager = std::make_unique<DamageTextGenerator>(game);
+	mEnemySpawner = std::make_unique<EnemySpawner>(*this);
 	mPlayer = nullptr;
 	mMapSize = 0;
 	mMaxResourcePoint = 5;
-	mStage = Stage::MAP1;
 }
+
+//unique_ptrで保持する管理クラスの定義が必要なため、デストラクタはcppで定義する
+DungeonScene::~DungeonScene() = default;
 
 void DungeonScene::fastUpdateScene() {
 	mTurnStateMachine->updateTurn();
@@ -37,6 +45,7 @@ void DungeonScene::fastUpdateScene() {
 void DungeonScene::updateScene()
 {
 	mDamageTextManaager->update();
+	onUpdateMap();
 }
 
 void DungeonScene::lateUpdateScene()
@@ -63,7 +72,6 @@ void DungeonScene::onEnter()
 	mTurnStateMachine->begin();
 
 	mGame.getGraphic().startFadeIn(1.0f); 
-	mGame.getAudioManager().playBGM("BGM_DUNGEON");
 
 #ifdef _DEBUG
 	mDebugFlag = true;
@@ -76,6 +84,8 @@ void DungeonScene::onEnter()
 	//デバッグ用カメラの生成
 	auto camera = std::make_unique<DebugCamera>(*this);
 	addActor(std::move(camera));
+
+	mTurnStateMachine->stop();
 
 	return;
 #endif
@@ -93,12 +103,14 @@ void DungeonScene::onEnter()
 	mUI = dungeonUI.get();
 	addActor(std::move(dungeonUI));
 
+	onEnterMap();
 
 }
 
 void DungeonScene::onExit()
 {
 	mMapGenerator->end();
+	mEnemySpawner->clear();
 	mResources.clear();
 	mPlayer = nullptr;
 	mUI = nullptr;
@@ -108,6 +120,8 @@ void DungeonScene::onExit()
 #ifdef _DEBUG
 	mDebugFlag = false;
 #endif
+	
+	onExitMap();
 }
 
 void DungeonScene::createEnemy(const std::string& enemyID, float x, float y)
@@ -138,8 +152,7 @@ void DungeonScene::spawnResource()
 {
 	if (mResources.size() >= mMaxResourcePoint) return;
 
-	int playerIndex[2];
-	mPlayer->getIndexPos(playerIndex);
+	const std::array<int, 2> playerIndex = mPlayer->getIndexPos();
 
 	int i = 0;
 	//障害物がない　かつ　プレイヤーから4マス以上9マス以下の範囲でスポーン
@@ -175,6 +188,9 @@ void DungeonScene::spawnResource()
 			resourceID = "MAGIC_IRON";
 			meshID = "GRASS";
 			break;
+		case Stage::MAP2:
+			//リソースを生成しない
+			return;
 		default:
 			resourceID = "MAGIC_IRON";
 			meshID = "GRASS";
@@ -271,6 +287,13 @@ int DungeonScene::getTileDataAt(int index)
 	if (x < 0 || x > mMapSize - 1 ||
 		y < 0 || y > mMapSize - 1) return TileType::WALL;
 	return mTileData[x][y];
+}
+
+bool DungeonScene::isWalkableTile(int x, int y)
+{
+	//範囲外はgetTileDataAtがWALLを返すため通行不可になる
+	const int tileType = getTileDataAt(x, y);
+	return tileType == TileType::FLOOR || tileType == TileType::RESOURCE;
 }
 
 int DungeonScene::getCharacterDataAt(int x, int y)
@@ -378,7 +401,7 @@ EnemyComponent* DungeonScene::getEnemyFromIndexPos(int index)
 	int x = index % mMapSize;
 	int y = index / mMapSize;
 	for (auto enemy : mEnemies) {
-		std::vector<int> charIndexPos = enemy->getIndexPos();
+		const std::array<int, 2>& charIndexPos = enemy->getIndexPos();
 		if (charIndexPos[0] == x && charIndexPos[1] == y) {
 			return enemy;
 		}
@@ -389,7 +412,7 @@ EnemyComponent* DungeonScene::getEnemyFromIndexPos(int index)
 EnemyComponent* DungeonScene::getEnemyFromIndexPos(int x, int y)
 {
 	for (auto enemy : mEnemies) {
-		std::vector<int> charIndexPos = enemy->getIndexPos();
+		const std::array<int, 2>& charIndexPos = enemy->getIndexPos();
 		if (charIndexPos[0] == x && charIndexPos[1] == y) {
 			return enemy;
 		}
@@ -434,3 +457,66 @@ TurnStateMachine& DungeonScene::getTurnStateMachine()
 	return *mTurnStateMachine.get();
 }
 
+EnemySpawner& DungeonScene::getEnemySpawner()
+{
+	return *mEnemySpawner;
+}
+
+Dungeon2Scene::Dungeon2Scene(Game& game)
+	: DungeonScene(game, Stage::MAP2),
+	mBossObj(nullptr)
+{
+	mBossDefeatEvent = std::make_unique<BossDefeatEvent>(*this);
+}
+void Dungeon1Scene::onEnterMap(){
+	//BGMの再生
+	mGame.getAudioManager().playBGM("BGM_DUNGEON");
+	
+}
+
+Dungeon2Scene::~Dungeon2Scene() = default;
+
+void Dungeon2Scene::onEnterMap() {
+	//BGMの再生
+	mGame.getAudioManager().playBGM("BGM_BOSS_BATTLE");
+	
+	//ボスのオブジェクトの生成(所有権はシーンに渡し、シーン退出時に通常のアクターとして破棄されるようにする)
+	auto bossObj = std::make_unique<Object>(*this, "BossObject");
+	mBossObj = bossObj.get();
+	addActor(std::move(bossObj));
+
+	mBossDefeatEvent->reset();
+}
+
+void Dungeon2Scene::onExitMap()
+{
+	mBossObj = nullptr;
+	mBossDefeatEvent->reset();
+}
+
+void Dungeon2Scene::onUpdateMap()
+{
+	mBossDefeatEvent->update();
+}
+
+bool Dungeon2Scene::onEnemyDefeated(EnemyComponent& enemy)
+{
+	//ボス以外は通常の撃破処理
+	if (enemy.getEnemyID() != "BOSS_PILLAR") return false;
+
+	//ボス討伐イベントを開始。ボスは沈む演出の後にイベント側で除去する
+	mBossDefeatEvent->start(enemy);
+	return true;
+}
+
+bool Dungeon2Scene::isEventPlaying() const
+{
+	return mBossDefeatEvent->isPlaying();
+}
+
+void Dungeon2Scene::removeBossObject()
+{
+	if (!mBossObj) return;
+	mBossObj->setState(Actor::State::Dead);
+	mBossObj = nullptr;
+}

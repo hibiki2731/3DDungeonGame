@@ -15,7 +15,7 @@ CharacterComponent::CharacterComponent(Actor& owner, DungeonScene& scene)
 	isAlive = true;
 
 	mDirection = 1;
-	mIndexPos = std::vector<int>{
+	mIndexPos = {
 		static_cast<int>(std::round(mOwner.getPosition().x / MAPTIPSIZE)),
 		static_cast<int>(std::round(mOwner.getPosition().z / MAPTIPSIZE))
 	};
@@ -52,7 +52,7 @@ bool CharacterComponent::getAlive()
 	return isAlive;
 }
 
-std::vector<int>& CharacterComponent::getIndexPos()
+std::array<int, 2>& CharacterComponent::getIndexPos()
 {
 	return mIndexPos;
 }
