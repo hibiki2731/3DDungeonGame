@@ -54,7 +54,7 @@ Player::Player(DungeonScene& scene, float x, float y)
 
 	mMoveSpeed		= mPlayerData.moveSpeed;		//移動速度
 	mFlashDuration  = mPlayerData.flushDuration;	//ダメージを受けたときの点滅時間
-	mAP = mPlayerData.actionLimit;					//APの初期値
+	mAP 			= mPlayerData.ap;				//APの初期値
 
 	//キャラクターコンポーネントの生成
 	auto character = std::make_unique<CharacterComponent>(*this, scene);
@@ -135,6 +135,7 @@ void Player::endProcessActor()
 	//ダンジョンシーン中のデータをプレイヤーマネージャーに保存する
 	PlayerManager& player = mScene.getGame().getPlayerManager();
 	player.setHP(mCharacter->getHP());
+	player.setAP(mAP);
 	//点滅強度をリセットする
 	mScene.getGame().getGraphic().updateDamageFlashIntensity(0.0f);
 }
@@ -205,7 +206,7 @@ void Player::giveDamage(int damage)
 	mPendingDamage += damage;
 	
 	//受けたダメージをメッセージウィンドウに表示
-	std::string message = std::to_string(damage) + "ダメージ受けた！";
+	std::string message = std::to_string(damage) + "ダメージ受けた！\n";
 	mScene.pushMessage(message);
 }
 

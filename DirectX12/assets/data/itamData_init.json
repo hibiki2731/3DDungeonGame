@@ -63,32 +63,28 @@
         {
             "category": "ACTION_LIMIT",
             "costResourceID": [
-                "GOLD",
-                "MAGIC_IRON"
+                "GOLD"
             ],
-            "description": "APの最大値が10増加\n",
+            "description": "APの最大値が20増加\n",
             "id": "BOOTS",
             "inPossession": false,
             "name": "靴",
             "price": [
-                10,
-                8
+                10
             ],
-            "value": 10
+            "value": 20
         },
         {
             "category": "YIELD",
             "costResourceID":[
-                "GOLD",
-                "MAGIC_IRON"
+                "GOLD"
             ],
             "description": "魔鉱石の収穫量が+2される\n",
             "id": "PICKSXE",
             "inPossession": false,
             "name": "ピッケル",
             "price":[
-                15,
-                10
+                15
             ],
             "value": 2,
             "valueID":"MAGIC_IRON"
@@ -104,7 +100,7 @@
             "inPossession": false,
             "name": "貯金箱",
             "price": [
-                40,
+                10,
                 20
             ],
             "value": 5,
@@ -122,8 +118,24 @@
             "name": "バックパック",
             "price": [
                 30,
-                15
+                20
             ]
+        },
+        {
+            "category": "ACTION_LIMIT",
+            "costResourceID": [
+                "GOLD",
+                "MAGIC_IRON"
+            ],
+            "description": "APの最大値が30増加\n",
+            "id": "BALLOON",
+            "inPossession": false,
+            "name": "風船",
+            "price": [
+                35,
+                10
+            ],
+            "value": 30
         },
         {
             "category": "DOUBLE_ATTACK",
@@ -132,6 +144,7 @@
             "inPossession": true,
             "name": "連撃の書"
         }
+
     ],
     "Item": [
         {

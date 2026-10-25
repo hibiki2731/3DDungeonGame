@@ -34,6 +34,10 @@ void PlayerManager::setHP(int hp)
 	mPlayerData.hp = hp;
 }
 
+void PlayerManager::setAP(int ap){
+	mPlayerData.ap = ap;
+}
+
 void PlayerManager::setMaxHP(int maxhp) {
 	mPlayerData.maxHp = maxhp;
 }
@@ -186,6 +190,7 @@ void PlayerManager::loadPlayerData()
 	mDefaultPlayerData.equippedWeaponIndex = json["equippedWeaponIndex"].get<int>();
 	mDefaultPlayerData.equippedArmerIndex = json["equippedArmerIndex"].get<int>();
 	mDefaultPlayerData.actionLimit = json["actionLimit"].get<int>();
+	mDefaultPlayerData.ap = mDefaultPlayerData.actionLimit;
 	mDefaultPlayerData.attackType = AttackType::SINGLE;	//攻撃タイプの初期値はシングルアタックにする
 
 	mPlayerData = mDefaultPlayerData; //プレイヤーデータを初期値で初期化:

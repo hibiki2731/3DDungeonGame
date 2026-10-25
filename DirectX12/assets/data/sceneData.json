@@ -1,5 +1,5 @@
 {
-    "DUNGEON": [
+    "DUNGEON_1": [
         "TorchFront",
         "TorchFront2",
         "TorchBack",
@@ -7,10 +7,13 @@
         "TorchLeft",
         "TorchLeft2"
     ],
+    "DUNGEON_2": [
+        "TorchLeft"
+    ],
+    "GAMEOVER": [],
     "TITLE": [],
     "TOWN": [
         "Backgound",
         "ControllDescriptor"
-    ],
-    "GAMEOVER":[]
+    ]
 }

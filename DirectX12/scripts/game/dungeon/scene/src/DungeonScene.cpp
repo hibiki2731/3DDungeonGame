@@ -16,10 +16,13 @@
 #include "FireParticleComponent.h"
 #include "DebugCamera.h"
 #include "Treasure.h"
+#include "Object.h"
+#include <string>
 //#define EDIT
 
-DungeonScene::DungeonScene(Game& game)
-	:Scene(game)
+DungeonScene::DungeonScene(Game& game, Stage stage)
+	:Scene(game),
+	mStage(stage)
 {
 	mMapGenerator = std::make_unique<MapGenerator>(*this);
 	mTurnStateMachine = std::make_unique<TurnStateMachine>(*this);
@@ -27,8 +30,10 @@ DungeonScene::DungeonScene(Game& game)
 	mPlayer = nullptr;
 	mMapSize = 0;
 	mMaxResourcePoint = 5;
-	mStage = Stage::MAP1;
 }
+
+//unique_ptrで保持する管理クラスの定義が必要なため、デストラクタはcppで定義する
+DungeonScene::~DungeonScene() = default;
 
 void DungeonScene::fastUpdateScene() {
 	mTurnStateMachine->updateTurn();
@@ -93,6 +98,7 @@ void DungeonScene::onEnter()
 	mUI = dungeonUI.get();
 	addActor(std::move(dungeonUI));
 
+	onEnterMap();
 
 }
 
@@ -108,6 +114,8 @@ void DungeonScene::onExit()
 #ifdef _DEBUG
 	mDebugFlag = false;
 #endif
+	
+	onExitMap();
 }
 
 void DungeonScene::createEnemy(const std::string& enemyID, float x, float y)
@@ -434,3 +442,12 @@ TurnStateMachine& DungeonScene::getTurnStateMachine()
 	return *mTurnStateMachine.get();
 }
 
+Dungeon2Scene::Dungeon2Scene(Game& game) : DungeonScene(game, Stage::MAP2) {}
+
+Dungeon2Scene::~Dungeon2Scene() = default;
+
+void Dungeon2Scene::onEnterMap() {
+	std::string objName = "BossObject";
+	mBossObj = std::make_unique<Object>(*this, objName);
+	
+}

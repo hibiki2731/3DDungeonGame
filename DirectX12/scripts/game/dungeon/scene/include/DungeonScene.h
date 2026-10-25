@@ -7,9 +7,12 @@ class Player;
 class EnemyComponent;
 class FireParticleComponent;
 class Treasure;
+class Object;
 
 enum class Stage {
 	MAP1,
+	MAP2,
+	COUNT
 };
 struct TileType {
 	enum Type {
@@ -18,6 +21,7 @@ struct TileType {
 		FLOOR = 1,
 		RESOURCE = 2,
 		TREASURE = 3,
+		EMPTY = 4,
 	};
 };
 
@@ -33,18 +37,20 @@ class DungeonScene :
     public Scene
 {
 public:
-    DungeonScene(class Game& game);
+    DungeonScene(class Game& game, Stage stage);
+    virtual ~DungeonScene();
 
     void fastUpdateScene() override;
 	void updateScene() override;
 	void lateUpdateScene() override;
 	void drawScene() override;
     void onEnter() override;
+	virtual void onEnterMap() {};
     void onExit() override;
+	virtual void onExitMap() {};
     
-    const std::string getName() const override {
-        return "DUNGEON";
-    };
+    //シーン名は階層ごとの派生クラスで定義する
+    virtual const std::string getName() const override = 0;
 
 
     //エネミーの作成
@@ -145,3 +151,31 @@ private:
 	std::unique_ptr<class DamageTextGenerator> mDamageTextManaager;	//ダメージテキスト管理
 };
 
+//1階のシーン
+class Dungeon1Scene :
+	public DungeonScene
+{
+public:
+	Dungeon1Scene(class Game& game) : DungeonScene(game, Stage::MAP1) {}
+
+	const std::string getName() const override {
+		return "DUNGEON_1";
+	};
+};
+
+//2階のシーン
+class Dungeon2Scene :
+	public DungeonScene
+{
+public:
+	Dungeon2Scene(class Game& game);
+	~Dungeon2Scene() override;
+
+	void onEnterMap() override;
+	const std::string getName() const override {
+		return "DUNGEON_2";
+	};
+
+private:
+	std::unique_ptr<Object> mBossObj;
+};

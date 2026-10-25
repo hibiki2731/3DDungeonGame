@@ -17,6 +17,8 @@ public:
 	//前方の宝箱を開ける。開けた場合はtrue(即時に終わる行動のため、そのまま行動終了する)
 	bool openTreasure();
 	//前方に階段があるか判定
+	bool downStairs();
+	//前方にゴールがあるか判定
 	bool isFacingGoal();
 
 private:

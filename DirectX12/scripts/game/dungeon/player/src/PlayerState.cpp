@@ -107,6 +107,7 @@ void PlayerRequestActionState::doAction()
 	if (mInteract.collect()) return;			//リソースを回収
 	if (mInteract.openTreasure()) return;		//宝箱からアイテムを入手
 
+	if(mInteract.downStairs()) return;
 	//目の前に階段があればゴール状態へ
 	if (mInteract.isFacingGoal()) {
 		changeState(PlayerStateType::GOAL);

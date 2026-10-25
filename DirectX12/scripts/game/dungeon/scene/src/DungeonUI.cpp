@@ -66,6 +66,9 @@ void DungeonUI::applyComponentLabel()
 	mAPBar = static_cast<SpriteComponent*>(mComponentLabels["apBar"].pComponent);
 	if (mAPBar) {
 		mAPBarOriginalSize = mAPBar->getSpriteSize();
+		XMFLOAT2 apBarSize = XMFLOAT2(mAPBarOriginalSize.x * static_cast<float>(mPlayer.getCurrentAP()) / static_cast<float>(mPlayerData.actionLimit), mAPBarOriginalSize.y);
+		if(apBarSize.y < 10.0f) apBarSize.y = 10.0f;
+		mAPBar->setSpriteSize(apBarSize);
 	}
 
 	//アイテムアイコン

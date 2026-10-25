@@ -68,6 +68,9 @@ void MapGenerator::loadMap(Stage stage)
 	case Stage::MAP1:
 		mapJson = json.at("stage1");
 		break;
+	case Stage::MAP2:
+		mapJson = json.at("stage2");
+		break;
 	}
 
 	//マップサイズの読み込み

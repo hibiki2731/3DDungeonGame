@@ -19,6 +19,9 @@
         },
         "3":{
             "category":"TREASURE"
+        },
+        "4":{
+            "category":"EMPTY"
         }
     },
 

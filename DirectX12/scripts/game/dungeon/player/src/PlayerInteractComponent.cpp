@@ -7,6 +7,7 @@
 #include "ItemManager.h"
 #include "Resource.h"
 #include "Treasure.h"
+#include "SceneManager.h"
 
 PlayerInteractComponent::PlayerInteractComponent(DungeonScene& scene, Player& player, CharacterComponent& character)
 	: Component(player),
@@ -56,6 +57,18 @@ bool PlayerInteractComponent::openTreasure()
 	mPlayer.endAction();
 
 	return true;
+}
+
+bool PlayerInteractComponent::downStairs(){
+	const std::vector<int> searchPos = getFrontIndexPos();
+	if(mScene.getTileDataAt(searchPos[0], searchPos[1]) != TileType::GOAL || mScene.getName() != "DUNGEON_1")
+		return false;
+	   
+	auto& sceneManager = mScene.getGame().getSceneManager();
+	sceneManager.transitToMap(2);
+
+	return true;
+	
 }
 
 bool PlayerInteractComponent::isFacingGoal()

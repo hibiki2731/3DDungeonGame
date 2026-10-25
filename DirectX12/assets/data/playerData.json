@@ -3,7 +3,7 @@
     "armers": [
         "NONE"
     ],
-    "defense": 1,
+    "defense": 20,
     "equippedArmerIndex": 0,
     "equippedWeaponIndex": 0,
     "explorer": [],
@@ -12,7 +12,7 @@
     "inventory": [],
     "maxhp": 25,
     "moveSpeed": 5.0,
-    "power": 3,
+    "power": 20,
     "rotSpeed": 4.5,
     "weapons": [
         "NONE"
