@@ -29,5 +29,16 @@
         "meshID": "BOSS_PILLAR",
         "movePattern": "BOSS_PILLAR",
         "attackPattern": "NONE"
+    },
+    "BOSS_ROCK":{
+        "name": "岩",
+        "hp": 5,
+        "power": 8,
+        "dropMoney": 0,
+        "defense": 0,
+        "meshID": "BOSS_ROCK",
+        "movePattern": "ASTAR",
+        "attackPattern": "MELEE"
     }
+    
 }

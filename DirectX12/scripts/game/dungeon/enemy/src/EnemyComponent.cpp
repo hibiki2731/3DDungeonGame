@@ -34,6 +34,8 @@ EnemyComponent::EnemyComponent(Actor& owner, DungeonScene& scene)
 	//アクターの初期位置から、インデックス位置を計算
 	mIndexPos[1] = static_cast<int>(std::round(mOwner.getPosition().z / MAPTIPSIZE));
 	mIndexPos[0] = static_cast<int>(std::round(mOwner.getPosition().x / MAPTIPSIZE));
+	//自分のいるマスをマップデータに登録する(途中で生成されたエネミーも障害物として扱われるようにするため)
+	scene.setCharacterDataAt(mIndexPos[0], mIndexPos[1], CharacterType::ENEMY);
 	//シーンのエネミーの処理用配列に追加する
 	scene.addEnemy(this);
 }

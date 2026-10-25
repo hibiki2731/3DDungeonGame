@@ -62,7 +62,6 @@ public:
 
 private:
 	void spawnEnemyAndResource();
-	void spawnEnemy();
 
 	
 

@@ -99,7 +99,12 @@ void MeshComponent::create(const MeshData * meshData)
 	}
 
 	//スケールを設定
-	mOwner.setScale(meshData->Scale);
+	//オーナーのスケール値にメッシュのスケールを掛け合わせる。
+	const XMFLOAT3 ownerScale = mOwner.getScale();
+	const XMFLOAT3 meshScale = meshData->Scale;
+	XMFLOAT3 resultScale = XMFLOAT3(ownerScale.x * meshScale.x, ownerScale.y * meshScale.y, ownerScale.z * meshScale.z);
+
+	mOwner.setScale(resultScale);
 
 }
 

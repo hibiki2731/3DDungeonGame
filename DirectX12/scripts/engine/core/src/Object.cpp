@@ -80,10 +80,9 @@ void Object::loadActorData(nlohmann::json& json)
 
 	//コンポーネントの取得
 	loadComponentData(json);
-
+	
 	//ラベルデータの取得
 	loadLabelData(json);
-
 }
 
 void Object::loadComponentData(nlohmann::json& json)

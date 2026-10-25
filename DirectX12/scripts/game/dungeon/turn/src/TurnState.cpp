@@ -11,6 +11,7 @@
 #include "AudioManager.h"
 #include "input.h"
 #include "SpriteComponent.h"
+#include "EnemySpawner.h"
 
 //---プレイヤー入力待ち---
 void PlayerTurnState::enter()
@@ -87,46 +88,15 @@ TurnState* TurnEndState::update()
 
 void TurnEndState::spawnEnemyAndResource()
 {
+	//召喚要求の処理(ボスの召喚など)。先に処理することで自然湧きより優先される
+	mDungeonScene.getEnemySpawner().flush();
+	//敵の自然湧き
+	mDungeonScene.getEnemySpawner().spawnNaturally();
+
+	//資源のランダム湧き
 	int random = Random::dist(1, 100);
 	if (random <= 10)
-		spawnEnemy();
-	random = Random::dist(1, 100);
-	if (random <= 10)
 		mDungeonScene.spawnResource();
-}
-
-void TurnEndState::spawnEnemy()
-{
-	const std::array<int, 2> playerIndex = mDungeonScene.getPlayer()->getIndexPos();
-
-	int i = 0; //湧き場がない場合、一定回数のループ後にループを抜ける
-
-	//障害物がない　かつ　プレイヤーから4マス以上9マス以下の範囲でスポーン
-	int mapSize = mDungeonScene.getMapSize();
-	while (i < 50) {
-		//スポーンするマスを乱数で決定
-		int x = playerIndex[0] + Random::dist(-9, 9);
-		int y = playerIndex[1] + Random::dist(-9, 9);
-
-
-		//障害物がある場合、もう一度乱数を振りなおす
-		if (mDungeonScene.getTileDataAt(x, y) != TileType::FLOOR ||
-			mDungeonScene.getCharacterDataAt(x, y) != CharacterType::EMPTY) {
-			i++;
-			continue;
-		}
-
-		//プレイヤーから3マスいないならば、もう一度乱数を振りなおす
-		int distance = abs(playerIndex[0] - x) + abs(playerIndex[1] - y);
-		if (distance <= 3) {
-			i++;
-			continue;
-		}
-
-		//敵の生成
-		mDungeonScene.createEnemy("SLIME", static_cast<float>(MAPTIPSIZE * x), static_cast<float>(MAPTIPSIZE * y));
-		break;
-	}
 }
 
 //---街への帰還確認---

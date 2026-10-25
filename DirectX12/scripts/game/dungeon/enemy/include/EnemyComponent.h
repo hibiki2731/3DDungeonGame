@@ -28,11 +28,13 @@ public:
 	void setAttackStrategy(std::unique_ptr<EnemyAttackStrategy> strategy); //攻撃パターンの設定
 	void setDropMoney(int money);			//エネミー撃破時に落とすお金の量を設定
 	void setName(const std::string& name);	//エネミーの名前を設定
+	void setEnemyID(const std::string& enemyID) { mEnemyID = enemyID; }	//エネミーID(enemyData.jsonのキー)を設定
 
 	//getter
 	XMFLOAT3 getPosition();	//位置の取得
 	int getDist();			//プレイヤーとの距離を取得
 	const std::string& getName() { return mName; } //エネミーの名前を取得
+	const std::string& getEnemyID() const { return mEnemyID; } //エネミーIDを取得
 	bool isActing() {return isActive;}
 
 private:
@@ -43,6 +45,7 @@ private:
 	void deadProcess();								//死亡時の処理
 
 	std::string		mName; 				//エネミーの名前
+	std::string		mEnemyID;			//エネミーID(enemyData.jsonのキー)
 	MeshComponent*	mMesh;			    //エネミーに設定されているメッシュ
 	int				mDropMoney;			//ドロップするお金
 	bool			isActive;			//true : 行動可能  false : 行動済み

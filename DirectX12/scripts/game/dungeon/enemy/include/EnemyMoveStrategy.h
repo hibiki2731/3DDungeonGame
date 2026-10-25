@@ -78,6 +78,7 @@ private:
 };
 
 //ボス(柱)の行動
+//一定ダメージを受けるか一定ターン滞在すると移動し、移動時と一定ターンごとに岩を召喚する
 class BossPillarStrategy : public EnemyMoveStrategy
 {
 public:
@@ -85,7 +86,14 @@ public:
 	std::array<int, 2> calcTargetIndex() override;
 	
 private:
-	std::array<std::array<int, 2>, 3> mMovablePosition;	//移動可能位置
+	//ボスの位置ごとの設定
+	struct BossPosition {
+		std::array<int, 2> position;							//ボスの位置
+		std::array<std::array<int, 2>, 2> moveSummonPositions;	//この位置に移動したときの召喚位置
+		std::array<int, 2> turnSummonPosition;					//この位置にいるときのターンごとの召喚位置
+	};
+
+	std::array<BossPosition, 3> mBossPositions;	//移動可能位置と召喚位置
 	int mCurrentMovablePositionIndex;
 	int mAccumulatedDamage;
 	int mDamageThreshold;
@@ -93,8 +101,16 @@ private:
 	int mStayedTurnThreshold;
 	
 	int mPreEnemyHP;
+
+	//---召喚---
+	std::string mSummonEnemyID;	//召喚するエネミーのID
+	int mMaxSummonCount;		//召喚したエネミーがフィールドに存在できる上限
+	int mSummonTurnCount;		//ターンごとの召喚用のカウンタ
+	int mSummonInterval;		//ターンごとの召喚の間隔(ターン)
 	
-	std::array<int, 2> selectNextPosition();	
+	std::array<int, 2> selectNextPosition();
+	void summonOnMove();	//移動先の周囲に召喚
+	void summonOnTurn();	//現在地に応じた決まった座標に召喚
 };
 
 //エネミーデータ(json)のmovePatternから行動パターンを生成する

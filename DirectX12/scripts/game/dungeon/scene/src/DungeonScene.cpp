@@ -16,6 +16,7 @@
 #include "FireParticleComponent.h"
 #include "DebugCamera.h"
 #include "Treasure.h"
+#include "EnemySpawner.h"
 #include "Object.h"
 #include <string>
 //#define EDIT
@@ -27,6 +28,7 @@ DungeonScene::DungeonScene(Game& game, Stage stage)
 	mMapGenerator = std::make_unique<MapGenerator>(*this);
 	mTurnStateMachine = std::make_unique<TurnStateMachine>(*this);
 	mDamageTextManaager = std::make_unique<DamageTextGenerator>(game);
+	mEnemySpawner = std::make_unique<EnemySpawner>(*this);
 	mPlayer = nullptr;
 	mMapSize = 0;
 	mMaxResourcePoint = 5;
@@ -82,6 +84,8 @@ void DungeonScene::onEnter()
 	auto camera = std::make_unique<DebugCamera>(*this);
 	addActor(std::move(camera));
 
+	mTurnStateMachine->stop();
+
 	return;
 #endif
 
@@ -105,6 +109,7 @@ void DungeonScene::onEnter()
 void DungeonScene::onExit()
 {
 	mMapGenerator->end();
+	mEnemySpawner->clear();
 	mResources.clear();
 	mPlayer = nullptr;
 	mUI = nullptr;
@@ -182,6 +187,9 @@ void DungeonScene::spawnResource()
 			resourceID = "MAGIC_IRON";
 			meshID = "GRASS";
 			break;
+		case Stage::MAP2:
+			//リソースを生成しない
+			return;
 		default:
 			resourceID = "MAGIC_IRON";
 			meshID = "GRASS";
@@ -439,6 +447,11 @@ void DungeonScene::createDamageText(const XMFLOAT3& pos, int digit)
 TurnStateMachine& DungeonScene::getTurnStateMachine()
 {
 	return *mTurnStateMachine.get();
+}
+
+EnemySpawner& DungeonScene::getEnemySpawner()
+{
+	return *mEnemySpawner;
 }
 
 Dungeon2Scene::Dungeon2Scene(Game& game) : DungeonScene(game, Stage::MAP2) {}

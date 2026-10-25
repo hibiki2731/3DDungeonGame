@@ -122,6 +122,8 @@ public:
 	void createDamageText(const XMFLOAT3& pos, int digit);
 	//ターンオブザーバー
 	class TurnStateMachine& getTurnStateMachine();
+	//エネミー生成管理
+	class EnemySpawner& getEnemySpawner();
 
 private:
 	//マップ情報
@@ -149,6 +151,7 @@ private:
 	std::unique_ptr<class MapGenerator> mMapGenerator;	//マップ生成
 	std::unique_ptr<class TurnStateMachine > mTurnStateMachine;	//ターン管理
 	std::unique_ptr<class DamageTextGenerator> mDamageTextManaager;	//ダメージテキスト管理
+	std::unique_ptr<class EnemySpawner> mEnemySpawner;	//エネミー生成管理
 };
 
 //1階のシーン

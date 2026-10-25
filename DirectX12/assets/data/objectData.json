@@ -973,6 +973,30 @@
         }
     },
     "DUNGEON_2": {
+        "BackRockWall": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                6.0,
+                -7.0,
+                0.10000000149011612
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                7.0,
+                7.0,
+                1.0
+            ]
+        },
         "BossObject": {
             "components": [
                 {
@@ -983,7 +1007,7 @@
             "label": null,
             "position": [
                 6.0,
-                0.0,
+                -1.0,
                 15.0
             ],
             "rotation": [
@@ -992,8 +1016,8 @@
                 0.0
             ],
             "scale": [
-                1.0,
-                1.0,
+                2.0,
+                2.0,
                 1.0
             ]
         },
@@ -1361,7 +1385,6 @@
                 1.0
             ]
         },
-        "EmptyObject": null,
         "EndWindow": {
             "components": [
                 {
@@ -1459,6 +1482,342 @@
                 1.0
             ]
         },
+        "FrontRockWall1": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                0.0,
+                -2.0,
+                14.0
+            ],
+            "rotation": [
+                0.0,
+                3.1419999599456787,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "FrontRockWall10": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                4.0,
+                -4.0,
+                14.0
+            ],
+            "rotation": [
+                0.0,
+                3.1419999599456787,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "FrontRockWall11": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                6.0,
+                -4.0,
+                14.0
+            ],
+            "rotation": [
+                0.0,
+                3.141590118408203,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "FrontRockWall12": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                8.0,
+                -4.0,
+                14.0
+            ],
+            "rotation": [
+                0.0,
+                3.141590118408203,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "FrontRockWall13": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                10.0,
+                -4.0,
+                14.0
+            ],
+            "rotation": [
+                0.0,
+                3.141590118408203,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "FrontRockWall14": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                12.0,
+                -4.0,
+                14.0
+            ],
+            "rotation": [
+                0.0,
+                3.141590118408203,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "FrontRockWall2": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                2.0,
+                -2.0,
+                14.0
+            ],
+            "rotation": [
+                0.0,
+                3.1419999599456787,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "FrontRockWall3": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                4.0,
+                -2.0,
+                14.0
+            ],
+            "rotation": [
+                0.0,
+                3.1419999599456787,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "FrontRockWall4": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                6.0,
+                -2.0,
+                14.0
+            ],
+            "rotation": [
+                0.0,
+                3.141590118408203,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "FrontRockWall5": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                8.0,
+                -2.0,
+                14.0
+            ],
+            "rotation": [
+                0.0,
+                3.141590118408203,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "FrontRockWall6": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                10.0,
+                -2.0,
+                14.0
+            ],
+            "rotation": [
+                0.0,
+                3.141590118408203,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "FrontRockWall7_copy": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                12.0,
+                -2.0,
+                14.0
+            ],
+            "rotation": [
+                0.0,
+                3.141590118408203,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "FrontRockWall8": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                0.0,
+                -4.0,
+                14.0
+            ],
+            "rotation": [
+                0.0,
+                3.1419999599456787,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "FrontRockWall9": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                2.0,
+                -4.0,
+                14.0
+            ],
+            "rotation": [
+                0.0,
+                3.1419999599456787,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
         "GoalWindow": {
             "components": [
                 {
@@ -1523,6 +1882,30 @@
             "scale": [
                 1.0,
                 1.0,
+                1.0
+            ]
+        },
+        "LeftRockWall": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                11.989999771118164,
+                -7.0,
+                7.0
+            ],
+            "rotation": [
+                0.0,
+                -1.5700000524520874,
+                0.0
+            ],
+            "scale": [
+                8.0,
+                8.0,
                 1.0
             ]
         },
@@ -1628,6 +2011,30 @@
                 1.0
             ]
         },
+        "RightRockWall": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                0.009999999776482582,
+                -7.0,
+                7.0
+            ],
+            "rotation": [
+                0.0,
+                1.5700000524520874,
+                0.0
+            ],
+            "scale": [
+                8.0,
+                8.0,
+                1.0
+            ]
+        },
         "RunOutWindow": {
             "components": [
                 {
@@ -1681,7 +2088,7 @@
         "TorchLeft": {
             "components": [
                 {
-                    "intensity": 1.0,
+                    "intensity": 70.0,
                     "lightColor": [
                         1.0,
                         0.4000000059604645,
@@ -1713,9 +2120,9 @@
             "label": null,
             "name": "TorchLeft",
             "position": [
-                11.5,
+                13.0,
                 1.2999999523162842,
-                2.0
+                0.0
             ],
             "rotation": [
                 0.0,
@@ -1725,6 +2132,228 @@
             "scale": [
                 1.0,
                 1.0,
+                1.0
+            ]
+        },
+        "TorchLeft_copy": {
+            "components": [
+                {
+                    "intensity": 70.0,
+                    "lightColor": [
+                        1.0,
+                        0.4000000059604645,
+                        0.0,
+                        1.0
+                    ],
+                    "lightOffsetPos": [
+                        -0.20000000298023224,
+                        0.4000000059604645,
+                        0.0,
+                        0.0
+                    ],
+                    "name": "PointLightComponent",
+                    "range": 50.0
+                },
+                {
+                    "name": "FireParticleComponent",
+                    "particleEmitPos": [
+                        -0.10000000149011612,
+                        0.30000001192092896,
+                        0.0
+                    ]
+                },
+                {
+                    "meshID": "TORCH",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "name": "TorchLeft",
+            "position": [
+                13.0,
+                1.2999999523162842,
+                13.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "TorchRight": {
+            "components": [
+                {
+                    "intensity": 70.0,
+                    "lightColor": [
+                        1.0,
+                        0.4000000059604645,
+                        0.0,
+                        1.0
+                    ],
+                    "lightOffsetPos": [
+                        0.20000000298023224,
+                        0.4000000059604645,
+                        0.0,
+                        0.0
+                    ],
+                    "name": "PointLightComponent",
+                    "range": 50.0
+                },
+                {
+                    "name": "FireParticleComponent",
+                    "particleEmitPos": [
+                        0.10000000149011612,
+                        0.30000001192092896,
+                        0.0
+                    ]
+                },
+                {
+                    "meshID": "TORCH",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "name": "TorchLeft",
+            "position": [
+                -1.0,
+                1.2999999523162842,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                3.141590118408203,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "TorchRight_copy": {
+            "components": [
+                {
+                    "intensity": 70.0,
+                    "lightColor": [
+                        1.0,
+                        0.4000000059604645,
+                        0.0,
+                        1.0
+                    ],
+                    "lightOffsetPos": [
+                        0.20000000298023224,
+                        0.4000000059604645,
+                        0.0,
+                        0.0
+                    ],
+                    "name": "PointLightComponent",
+                    "range": 50.0
+                },
+                {
+                    "name": "FireParticleComponent",
+                    "particleEmitPos": [
+                        0.10000000149011612,
+                        0.30000001192092896,
+                        0.0
+                    ]
+                },
+                {
+                    "meshID": "TORCH",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "name": "TorchLeft",
+            "position": [
+                -1.0,
+                1.2999999523162842,
+                13.0
+            ],
+            "rotation": [
+                0.0,
+                3.141590118408203,
+                0.0
+            ],
+            "scale": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "UnderBackWall": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                6.0,
+                -10.050000190734863,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                3.1414999961853027,
+                0.0
+            ],
+            "scale": [
+                5.0,
+                5.0,
+                1.0
+            ]
+        },
+        "UnderBackWall_copy": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                6.0,
+                -10.050000190734863,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                3.1414999961853027,
+                0.0
+            ],
+            "scale": [
+                5.0,
+                5.0,
+                1.0
+            ]
+        },
+        "UnderFrontWall": {
+            "components": [
+                {
+                    "meshID": "ROCK_WALL",
+                    "name": "MeshComponent"
+                }
+            ],
+            "label": null,
+            "position": [
+                6.0,
+                -10.050000190734863,
+                12.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "scale": [
+                5.0,
+                5.0,
                 1.0
             ]
         }

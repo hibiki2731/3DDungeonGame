@@ -35,7 +35,7 @@ void MainMenu::applyComponentLabel()
 void MainMenu::updateMenu()
 {
 	if (movingToDungeon && mScene.getGame().getGraphic().isFinishedFade()) {
-		mScene.getGame().getSceneManager().transitToMap();
+		mScene.getGame().getSceneManager().transitToMap(2);
 	}
 }
 

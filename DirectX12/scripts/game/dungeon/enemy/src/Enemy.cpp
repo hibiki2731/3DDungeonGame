@@ -29,6 +29,7 @@ Enemy::Enemy(DungeonScene& scene, const std::string& enemyID, float x, float y)
 	int dropMoney = enemyData[enemyID].value("dropMoney", 0) + scene.getGame().getItemManager().getResourceData("GOLD").yield;
 	mEnemy->setDropMoney(dropMoney);
 	mEnemy->setName(enemyData[enemyID]["name"].get<std::string>());
+	mEnemy->setEnemyID(enemyID);
 	//jsonのmovePatternに応じた行動パターンを設定する
 	mEnemy->setMoveStrategy(createMoveStrategy(enemyData[enemyID], *mEnemy, scene));
 	//jsonのattackPatternに応じた攻撃パターンを設定する

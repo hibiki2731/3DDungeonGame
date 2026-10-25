@@ -3,6 +3,7 @@
 #include "DungeonScene.h"
 #include "Player.h"
 #include "Random.h"
+#include "EnemySpawner.h"
 #include <queue>
 #include <functional>
 #include <unordered_map>
@@ -146,16 +147,22 @@ std::array<int, 2> SenseStrategy::calcTargetIndex()
 //---ボス(弱点)---
 BossPillarStrategy::BossPillarStrategy(EnemyComponent& enemy, DungeonScene& scene) :
 	EnemyMoveStrategy(enemy, scene),
-	mMovablePosition(
-		std::array<int, 2>{3,5},
-		std::array<int, 2>{1,2},
-		std::array<int, 2>{4,1}),
+	//{ボスの位置, {移動時の召喚位置 x2}, ターンごとの召喚位置}
+	mBossPositions{ {
+		{ {3,5}, { { {2,4}, {4,4} } }, {3,1} },
+		{ {1,2}, { { {2,1}, {2,3} } }, {5,2} },
+		{ {4,1}, { { {3,2}, {5,2} } }, {4,5} },
+	} },
 	mCurrentMovablePositionIndex(0),
 	mAccumulatedDamage(0),
 	mDamageThreshold(20),
 	mStayedTurnCount(0),
 	mStayedTurnThreshold(9),
-	mPreEnemyHP(-1)
+	mPreEnemyHP(-1),
+	mSummonEnemyID("BOSS_ROCK"),
+	mMaxSummonCount(3),
+	mSummonTurnCount(0),
+	mSummonInterval(8)	//TODO: 召喚間隔の調整
 {
 }
 
@@ -168,42 +175,68 @@ std::array<int, 2> BossPillarStrategy::calcTargetIndex()
 	const int currentHP = mEnemy.getHP();
 	const int damage = mPreEnemyHP - currentHP; 
 	
+	//前ターンのHPを更新
+	mPreEnemyHP = currentHP;
+	
+	bool isMoving = false;
+	std::array<int, 2> targetIndex = mEnemy.getIndexPos();
+
 	//蓄積ダメージ値が許容量を超えていたら移動
 	mAccumulatedDamage += damage;
 	if(mAccumulatedDamage >= mDamageThreshold){
-		mAccumulatedDamage = 0;
-		mStayedTurnCount = 0;
-		return selectNextPosition();	
+		isMoving = true;
 	}
-	
 	//滞在ターン数が閾値を超えてきたら移動
-	++mStayedTurnCount;
-	if(mStayedTurnCount >= mStayedTurnThreshold){
+	else if(++mStayedTurnCount >= mStayedTurnThreshold){
+		isMoving = true;
+	}
+
+	if (isMoving) {
 		mAccumulatedDamage = 0;
 		mStayedTurnCount = 0;
-		return selectNextPosition();
+		targetIndex = selectNextPosition();
+		//移動時は移動先の周囲に必ず召喚する(ターンごとの召喚より先に要求し、優先させる)
+		summonOnMove();
 	}
-	
-	//前ターンのHPを更新
-	mPreEnemyHP = currentHP;
+	else {
+		//プレイヤーの方向を向く
+		mEnemy.lookAt(mScene.getPlayer()->getIndexPos());
+	}
 
-	//プレイヤーの方向を向く
-	mEnemy.lookAt(mScene.getPlayer()->getIndexPos());
-	//現在地を返す
-	return mEnemy.getIndexPos();
+	//一定ターンごとに召喚
+	if (++mSummonTurnCount >= mSummonInterval) {
+		mSummonTurnCount = 0;
+		summonOnTurn();
+	}
+
+	return targetIndex;
 }
 
 std::array<int, 2> BossPillarStrategy::selectNextPosition()
 {
 	//移動候補地をランダムに選出
-	int nextPositionIndex = Random::dist(0, mMovablePosition.size() - 2);	//そのまま配列のインデックスになるよう-2する
+	int nextPositionIndex = Random::dist(0, static_cast<int>(mBossPositions.size()) - 2);	//そのまま配列のインデックスになるよう-2する
 	//現在地以外のインデックスになるよう調整
 	if(nextPositionIndex >= mCurrentMovablePositionIndex) ++nextPositionIndex;
 
 	//現在の移動候補地インデックスを更新
 	mCurrentMovablePositionIndex = nextPositionIndex;
 
-    return mMovablePosition[nextPositionIndex];
+    return mBossPositions[nextPositionIndex].position;
+}
+
+void BossPillarStrategy::summonOnMove()
+{
+	//召喚は敵配列の走査中に行えないため、要求を積んでターン終了時に生成する
+	EnemySpawner& spawner = mScene.getEnemySpawner();
+	for (const auto& summonPos : mBossPositions[mCurrentMovablePositionIndex].moveSummonPositions) {
+		spawner.requestSpawn(mSummonEnemyID, summonPos, mMaxSummonCount);
+	}
+}
+
+void BossPillarStrategy::summonOnTurn()
+{
+	mScene.getEnemySpawner().requestSpawn(mSummonEnemyID, mBossPositions[mCurrentMovablePositionIndex].turnSummonPosition, mMaxSummonCount);
 }
 
 //---行動パターンの生成---
