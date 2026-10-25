@@ -89,7 +89,7 @@ private:
 	//ボスの位置ごとの設定
 	struct BossPosition {
 		std::array<int, 2> position;							//ボスの位置
-		std::array<std::array<int, 2>, 2> moveSummonPositions;	//この位置に移動したときの召喚位置
+		std::array<int, 2> moveSummonPosition;					//この位置に移動したときの召喚位置
 		std::array<int, 2> turnSummonPosition;					//この位置にいるときのターンごとの召喚位置
 	};
 

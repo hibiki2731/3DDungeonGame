@@ -348,7 +348,7 @@
                 0.7293143272399902,
                 1.0470988750457764
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/rocks_ground_04_diff_4k.jpg"
+            "texturePath": "assets/texture/rocks_ground_04_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -697,7 +697,7 @@
                 0.41630682349205017,
                 1.0151797533035278
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/rocks_ground_04_diff_4k.jpg"
+            "texturePath": "assets/texture/rocks_ground_04_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -1046,7 +1046,7 @@
                 0.41630682349205017,
                 1.0151797533035278
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/rocks_ground_04_diff_4k.jpg"
+            "texturePath": "assets/texture/rocks_ground_04_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -1395,7 +1395,7 @@
                 0.7725533246994019,
                 1.0569742918014526
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/rocks_ground_04_diff_4k.jpg"
+            "texturePath": "assets/texture/rocks_ground_04_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -1744,7 +1744,7 @@
                 0.4094119071960449,
                 1.0433804988861084
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/rocks_ground_04_diff_4k.jpg"
+            "texturePath": "assets/texture/rocks_ground_04_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -2093,7 +2093,7 @@
                 0.07065233588218689,
                 1.0575144290924072
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/rocks_ground_04_diff_4k.jpg"
+            "texturePath": "assets/texture/rocks_ground_04_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -6654,7 +6654,7 @@
                 1.0833333730697632,
                 0.875
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -11215,7 +11215,7 @@
                 1.0833332538604736,
                 0.25
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -15776,7 +15776,7 @@
                 1.0833332538604736,
                 0.75
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -20337,7 +20337,7 @@
                 1.0,
                 0.125
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -24898,7 +24898,7 @@
                 1.0833333730697632,
                 0.625
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -29459,7 +29459,7 @@
                 1.0833333730697632,
                 0.625
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -34020,7 +34020,7 @@
                 1.0833332538604736,
                 0.25
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -38581,7 +38581,7 @@
                 1.0833333730697632,
                 0.875
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -43142,7 +43142,7 @@
                 1.0833332538604736,
                 0.25
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -47703,7 +47703,7 @@
                 1.0833332538604736,
                 0.75
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -52264,7 +52264,7 @@
                 1.0,
                 0.125
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -56825,7 +56825,7 @@
                 1.0833333730697632,
                 0.625
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -61386,7 +61386,7 @@
                 1.0833332538604736,
                 0.25
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -65947,7 +65947,7 @@
                 1.0,
                 0.875
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -70508,7 +70508,7 @@
                 1.0,
                 0.875
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -75069,7 +75069,7 @@
                 1.0833333730697632,
                 0.375
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -79630,7 +79630,7 @@
                 1.0833333730697632,
                 0.375
             ],
-            "texturePath": "assets/3DModels/Boss/BossObject/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         }
     ]
 }

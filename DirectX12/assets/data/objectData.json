@@ -7,7 +7,7 @@
                     "name": "MeshComponent"
                 },
                 {
-                    "intensity": 6.0,
+                    "intensity": 1.0,
                     "lightColor": [
                         0.29113924503326416,
                         0.25881117582321167,
@@ -2153,7 +2153,7 @@
         "TorchLeft": {
             "components": [
                 {
-                    "intensity": 70.0,
+                    "intensity": 50.0,
                     "lightColor": [
                         1.0,
                         0.4000000059604645,
@@ -2203,7 +2203,7 @@
         "TorchLeft_copy": {
             "components": [
                 {
-                    "intensity": 70.0,
+                    "intensity": 50.0,
                     "lightColor": [
                         1.0,
                         0.4000000059604645,
@@ -2253,7 +2253,7 @@
         "TorchRight": {
             "components": [
                 {
-                    "intensity": 70.0,
+                    "intensity": 50.0,
                     "lightColor": [
                         1.0,
                         0.4000000059604645,
@@ -2303,7 +2303,7 @@
         "TorchRight_copy": {
             "components": [
                 {
-                    "intensity": 70.0,
+                    "intensity": 50.0,
                     "lightColor": [
                         1.0,
                         0.4000000059604645,

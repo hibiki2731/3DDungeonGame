@@ -20,7 +20,7 @@
 #include "BossDefeatEvent.h"
 #include "Object.h"
 #include <string>
-#define EDIT
+//#define EDIT
 
 DungeonScene::DungeonScene(Game& game, Stage stage)
 	:Scene(game),

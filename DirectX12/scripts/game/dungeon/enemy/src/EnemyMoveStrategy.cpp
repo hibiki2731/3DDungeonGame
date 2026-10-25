@@ -149,9 +149,9 @@ BossPillarStrategy::BossPillarStrategy(EnemyComponent& enemy, DungeonScene& scen
 	EnemyMoveStrategy(enemy, scene),
 	//{ボスの位置, {移動時の召喚位置 x2}, ターンごとの召喚位置}
 	mBossPositions{ {
-		{ {3,5}, { { {2,4}, {4,4} } }, {3,1} },
-		{ {1,2}, { { {2,1}, {2,3} } }, {5,2} },
-		{ {4,1}, { { {3,2}, {5,2} } }, {4,5} },
+		{ {3,5}, {4, 4}, {3,1} },
+		{ {1,2}, {2, 1}, {5,2} },
+		{ {4,1}, {5, 2}, {4,5} },
 	} },
 	mCurrentMovablePositionIndex(0),
 	mAccumulatedDamage(0),
@@ -229,9 +229,7 @@ void BossPillarStrategy::summonOnMove()
 {
 	//召喚は敵配列の走査中に行えないため、要求を積んでターン終了時に生成する
 	EnemySpawner& spawner = mScene.getEnemySpawner();
-	for (const auto& summonPos : mBossPositions[mCurrentMovablePositionIndex].moveSummonPositions) {
-		spawner.requestSpawn(mSummonEnemyID, summonPos, mMaxSummonCount);
-	}
+	spawner.requestSpawn(mSummonEnemyID, mBossPositions[mCurrentMovablePositionIndex].moveSummonPosition, mMaxSummonCount);
 }
 
 void BossPillarStrategy::summonOnTurn()
