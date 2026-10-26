@@ -329,7 +329,7 @@
                 },
                 {
                     "borderSize": 5.1529998779296875,
-                    "filePath": "assets/picture\\UI1/Divider Fade/divider-fade-002.png",
+                    "filePath": "assets/picture/divider-fade-002.png",
                     "height": 10.04699993133545,
                     "name": "SpriteComponent",
                     "position": [
@@ -1350,7 +1350,7 @@
                 },
                 {
                     "borderSize": 5.1529998779296875,
-                    "filePath": "assets/picture\\UI1/Divider Fade/divider-fade-002.png",
+                    "filePath": "assets/picture/divider-fade-002.png",
                     "height": 10.04699993133545,
                     "name": "SpriteComponent",
                     "position": [
