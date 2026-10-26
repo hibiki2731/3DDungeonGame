@@ -21,7 +21,6 @@ public:
 	void endProcess() override;
 
     void create(const std::string filename);
-    void loadFileAndCreate(const std::string& structName);
     virtual void draw();
 
 	//描画範囲のセッター

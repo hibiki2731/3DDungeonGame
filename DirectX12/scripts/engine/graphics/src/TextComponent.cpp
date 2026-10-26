@@ -5,7 +5,6 @@
 #include "AssetManager.h"
 #include "MyUtility.h"
 #include "myJson.h"
-#include <fstream>
 
 TextComponent::TextComponent(Actor& owner, float zDepth) 
 	: Component(owner),
@@ -40,43 +39,6 @@ TextComponent::TextComponent(Actor& owner, float zDepth)
 	//テキストフォーマットの初期化
 	initDWriteFactory();
 	applyTextFormat();
-}
-
-void TextComponent::loadFileAndCreate(const std::string& structName)
-{
-	//テキストデータの取得
-	nlohmann::json textJson;
-	std::ifstream textfile("assets\\data\\textData.json");
-	textfile >> textJson;
-
-	//構造体が存在しない場合、作成する
-	if (!textJson.contains(structName)) {
-		textJson[structName] = {
-			{"x", mPosition.x},
-			{"y", mPosition.y},
-			{"fontSize", mFontSize},
-			{"lineSpace", mLineSpace},
-			{"text", Utility::wstringToString(mText)}
-		};
-		std::ofstream textfileOut("assets\\data\\textData.json");
-		textfileOut << textJson.dump(4);
-	}
-
-	mFontSize = textJson[structName].value("fontSize", mFontSize);
-	setLineSpace(textJson[structName].value("lineSpace", mLineSpace));	//ここでテキストフォーマットが更新される
-	mPosition.x = textJson[structName].value("x", mPosition.x);
-	mPosition.y = textJson[structName].value("y", mPosition.y);
-	mText = Utility::stringToWString(textJson[structName].value("text", "empty"));
-	std::vector<float> defaultColor = { 0.0f, 0.0f, 0.0f, 1.0f };
-	if (!textJson["color"].is_null()) {
-		mTextColor.r = textJson.at("color").at(0).get<float>();
-		mTextColor.g = textJson.at("color").at(1).get<float>();
-		mTextColor.b = textJson.at("color").at(2).get<float>();
-		mTextColor.a = textJson.at("color").at(3).get<float>();
-		setTextColor(mTextColor);
-	}
-
-	applyTextTexture();
 }
 
 void TextComponent::loadFromJson(const nlohmann::json& json)

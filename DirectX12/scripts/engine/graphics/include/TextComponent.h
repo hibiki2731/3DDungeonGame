@@ -12,7 +12,6 @@ public:
 	TextComponent(Actor& owner, float zDepth = 100.0f);
 	DECLARE_COMPONENT_NAME(TextComponent)
 
-	void loadFileAndCreate(const std::string& structName);
 	void loadFromJson(const nlohmann::json& json) override;
 	void applyTextTexture();
 	void draw();
