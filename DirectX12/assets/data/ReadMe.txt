@@ -21,3 +21,4 @@ movePattern : 敵の行動パターン
     AsterA  *アルゴリズムでプレイヤーを追跡
     Sense   基本ランダム、一定範囲に入ったらA*で追跡
         senseRange　感知範囲
+        

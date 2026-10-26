@@ -3,7 +3,7 @@
         {
             "category": "CHEST",
             "costResourceID": [
-                "GRASS"
+                "MAGIC_IRON"
             ],
             "defence": 0,
             "description": "なにも着ていない。\n早く服を着よう\n",
@@ -16,8 +16,22 @@
         },
         {
             "category": "CHEST",
+            "costResourceID":[
+                "MAGIC_IRON"
+            ],
+            "defence": 4,
+            "description": "防御力 4",
+            "id": "LETHER_ARMER",
+            "inPossession": false,
+            "name" :"皮の鎧",
+            "price":[
+                20
+            ]
+        },
+        {
+            "category": "CHEST",
             "costResourceID": [
-                "GRASS"
+                "MAGIC_IRON"
             ],
             "defence": 1,
             "description": "防御力 1",
@@ -26,22 +40,6 @@
             "name": "布の服",
             "price": [
                 3
-            ]
-        },
-        {
-            "category": "CHEST",
-            "costResourceID":[
-                "GOLD",
-                "GRASS"
-            ],
-            "defence": 4,
-            "description": "防御力 4",
-            "id": "LETHER_ARMER",
-            "inPossession": false,
-            "name" :"皮の鎧",
-            "price":[
-                20,
-                20
             ]
         },
         {
@@ -63,41 +61,37 @@
         {
             "category": "ACTION_LIMIT",
             "costResourceID": [
-                "GOLD",
-                "GRASS"
+                "GOLD"
             ],
-            "description": "APの最大値が10増加\n",
+            "description": "APの最大値が20増加\n",
             "id": "BOOTS",
             "inPossession": false,
             "name": "靴",
             "price": [
-                10,
-                8
+                10
             ],
-            "value": 10
+            "value": 20
         },
         {
             "category": "YIELD",
             "costResourceID":[
-                "GOLD",
-                "GRASS"
+                "GOLD"
             ],
             "description": "魔鉱石の収穫量が+2される\n",
             "id": "PICKSXE",
             "inPossession": false,
             "name": "ピッケル",
             "price":[
-                15,
-                10
+                15
             ],
             "value": 2,
-            "valueID":"GRASS"
+            "valueID":"MAGIC_IRON"
         },
         {
             "category": "YIELD",
             "costResourceID": [
                 "GOLD",
-                "GRASS"
+                "MAGIC_IRON"
             ],
             "description": "敵が落とすお金が+5される\n",
             "id": "BANK",
@@ -114,7 +108,7 @@
             "category": "STORAGE_SIZE",
             "costResourceID": [
                 "GOLD",
-                "GRASS"
+                "MAGIC_IRON"
             ],
             "description": "所持アイテム数が1増加\n",
             "id": "BACKPACK",
@@ -122,8 +116,24 @@
             "name": "バックパック",
             "price": [
                 30,
-                15
+                20
             ]
+        },
+        {
+            "category": "ACTION_LIMIT",
+            "costResourceID": [
+                "GOLD",
+                "MAGIC_IRON"
+            ],
+            "description": "APの最大値が30増加\n",
+            "id": "BALLOON",
+            "inPossession": false,
+            "name": "風船",
+            "price": [
+                35,
+                10
+            ],
+            "value": 30
         },
         {
             "category": "DOUBLE_ATTACK",
@@ -145,7 +155,7 @@
             "id": "HERB",
             "name": "薬草",
             "price": [
-                3
+                2
             ],
             "value": 20
         },
@@ -159,7 +169,7 @@
             "id": "SALTED_KELP",
             "name": "塩昆布",
             "price": [
-                5
+                3
             ],
             "value": 20
         }
@@ -167,7 +177,7 @@
     "Weapon": [
         {
             "costResourceID": [
-                "GRASS"
+                "MAGIC_IRON"
             ],
             "description": "なにも持っていない!!\n",
             "id": "NONE",
@@ -179,8 +189,21 @@
             ]
         },
         {
+            "costResourceID":[
+                "MAGIC_IRON"
+            ],
+            "description": "攻撃力 4",
+            "id":"IRON_SORD",
+            "inPossession":false,
+            "name":"鉄の剣",
+            "power": 4,
+            "price":[
+                25
+            ]
+        },
+        {
             "costResourceID": [
-                "GRASS"
+                "MAGIC_IRON"
             ],
             "description": "攻撃力 2\n",
             "id": "WOODEN_SORD",
@@ -189,21 +212,6 @@
             "power": 2,
             "price": [
                 5
-            ]
-        },
-        {
-            "costResourceID":[
-                "GOLD",
-                "GRASS"
-            ],
-            "description": "攻撃力 4",
-            "id":"IRON_SORD",
-            "inPossession":false,
-            "name":"鉄の剣",
-            "power": 4,
-            "price":[
-                20,
-                25
             ]
         },
         {

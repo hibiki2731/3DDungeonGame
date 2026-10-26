@@ -51864,7 +51864,7 @@
                 0.7812499403953552,
                 0.5625
             ],
-            "texturePath": "assets/3DModels/Nurikabe/lichen_rock_diff_4k.jpg"
+            "texturePath": "assets/texture/lichen_rock_diff_4k.jpg"
         },
         {
             "indecis": [
@@ -52213,7 +52213,7 @@
                 0.625,
                 0.5
             ],
-            "texturePath": "assets/3DModels/Nurikabe/rocks_ground_04_diff_4k.jpg"
+            "texturePath": "assets/texture/rocks_ground_04_diff_4k.jpg"
         }
     ]
 }

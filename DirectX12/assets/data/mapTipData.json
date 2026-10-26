@@ -14,11 +14,14 @@
         },
         "2":{
             "category":"RESOURCE",
-            "resourceID":"GRASS",
+            "resourceID":"MAGIC_IRON",
             "meshID":"GRASS"
         },
         "3":{
             "category":"TREASURE"
+        },
+        "4":{
+            "category":"EMPTY"
         }
     },
 
@@ -36,6 +39,10 @@
         "2":{
             "category":"ENEMY",
             "enemyID":"NURIKABE"
+        },
+        "3":{
+            "category":"ENEMY",
+            "enemyID":"BOSS_PILLAR"
         }
     }
 

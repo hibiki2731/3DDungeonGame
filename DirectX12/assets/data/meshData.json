@@ -43,5 +43,21 @@
     "TREASURE_OPEN":{
         "fbxPath": "assets/3DModels/Treasure/treasureBox_open.fbx",
         "jsonPath": "assets/3DModels/Treasure/treasureBox_open.json"
+    },
+    "BOSS_OBJECT":{
+        "fbxPath": "assets/3DModels/Boss/BossObject/boss.fbx",
+        "jsonPath": "assets/3DModels/Boss/BossObject/boss.json"
+    },
+    "BOSS_PILLAR":{
+        "fbxPath": "assets/3DModels/Boss/BossPillar/bossPillar.fbx",
+        "jsonPath": "assets/3DModels/Boss/BossPillar/bossPillar.json"
+    },
+    "BOSS_ROCK":{
+        "fbxPath": "assets/3DModels/Boss/BossAttackRock/bossAttackRock.fbx",
+        "jsonPath": "assets/3DModels/Boss/BossAttackRock/bossAttackRock.json"
+    },
+    "BOSS_DOOR":{
+        "fbxPath": "assets/3DModels/Door/bossDoor.fbx",
+        "jsonPath": "assets/3DModels/Door/bossDoor.json"
     }
 }
