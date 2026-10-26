@@ -318,6 +318,12 @@
     <ClCompile Include="scripts\engine\utility\src\timer.cpp">
       <Filter>engine\utility\src</Filter>
     </ClCompile>
+    <ClCompile Include="scripts\engine\utility\src\Benchmark.cpp">
+      <Filter>engine\utility\src</Filter>
+    </ClCompile>
+    <ClCompile Include="scripts\engine\debug\src\BenchRunner.cpp">
+      <Filter>engine\debug\src</Filter>
+    </ClCompile>
     <ClCompile Include="scripts\external\Imgui\imgui.cpp">
       <Filter>external\Imgui</Filter>
     </ClCompile>
@@ -547,6 +553,12 @@
     </ClInclude>
     <ClInclude Include="scripts\engine\utility\include\timer.h">
       <Filter>engine\utility\include</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\engine\utility\include\Benchmark.h">
+      <Filter>engine\utility\include</Filter>
+    </ClInclude>
+    <ClInclude Include="scripts\engine\debug\include\BenchRunner.h">
+      <Filter>engine\debug\include</Filter>
     </ClInclude>
     <ClInclude Include="scripts\external\Imgui\imconfig.h">
       <Filter>external\Imgui</Filter>

@@ -4,6 +4,7 @@
 #include "PointLightComponent.h"
 #include "SpotLightComponent.h"
 #include "Game.h"
+#include "Benchmark.h"
 #include "Imgui/imgui_impl_win32.h"
 #include "AssetManager.h"
 #include <comdef.h>
@@ -148,6 +149,7 @@ HRESULT Graphic::createDevice() {
 		//デバイスが作成できていたらループを抜ける
 		if (isDeviceCreated) break;
 	}
+	adapter.As(&mAdapter);
 
 #ifdef _DEBUG
 	//誤検知エラーを無視するフィルタの作成
@@ -973,9 +975,9 @@ HRESULT Graphic::createD2D()
 
 HRESULT Graphic::createCbvAndHeap()
 {
-	HRESULT hr = createCbvTbvHeap(mCbvTbvHeap, 10000); //共有用のヒープを作成
+	HRESULT hr = createCbvTbvHeap(mCbvTbvHeap, CbvTbvHeapCapacity); //共有用のヒープを作成
 	for(int frame = 0; frame < FrameCount; frame++) {
-		hr = createBuf(1 << 20, mConstantBuf[frame]);	//コンスタントバッファを1MB作成
+		hr = createBuf(ConstantBufSize, mConstantBuf[frame]);	//コンスタントバッファを1MB作成
 		assert(SUCCEEDED(hr));
 	}
 	for (int frame = 0; frame < FrameCount; frame++) {
@@ -1430,6 +1432,52 @@ void Graphic::createShaderResourceView(ID3D12Resource* shaderResource, int heapI
 	Device->CreateShaderResourceView(shaderResource, &desc, hCbvTbvHeap);
 }
 
+void Graphic::createConstantBufferViewOn(ID3D12DescriptorHeap* heap, int heapIndex, D3D12_GPU_VIRTUAL_ADDRESS address, UINT sizeInBytes)
+{
+	D3D12_CONSTANT_BUFFER_VIEW_DESC desc = {};
+	desc.BufferLocation = address;
+	desc.SizeInBytes = sizeInBytes;
+
+	auto handle = heap->GetCPUDescriptorHandleForHeapStart();
+	handle.ptr += getCbvTbvIncSize() * heapIndex;
+
+	Device->CreateConstantBufferView(&desc, handle);
+}
+
+void Graphic::createShaderResourceViewOn(ID3D12DescriptorHeap* heap, int heapIndex, ID3D12Resource* shaderResource)
+{
+	D3D12_SHADER_RESOURCE_VIEW_DESC desc = {};
+	desc.Format = shaderResource->GetDesc().Format;
+	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	desc.Texture2D.MipLevels = 1;
+
+	auto handle = heap->GetCPUDescriptorHandleForHeapStart();
+	handle.ptr += getCbvTbvIncSize() * heapIndex;
+
+	Device->CreateShaderResourceView(shaderResource, &desc, handle);
+}
+
+D3D12_GPU_VIRTUAL_ADDRESS Graphic::getBase3DAddress(int frame)
+{
+	return mConstantBuf[frame]->GetGPUVirtualAddress();
+}
+
+void Graphic::bindSharedHeap()
+{
+	mCommandList->SetDescriptorHeaps(1, mCbvTbvHeap.GetAddressOf());
+}
+
+bool Graphic::queryVideoMemory(UINT64& usage, UINT64& budget)
+{
+	if (!mAdapter) return false;
+	DXGI_QUERY_VIDEO_MEMORY_INFO info = {};
+	if (FAILED(mAdapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info))) return false;
+	usage = info.CurrentUsage;
+	budget = info.Budget;
+	return true;
+}
+
 void Graphic::updateViewProj(const XMMATRIX& viewProj)
 {
 	Base3DData.viewProj = viewProj;
@@ -1771,6 +1819,9 @@ bool Graphic::isFinishedFade()
 
 void Graphic::setRenderType(STATE state)
 {
+	//計測用(段階1,2): メッシュが個別ヒープをセットしているので、共有ヒープに戻す
+	if (Bench::stage() <= 2) bindSharedHeap();
+
 	//mStateに応じて3Dと2Dを切換え
 	if (state == Graphic::RENDER_3D) {
 		//パイプラインステートをセット

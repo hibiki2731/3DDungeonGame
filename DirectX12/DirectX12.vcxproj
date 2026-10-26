@@ -365,6 +365,8 @@
     <ClCompile Include="scripts\game\town\scene\src\TownUI.cpp" />
     <ClCompile Include="scripts\engine\graphics\src\TextComponent.cpp" />
     <ClCompile Include="scripts\engine\utility\src\timer.cpp" />
+    <ClCompile Include="scripts\engine\utility\src\Benchmark.cpp" />
+    <ClCompile Include="scripts\engine\debug\src\BenchRunner.cpp" />
     <ClCompile Include="scripts\game\title\src\TitleScene.cpp" />
     <ClCompile Include="scripts\game\town\scene\src\TownScene.cpp" />
     <ClCompile Include="scripts\game\dungeon\object\src\Treasure.cpp" />
@@ -455,6 +457,8 @@
     <ClInclude Include="scripts\external\stb\stb_image.h" />
     <ClInclude Include="scripts\engine\graphics\include\TextComponent.h" />
     <ClInclude Include="scripts\engine\utility\include\timer.h" />
+    <ClInclude Include="scripts\engine\utility\include\Benchmark.h" />
+    <ClInclude Include="scripts\engine\debug\include\BenchRunner.h" />
     <ClInclude Include="scripts\game\title\include\TitleScene.h" />
     <ClInclude Include="scripts\game\town\scene\include\TownScene.h" />
     <ClInclude Include="scripts\game\dungeon\object\include\Treasure.h" />

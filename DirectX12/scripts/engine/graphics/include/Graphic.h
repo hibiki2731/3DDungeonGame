@@ -86,6 +86,12 @@ public:
 	void createConstantBufferView(int cbIndex, int cbSize, int heapIndex, int heapSize);	//コンスタントバッファビューの作成(2フレーム分コンスタントバッファ内の領域を確保するため、heapSize間隔で2つビューを作成)
 	void createBase3DBufferView(int heapIndex, int heapSize);								//3Dオブジェクトが共通して使うコンスタントバッファビューの作成(2フレーム分)
 	void createShaderResourceView(ID3D12Resource* shaderResource, int heapIndex);			//シェーダーリソースビューの作成
+	//---計測用(段階1,2): 共有ヒープ以外のヒープにビューを作成---
+	void createConstantBufferViewOn(ID3D12DescriptorHeap* heap, int heapIndex, D3D12_GPU_VIRTUAL_ADDRESS address, UINT sizeInBytes);
+	void createShaderResourceViewOn(ID3D12DescriptorHeap* heap, int heapIndex, ID3D12Resource* shaderResource);
+	D3D12_GPU_VIRTUAL_ADDRESS getBase3DAddress(int frame);	//Base3DDataのGPUアドレス
+	void bindSharedHeap();									//共有ヒープをコマンドリストに再セット
+	bool queryVideoMemory(UINT64& usage, UINT64& budget);	//ローカルVRAMの使用量
 	
 
 	//---描画処理---
@@ -148,6 +154,8 @@ public:
 	static constexpr int	 ClientHeight = 720;
 	static constexpr float	 Aspect = static_cast<float>(ClientWidth) / ClientHeight;
 	static constexpr int	 FrameCount = 2;
+	static constexpr int	 CbvTbvHeapCapacity = 10000;	//共有ディスクリプタヒープのディスクリプタ数
+	static constexpr int	 ConstantBufSize = 1 << 20;	//共有コンスタントバッファのサイズ(1MB)
 
 #ifdef _DEBUG
 	void setShareDescriptor();
@@ -185,6 +193,7 @@ private:
 	//---DirectX12---
 	//デバイス
 	ComPtr<ID3D12Device> Device;
+	ComPtr<IDXGIAdapter3> mAdapter;	//VRAM使用量の取得に使用
 	//コマンド
 	ComPtr<ID3D12CommandAllocator> mCommandAllocator[FrameCount];	//フレーム数分用意
 	ComPtr<ID3D12GraphicsCommandList> mCommandList;

@@ -17,6 +17,8 @@ struct MeshData {
 	//マテリアルデータ
 	std::vector<XMFLOAT4> Material;
     std::vector<std::string> TextureName;
+	//計測用(段階1): キャッシュを使わない場合、テクスチャはメッシュデータが所有する
+	std::vector<ComPtr<ID3D12Resource>> OwnedTexture;
 	//スケール
 	XMFLOAT3 Scale;
 };
@@ -36,6 +38,9 @@ public:
 	int getCBEndIndex(int size);//必要なサイズを引数に取る
 	int getHeapEndIndex(int size); //必要なサイズを引数に取る
 	MeshData* getMeshData(const std::string& meshID); 
+	std::unique_ptr<MeshData> createUncachedMeshData(const std::string& meshID); //計測用(段階1): キャッシュを使わずにメッシュデータを作成
+	int getCBUsedEnd() const { return mCBEndIndex; }		//計測用: コンスタントバッファの使用済み末尾
+	int getHeapUsedEnd() const { return mHeapEndIndex; }	//計測用: ディスクリプタヒープの使用済み末尾
 	SpriteData getSpriteData();
 	XMFLOAT2 createTextureAndGetSize(const std::string& filePath);
 	ID3D12Resource* getShaderResource(const std::string& textureName);
@@ -73,6 +78,7 @@ private:
 
 	Graphic& mGraphic;
 	std::unordered_map<std::string, std::unique_ptr<MeshData>> mLoadData;
+	std::unordered_map<std::string, MeshFileData> mMeshFileData; //メッシュIDとファイル情報の対応
 	std::unordered_map<std::string, ComPtr<ID3D12Resource>> mTextureData; //テクスチャデータのキャッシュ
 	std::map<int, int> mClearedMemory; //解放されたメモリ
 	std::map<int, int> mClearedHeap; //解放されたメモリ
@@ -91,6 +97,7 @@ private:
 	nlohmann::json mSceneJson;
 
 	void createMeshData(const std::string& meshID, const MeshFileData& meshFileData);
+	std::unique_ptr<MeshData> buildMeshData(const MeshFileData& meshFileData, bool useTextureCache);
 	void createSpriteBuffers();
 	void loadJson();
 };

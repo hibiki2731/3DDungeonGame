@@ -30,6 +30,7 @@ class ItemManager;
 class PlayerManager;
 class AudioManager;
 class GUIDebugger;
+class BenchRunner;
 
 class Game {
 public:
@@ -75,6 +76,9 @@ private:
 
 	//オーディオマネージャー
 	std::unique_ptr<AudioManager> mAudioManager;
+
+	//計測シナリオ(--bench時のみ)
+	std::unique_ptr<BenchRunner> mBenchRunner;
 
 #ifdef _DEBUG
 	//GUI編集用

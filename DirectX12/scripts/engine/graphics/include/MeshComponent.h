@@ -63,4 +63,13 @@ private:
 
     //メッシュのID
     std::string mMeshID;
+
+    //---計測用(段階1,2): アロケータを使わず、オブジェクトごとに作成するリソース---
+    std::unique_ptr<MeshData> mOwnedMeshData;           //段階1: キャッシュを使わない頂点バッファ、テクスチャ
+    std::vector<ComPtr<ID3D12Resource>> mOwnCB;         //[0]:World, [1..NumParts]:マテリアル。各フレーム分の領域を持つ
+    std::vector<UINT8*> mOwnCBData;                     //マップしたアドレス
+    ComPtr<ID3D12DescriptorHeap> mOwnHeap;              //このメッシュ専用のディスクリプタヒープ
+    void createOwnResources();
+    void drawOwnResources();
+    void releaseOwnResources();
 };

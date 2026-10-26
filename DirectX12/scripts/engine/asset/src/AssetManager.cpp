@@ -3,6 +3,7 @@
 #include <fstream>
 #include "FBXConverter.h"
 #include "json.hpp"
+#include "Benchmark.h"
 
 static float spriteVertices[] = {
 	0.0f, 0.0f, 0.0f, 0.0f,
@@ -73,6 +74,9 @@ AssetManager::AssetManager(Graphic& graphic)
 		fbxConverter.fbxToJson(value["fbxPath"].get<std::string>().c_str(), meshFileData.filePath.c_str() , 1.0f, 1.0f, 1.0f, 0, 1, 2); //横、縦、奥行
 #endif
 
+		mMeshFileData[key] = meshFileData;
+		//計測用(段階1): 起動時の一括読み込みを行わず、オブジェクト生成のたびに読み込む
+		if (Bench::stage() == 1) continue;
 		createMeshData(key, meshFileData);
 	}
 
@@ -83,6 +87,18 @@ void AssetManager::createMeshData(const std::string& meshID, const MeshFileData&
 {
 	if (mLoadData.contains(meshID)) return; //すでに読み込まれたオブジェクトはスルー
 
+	mLoadData[meshID] = buildMeshData(meshFileData, true);
+}
+
+std::unique_ptr<MeshData> AssetManager::createUncachedMeshData(const std::string& meshID)
+{
+	auto iter = mMeshFileData.find(meshID);
+	if (iter == mMeshFileData.end()) return nullptr;
+	return buildMeshData(iter->second, false);
+}
+
+std::unique_ptr<MeshData> AssetManager::buildMeshData(const MeshFileData& meshFileData, bool useTextureCache)
+{
 	//ファイルを読み込む
 	std::ifstream meshFile(meshFileData.filePath);
 	assert(!meshFile.fail());
@@ -100,6 +116,7 @@ void AssetManager::createMeshData(const std::string& meshID, const MeshFileData&
 	meshData->VertexBufView.resize(numParts);
 	meshData->Material.resize(3 * numParts); 
 	meshData->TextureName.resize(numParts);
+	if (!useTextureCache) meshData->OwnedTexture.resize(numParts);
 	meshData->Scale = XMFLOAT3(meshFileData.scale[0], meshFileData.scale[1], meshFileData.scale[2]);
 
 	int k = -1; //パーツのインデックス
@@ -159,6 +176,14 @@ void AssetManager::createMeshData(const std::string& meshID, const MeshFileData&
 
 			std::string texturePath = partsJson["texturePath"].get<std::string>();
 
+			//計測用(段階1): キャッシュを使わず、パーツごとにテクスチャを作成する
+			if (!useTextureCache) {
+				HRESULT hr = mGraphic.createShaderResource(texturePath, meshData->OwnedTexture[k]);
+				assert(SUCCEEDED(hr));
+				meshData->TextureName[k] = texturePath;
+				continue;
+			}
+
 			auto iter = mTextureData.find(texturePath);
 			if (iter != mTextureData.end()) {
 				//すでに読み込まれたテクスチャはスルー
@@ -175,7 +200,7 @@ void AssetManager::createMeshData(const std::string& meshID, const MeshFileData&
 		}
 	}
 
-	mLoadData[meshID] = std::move(meshData);
+	return meshData;
 }
 
 XMFLOAT2 AssetManager::createTextureAndGetSize(const std::string& filePath)
@@ -255,6 +280,7 @@ int AssetManager::getCBEndIndex(int size)
 	//解放されたメモリがなければ、最後尾のインデックスを取得
 	index = mCBEndIndex;
 	mCBEndIndex += size;
+	assert(mCBEndIndex <= Graphic::ConstantBufSize);
 	return index;
 }
 
@@ -287,6 +313,7 @@ int AssetManager::getHeapEndIndex(int size)
 	//解放されたヒープがなければ、最後尾のインデックスを取得
 	index = mHeapEndIndex;
 	mHeapEndIndex += size;
+	assert(mHeapEndIndex <= Graphic::CbvTbvHeapCapacity);
 	return index;
 }
 
@@ -297,18 +324,9 @@ MeshData* AssetManager::getMeshData(const std::string& meshID)
 		return iter->second.get();
 	}
 	else {
-		std::fstream file("assets/data/MeshData.json");
-		nlohmann::json json;
-		file >> json;
-
-		//メッシュデータに目的のIDが存在するか調べる
-		for (const auto& [key, value] : json.items()) {
-			if (meshID != key) continue;
-
-			MeshFileData meshFileData;
-			meshFileData.filePath = value["filePath"].get<std::string>();
-			meshFileData.scale = value.value("scale", std::vector<float>{ 1.0f, 1.0f, 1.0f });
-			createMeshData(meshID, meshFileData);
+		auto fileIter = mMeshFileData.find(meshID);
+		if (fileIter != mMeshFileData.end()) {
+			createMeshData(meshID, fileIter->second);
 			return mLoadData[meshID].get();
 		}
 	}

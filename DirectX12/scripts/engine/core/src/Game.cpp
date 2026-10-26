@@ -18,6 +18,8 @@
 #include "AudioManager.h"
 #include "Scene.h"
 #include "GUIDebugger.h"
+#include "Benchmark.h"
+#include "BenchRunner.h"
 
 Game::Game(){
 	mUpdatingActors = false;
@@ -29,6 +31,8 @@ void Game::runLoop()
 {
 	while (!mGraphic->quit()) {
 		setDeltaTime();
+
+		if (mBenchRunner) mBenchRunner->beginFrame();
 
 		input();
 		update();
@@ -44,8 +48,11 @@ int Game::endProcess()
 }
 
 void Game::init() {
-	mGraphic = std::make_unique<Graphic>(*this);
-	mGraphic->init();
+	{
+		Bench::ScopeTimer timer("A_graphic_init");
+		mGraphic = std::make_unique<Graphic>(*this);
+		mGraphic->init();
+	}
 	mGraphic->clearColor(0.25f, 0.5f, 0.9f);
 
 #ifdef _DEBUG
@@ -57,7 +64,10 @@ void Game::init() {
 	initDeltaTime();
 
 	//assetManagerの初期化 meshComponentを作成する前に初期化
-	mAssetManager = std::make_unique<AssetManager>(*mGraphic.get());
+	{
+		Bench::ScopeTimer timer("A_asset_manager_init");
+		mAssetManager = std::make_unique<AssetManager>(*mGraphic.get());
+	}
 
 	//ビルボード処理用のバッファを初期化
 	mGraphic->initBilbordBuffer();
@@ -69,10 +79,18 @@ void Game::init() {
 	mPlayerManager = std::make_unique<PlayerManager>(*this);
 
 	//AudioManager
-	mAudioManager = std::make_unique<AudioManager>();
+	{
+		Bench::ScopeTimer timer("A_audio_init");
+		mAudioManager = std::make_unique<AudioManager>();
+	}
 
 	//シーンマネージャーの初期化	
-	mSceneManager = std::make_unique<SceneManager>(*this);
+	{
+		Bench::ScopeTimer timer("A_scene_manager_init");
+		mSceneManager = std::make_unique<SceneManager>(*this);
+	}
+
+	if (Bench::config().enabled) mBenchRunner = std::make_unique<BenchRunner>(*this);
 
 
 }
@@ -174,7 +192,11 @@ void Game::draw()
 
 	mGraphic->endRender();
 
+	if (mBenchRunner) mBenchRunner->frameSubmitted();
+
 	mGraphic->moveToNextFrame();
+
+	if (mBenchRunner) mBenchRunner->endFrame();
 
 
 }

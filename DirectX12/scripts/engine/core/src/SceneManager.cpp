@@ -8,6 +8,7 @@
 #include "json.hpp"
 #include "AssetManager.h"
 #include "Object.h"
+#include "Benchmark.h"
 
 SceneManager::SceneManager(Game& game)
 	:mGame(game)
@@ -116,6 +117,8 @@ void SceneManager::transitToGameOver(){
 void SceneManager::transitScene()
 {
 	if (mNextSceneType != mCurrentSceneType) {
+		//計測用: 旧シーンの破棄から新シーンの生成まで
+		Bench::ScopeTimer timer("B_transit_scene", mCurrentSceneType + "->" + mNextSceneType);
 	
 		//シーンから出る処理
 		if (mCurrentScene) {
